@@ -9,7 +9,7 @@ export const  AllRoutes = () => {
             element : <App/>,
             children : [
                 {
-                    path : "/",
+                    path : "tickets",
                     element : <TicketsDashboard/>,
                     index : true,
                 },

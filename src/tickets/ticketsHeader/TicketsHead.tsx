@@ -47,7 +47,7 @@ const TicketsHead = () => {
         <span className="p-1.5 outline-1 rounded shadow">
           <FontAwesomeIcon icon={faCodeMerge} />
         </span>
-        <Button className="p-0 bg-blue-500 hover:bg-blue-800" onClick={()=>navigate('createTicket')}>
+        <Button className="p-0 bg-blue-500 hover:bg-blue-800" onClick={()=>navigate('/createTicket')}>
           <FontAwesomeIcon icon={faPlus} className="text-xs" />
           Create
         </Button>

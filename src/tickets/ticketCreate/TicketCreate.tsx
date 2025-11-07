@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import {
 import { SelectSearch } from "@/components/ui/SelectSearch";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/lib/utils";
 import {
   Bold,
   CalendarIcon,
@@ -28,8 +30,13 @@ import {
   Underline,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const TicketCreate = () => {
+  const [open, setOpen] = useState<Boolean>(false);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const navigate = useNavigate();
   const ticketStatusData = [
     { label: "Open", value: "Open" },
     { label: "Close", value: "Close" },
@@ -49,22 +56,52 @@ const TicketCreate = () => {
     { label: "Critical", value: "Critical" },
   ];
 
-  const [open, setOpen] = useState<Boolean>(false);
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-
   return (
     <div>
-      <Dialog defaultOpen={true}>
+      <Dialog
+        defaultOpen={true}
+        onOpenChange={(isOpen) => !isOpen && navigate("/tickets")}
+      >
+        <DialogOverlay
+          onClick={() => {
+            navigate("/createTicket");
+          }}
+        />
         <DialogContent className="h-[95%] min-w-[80%] ">
           <DialogHeader>
             <DialogTitle>Create New Ticket </DialogTitle>
             <DialogDescription>
-              <form className="w-full h-full text-black dark:text-white">
+              <form className="w-full h-full text-black dark:text-white grid gap-10">
                 <div className="w-full h-full grid grid-cols-4 gap-5 pt-5">
                   <div className=" w-full h-full col-span-3 flex flex-col gap-4 ">
-                    
                     <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
+                      <div className="w-full h-full flex gap-10">
+                        {/* <strong className="">Tickets Details</strong> */}
+                        <div className="grid gap-2">
+                          <Label>Ticket status</Label>
+                          <SelectSearch
+                            SelectSearchData={ticketStatusData}
+                            title={"Select Status"}
+                            size={"md"}
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label>Ticket State</Label>
+                          <SelectSearch
+                            SelectSearchData={ticketStateData}
+                            title={"Select State"}
+                            size={"md"}
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label>Ticket Severity</Label>
+                          <SelectSearch
+                            SelectSearchData={ticketSeverityData}
+                            title={"Select Severity"}
+                            size={"md"}
+                          />
+                        </div>
+                      </div>
                       {/* subject and descr */}
                       <div className=" w-full h-full grid gap-2">
                         <Label>Summary(Subject)</Label>
@@ -146,8 +183,8 @@ const TicketCreate = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="w-full h-full grid gap-4">
-                    <div className="w-full h-full grid gap-4 ">
+                  <div className="w-full h-full grid gap-0">
+                    <div className="w-full h-full grid gap-0 ">
                       <div className="flex flex-col gap-3">
                         <Label htmlFor="date" className="px-1">
                           Start Date
@@ -159,7 +196,9 @@ const TicketCreate = () => {
                               id="date"
                               className="w-48 justify-between font-normal"
                             >
-                              {startDate ? startDate.toLocaleDateString() : "Select date"}
+                              {startDate
+                                ? startDate.toLocaleDateString()
+                                : "Select date"}
                               <ChevronDownIcon />
                             </Button>
                           </PopoverTrigger>
@@ -190,7 +229,9 @@ const TicketCreate = () => {
                               id="date"
                               className="w-48 justify-between font-normal"
                             >
-                              {endDate ? endDate.toLocaleDateString() : "Select date"}
+                              {endDate
+                                ? endDate.toLocaleDateString()
+                                : "Select date"}
                               <ChevronDownIcon />
                             </Button>
                           </PopoverTrigger>
@@ -210,33 +251,42 @@ const TicketCreate = () => {
                           </PopoverContent>
                         </Popover>
                       </div>
-                      <div className="w-full h-full flex gap-4 flex-col ">
-                      {/* <strong className="">Tickets Details</strong> */}
                       <div className="grid gap-2">
-                        <Label>Ticket status</Label>
+                        <Label>Assignee</Label>
                         <SelectSearch
                           SelectSearchData={ticketStatusData}
-                          title={"Select Status"}
+                          title={"Select Assignee"}
                           size={"md"}
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Ticket State</Label>
-                        <SelectSearch
-                          SelectSearchData={ticketStateData}
-                          title={"Select State"}
-                          size={"md"}
-                        />
+                        <Label>Created by</Label>
+                        <Input placeholder="ex: John Doe" className="text-sm w-[85%]" />
                       </div>
-                      <div className="grid gap-2">
-                        <Label>Ticket Severity</Label>
-                        <SelectSearch
-                          SelectSearchData={ticketSeverityData}
-                          title={"Select Severity"}
-                          size={"md"}
-                        />
-                      </div>
+                      
                     </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-5 w-full h-full">
+                  <div className="w-full h-full"></div>
+                  <div className="w-full h-full grid grid-cols-2">
+                    <div className="w-full h-full">
+                      <span
+                        className="cursor-pointer px-5 w-[70%] hover:bg-gray-50 uppercase hover:text-red-500 font-bold inline-flex items-center justify-center rounded-md border border-input  py-2 text-sm transition-colorshover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:pointer-events-none"
+                        onClick={() => {
+                          navigate("/tickets");
+                        }}
+                      >
+                        close
+                      </span>
+                    </div>
+                    <div className="w-full h-full">
+                      <Button
+                        className="hover:text-green-500 font-bold w-[70%]  uppercase"
+                        variant={"outline"}
+                      >
+                        Create Ticket
+                      </Button>
                     </div>
                   </div>
                 </div>
