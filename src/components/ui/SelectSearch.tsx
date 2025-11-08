@@ -18,15 +18,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-
- interface SelectSearchProps
-  {
-    value: string,
-    label: string,
-  }
-export function SelectSearch({SelectSearchData,title,size} : {SelectSearchData: SelectSearchProps[],title:string,size : "sm" | "md"}) {
+interface Option {
+  label: string
+  value: string
+}
+interface SelectSearchProps {
+  SelectSearchData: Option[];
+  title: string;
+  size: "sm" | "md";
+  value: string; 
+  onChange: (value: string) => void; 
+}
+export function SelectSearch({SelectSearchData,title,size,value,onChange} : SelectSearchProps) {
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
 
   return (
     <Popover open={open} onOpenChange={setOpen} >
@@ -55,7 +59,7 @@ export function SelectSearch({SelectSearchData,title,size} : {SelectSearchData: 
                   key={item.value}
                   value={item.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
+                    onChange(currentValue === value ? "" : currentValue)
                     setOpen(false)
                   }}
                 >
