@@ -21,6 +21,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { set } from "date-fns";
 import { se } from "date-fns/locale";
 import {
   Bold,
@@ -51,8 +52,13 @@ interface TicketFormDataType {
 
 const TicketCreate = () => {
   const [open, setOpen] = useState<Boolean>(false);
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [keyval, setKeyval] = useState<number>(0);
+  const [bold, setBold] = useState<boolean>(false);
+  const [italic, setItalic] = useState<boolean>(false);
+  const [underline, setUnderline] = useState<boolean>(false);
+  const [strikethrough, setStrikethrough] = useState<boolean>(false);
+  const [numbering, setNumbering] = useState<boolean>(false);
+  const [pointing, setPointing] = useState<boolean>(false);
   const [formData, setFormData] = useState<TicketFormDataType>({
     ticketStatus: "",
     ticketState: "",
@@ -87,7 +93,6 @@ const TicketCreate = () => {
   ];
 
   const handleSelectChange = (name: string) => (value: string) => {
-    console.log("Selected value:", value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -98,7 +103,6 @@ const TicketCreate = () => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    console.log(e.target.name, e.target.value, e);
     const { name, value, files } = e.target as HTMLInputElement;
     setFormData((prevData) => ({
       ...prevData,
@@ -109,8 +113,22 @@ const TicketCreate = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form Data Submitted:", formData);
+    setFormData({
+      ticketStatus: "",
+      ticketState: "",
+      ticketSeverity: "",
+      summary: "",
+      description: "",
+      attachments: null,
+      comments: "",
+      startDate: null,
+      endDate: null,
+      assignee: "",
+      createdBy: "",
+    });
+    // navigate("/tickets");
   };
-
+  console.log('bold:',bold,'italic:',italic,'underline:',underline,'strikethrough:',strikethrough,'numbering:',numbering,'pointing:',pointing);
   return (
     <div>
       <Dialog
@@ -199,7 +217,7 @@ const TicketCreate = () => {
                             id="attachments"
                             name="attachments"
                             className="text-sm"
-                            
+                            key={keyval}
                             onChange={handleInputChange}
                           />
                         </div>
@@ -215,6 +233,7 @@ const TicketCreate = () => {
                                     ...prev,
                                     ['attachments']:null
                                   }))
+                                  setKeyval((prev)=>prev+1);
                                 }}
                               />
                             </span>
@@ -238,24 +257,28 @@ const TicketCreate = () => {
                               <ToggleGroupItem
                                 value="bold"
                                 aria-label="Toggle bold"
+                                onClick={()=>setBold(!bold)}
                               >
-                                <Bold className="h-4 w-4" />
+                                <Bold className="h-4 w-4"  />
                               </ToggleGroupItem>
                               <ToggleGroupItem
                                 value="italic"
                                 aria-label="Toggle italic"
+                                onClick={()=>setItalic(!italic)}
                               >
                                 <Italic className="h-4 w-4" />
                               </ToggleGroupItem>
                               <ToggleGroupItem
                                 value="underline"
                                 aria-label="Toggle underline"
+                                onClick={()=>setUnderline(!underline)}
                               >
                                 <Underline className="h-4 w-4" />
                               </ToggleGroupItem>
                               <ToggleGroupItem
                                 value="strikethrough"
                                 aria-label="Toggle strikethrough"
+                                onClick={()=>setStrikethrough(!strikethrough)}
                               >
                                 <Strikethrough className="h-4 w-4" />
                               </ToggleGroupItem>
@@ -263,21 +286,23 @@ const TicketCreate = () => {
                               <ToggleGroupItem
                                 value="numbering"
                                 aria-label="Toggle numbering"
+                                onClick={()=>setNumbering(!numbering)}
                               >
                                 <ListOrdered className="h-4 w-4" />
                               </ToggleGroupItem>
                               <ToggleGroupItem
                                 value="pointing"
                                 aria-label="Toggle pointing"
+                                onClick={()=>setPointing(!pointing)}
                               >
-                                <List className="h-4 w-4" />
+                                <List className="h-4 w-4"  />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           </div>
                           <div className="border-x-1 border-b-1 border-black">
                             <Textarea
                               placeholder="Add Comment..."
-                              className="h-10 text-sm resize-none border-0 outline-0"
+                              className={cn("h-10 text-sm resize-none border-0  outline-0",bold && "font-bold!", italic && "italic", underline && "underline", strikethrough && "line-through")}
                               rows={1}
                               name="comments"
                               onChange={handleInputChange}
@@ -334,7 +359,7 @@ const TicketCreate = () => {
                           <Label htmlFor="date" className="px-1">
                             End Date
                           </Label>
-                          <Popover onOpenChange={setOpen}>
+                          <Popover  onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
