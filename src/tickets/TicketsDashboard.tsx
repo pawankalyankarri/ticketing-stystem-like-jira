@@ -1,7 +1,13 @@
 import { Card } from "@/components/ui/card";
 import TicketsHead from "./ticketsHeader/TicketsHead";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const TicketsDashboard = () => {
+  useEffect(()=>{
+    axios.get("http://127.0.0.1:9002/api/ticketing").then((res)=>console.log(res)).catch(err=>console.log(err))
+
+  },[])
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0 w-full h-full ">
       <div className="w-full h-min">
