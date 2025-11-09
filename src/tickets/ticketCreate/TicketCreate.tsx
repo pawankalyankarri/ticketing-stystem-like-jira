@@ -21,8 +21,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { set } from "date-fns";
-import { se } from "date-fns/locale";
+import axios from "axios";
 import {
   Bold,
   CalendarIcon,
@@ -37,17 +36,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface TicketFormDataType {
-  ticketStatus: string;
-  ticketState: string;
-  ticketSeverity: string;
+  ticket_status: string;
+  ticket_state: string;
+  ticket_severity: string;
   summary: string;
   description: string;
-  attachments: File | null;
-  comments: string;
-  startDate: Date | null;
-  endDate: Date | null;
+  file_attachment: File | string;
+  comment_text: string;
+  start_date: Date | null;
+  end_date: Date | null;
   assignee: string;
-  createdBy: string;
+  created_by: string;
 }
 
 const TicketCreate = () => {
@@ -60,17 +59,17 @@ const TicketCreate = () => {
   const [numbering, setNumbering] = useState<boolean>(false);
   const [pointing, setPointing] = useState<boolean>(false);
   const [formData, setFormData] = useState<TicketFormDataType>({
-    ticketStatus: "",
-    ticketState: "",
-    ticketSeverity: "",
+    ticket_status: "",
+    ticket_state: "",
+    ticket_severity: "",
     summary: "",
     description: "",
-    attachments: null,
-    comments: "",
-    startDate: null,
-    endDate: null,
+    file_attachment: "",
+    comment_text: "",
+    start_date: null,
+    end_date: null,
     assignee: "",
-    createdBy: "",
+    created_by: "",
   });
   const navigate = useNavigate();
   const ticketStatusData = [
@@ -108,27 +107,55 @@ const TicketCreate = () => {
       ...prevData,
       [name]: files ? files[0] : value,
     }));
+    console.log(formData);
+  };
+  const fileList = [""]
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const data = new FormData();
+
+    // Append all fields
+    data.append("ticket_status", formData.ticket_status);
+    data.append("ticket_state", formData.ticket_state);
+    data.append("ticket_severity", formData.ticket_severity);
+    data.append("summary", formData.summary);
+    data.append("description", formData.description);
+    data.append("comment_text", formData.comment_text);
+    data.append("assignee", formData.assignee);
+    data.append("created_by", formData.created_by);
+    data.append("start_date", formData.start_date?.toISOString() || "");
+    data.append("end_date", formData.end_date?.toISOString() || "");
+    data.append("file_attachment",JSON.stringify(fileList) ); 
+
+    // Append file as file object (if exists)
+    // if (formData.file_attachment) {
+    //   data.append(
+    //     "file_attachment",
+    //     formData.file_attachment,
+    //     formData.file_attachment.name
+    //   );
+    // } else {
+    //   data.append("file_attachment", ""); 
+    // }
+    console.log('data',data)
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:9002/api/ticketing/create-ticket",
+        data,
+        {
+          headers: {
+          "Content-Type": "application/json",
+        },
+        }
+      );
+      console.log("Ticket created successfully:", response.data);
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    setFormData({
-      ticketStatus: "",
-      ticketState: "",
-      ticketSeverity: "",
-      summary: "",
-      description: "",
-      attachments: null,
-      comments: "",
-      startDate: null,
-      endDate: null,
-      assignee: "",
-      createdBy: "",
-    });
-    // navigate("/tickets");
-  };
-  console.log('bold:',bold,'italic:',italic,'underline:',underline,'strikethrough:',strikethrough,'numbering:',numbering,'pointing:',pointing);
+  // console.log('bold:',bold,'italic:',italic,'underline:',underline,'strikethrough:',strikethrough,'numbering:',numbering,'pointing:',pointing);
   return (
     <div>
       <Dialog
@@ -160,8 +187,8 @@ const TicketCreate = () => {
                               SelectSearchData={ticketStatusData}
                               title={"Select Status"}
                               size={"md"}
-                              value={formData.ticketStatus}
-                              onChange={handleSelectChange("ticketStatus")}
+                              value={formData.ticket_status}
+                              onChange={handleSelectChange("ticket_status")}
                             />
                           </div>
                           <div className="grid gap-2">
@@ -170,8 +197,8 @@ const TicketCreate = () => {
                               SelectSearchData={ticketStateData}
                               title={"Select State"}
                               size={"md"}
-                              value={formData.ticketState}
-                              onChange={handleSelectChange("ticketState")}
+                              value={formData.ticket_state}
+                              onChange={handleSelectChange("ticket_state")}
                             />
                           </div>
                           <div className="grid gap-2">
@@ -180,8 +207,8 @@ const TicketCreate = () => {
                               SelectSearchData={ticketSeverityData}
                               title={"Select Severity"}
                               size={"md"}
-                              value={formData.ticketSeverity}
-                              onChange={handleSelectChange("ticketSeverity")}
+                              value={formData.ticket_severity}
+                              onChange={handleSelectChange("ticket_severity")}
                             />
                           </div>
                         </div>
@@ -211,41 +238,41 @@ const TicketCreate = () => {
                       <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                         {/* attachments */}
                         <div className=" w-full h-full grid gap-2">
-                          <Label htmlFor="attachments">Attachments</Label>
+                          <Label htmlFor="file_attachment">Attachments</Label>
                           <Input
                             type="file"
-                            id="attachments"
-                            name="attachments"
+                            id="file_attachment"
+                            name="file_attachment"
                             className="text-sm"
                             key={keyval}
                             onChange={handleInputChange}
                           />
                         </div>
-                        {formData.attachments && (
+                        {formData.file_attachment && (
                           <div className="w-[300px] h-[200px] grid gap-2 relative">
                             {/* here image will displayed */}
                             <span className="absolute right-3 top-1 z-0 hover:z-10 ">
                               <FontAwesomeIcon
                                 icon={faTrash}
                                 className="text-red-500 "
-                                onClick={()=>{
-                                  setFormData((prev)=>({
+                                onClick={() => {
+                                  setFormData((prev) => ({
                                     ...prev,
-                                    ['attachments']:null
-                                  }))
-                                  setKeyval((prev)=>prev+1);
+                                    ["file_attachment"]: "",
+                                  }));
+                                  setKeyval((prev) => prev + 1);
                                 }}
                               />
                             </span>
-                            <img
-                              src={
-                                formData.attachments
-                                  ? URL.createObjectURL(formData.attachments)
-                                  : ""
-                              }
-                              alt=""
-                              className=""
-                            />
+                            {formData.file_attachment instanceof File && (
+                              <img
+                                src={URL.createObjectURL(
+                                  formData.file_attachment
+                                )}
+                                alt="Preview"
+                                className="w-32 h-32 object-cover rounded"
+                              />
+                            )}
                           </div>
                         )}
                       </div>
@@ -257,28 +284,28 @@ const TicketCreate = () => {
                               <ToggleGroupItem
                                 value="bold"
                                 aria-label="Toggle bold"
-                                onClick={()=>setBold(!bold)}
+                                onClick={() => setBold(!bold)}
                               >
-                                <Bold className="h-4 w-4"  />
+                                <Bold className="h-4 w-4" />
                               </ToggleGroupItem>
                               <ToggleGroupItem
                                 value="italic"
                                 aria-label="Toggle italic"
-                                onClick={()=>setItalic(!italic)}
+                                onClick={() => setItalic(!italic)}
                               >
                                 <Italic className="h-4 w-4" />
                               </ToggleGroupItem>
                               <ToggleGroupItem
                                 value="underline"
                                 aria-label="Toggle underline"
-                                onClick={()=>setUnderline(!underline)}
+                                onClick={() => setUnderline(!underline)}
                               >
                                 <Underline className="h-4 w-4" />
                               </ToggleGroupItem>
                               <ToggleGroupItem
                                 value="strikethrough"
                                 aria-label="Toggle strikethrough"
-                                onClick={()=>setStrikethrough(!strikethrough)}
+                                onClick={() => setStrikethrough(!strikethrough)}
                               >
                                 <Strikethrough className="h-4 w-4" />
                               </ToggleGroupItem>
@@ -286,25 +313,31 @@ const TicketCreate = () => {
                               <ToggleGroupItem
                                 value="numbering"
                                 aria-label="Toggle numbering"
-                                onClick={()=>setNumbering(!numbering)}
+                                onClick={() => setNumbering(!numbering)}
                               >
                                 <ListOrdered className="h-4 w-4" />
                               </ToggleGroupItem>
                               <ToggleGroupItem
                                 value="pointing"
                                 aria-label="Toggle pointing"
-                                onClick={()=>setPointing(!pointing)}
+                                onClick={() => setPointing(!pointing)}
                               >
-                                <List className="h-4 w-4"  />
+                                <List className="h-4 w-4" />
                               </ToggleGroupItem>
                             </ToggleGroup>
                           </div>
                           <div className="border-x-1 border-b-1 border-black">
                             <Textarea
                               placeholder="Add Comment..."
-                              className={cn("h-10 text-sm resize-none border-0  outline-0",bold && "font-bold!", italic && "italic", underline && "underline", strikethrough && "line-through")}
+                              className={cn(
+                                "h-10 text-sm resize-none border-0  outline-0",
+                                bold && "font-bold!",
+                                italic && "italic",
+                                underline && "underline",
+                                strikethrough && "line-through"
+                              )}
                               rows={1}
-                              name="comments"
+                              name="comment_text"
                               onChange={handleInputChange}
                             />
                           </div>
@@ -324,9 +357,9 @@ const TicketCreate = () => {
                                 id="date"
                                 className="w-48 justify-between font-normal"
                               >
-                                {formData.startDate
+                                {formData.start_date
                                   ? new Date(
-                                      formData?.startDate
+                                      formData?.start_date
                                     ).toLocaleDateString()
                                   : "Select date"}
                                 <ChevronDownIcon />
@@ -338,13 +371,13 @@ const TicketCreate = () => {
                             >
                               <Calendar
                                 mode="single"
-                                selected={formData.startDate ?? undefined}
+                                selected={formData.start_date ?? undefined}
                                 captionLayout="dropdown"
                                 onSelect={(date) => {
                                   if (!date) return;
                                   setFormData((prevData) => ({
                                     ...prevData,
-                                    startDate:
+                                    start_date:
                                       date instanceof Date
                                         ? date
                                         : new Date(date),
@@ -359,15 +392,15 @@ const TicketCreate = () => {
                           <Label htmlFor="date" className="px-1">
                             End Date
                           </Label>
-                          <Popover  onOpenChange={setOpen}>
+                          <Popover onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
                                 id="date"
                                 className="w-48 justify-between font-normal"
                               >
-                                {formData.endDate
-                                  ? formData.endDate.toLocaleDateString()
+                                {formData.end_date
+                                  ? formData.end_date.toLocaleDateString()
                                   : "Select date"}
                                 <ChevronDownIcon />
                               </Button>
@@ -378,13 +411,13 @@ const TicketCreate = () => {
                             >
                               <Calendar
                                 mode="single"
-                                selected={formData.endDate ?? undefined}
+                                selected={formData.end_date ?? undefined}
                                 captionLayout="dropdown"
                                 onSelect={(date) => {
                                   if (!date) return;
                                   setFormData((prevData) => ({
                                     ...prevData,
-                                    endDate:
+                                    end_date:
                                       date instanceof Date
                                         ? date
                                         : new Date(date),
@@ -406,12 +439,12 @@ const TicketCreate = () => {
                           />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="createdBy">Created by</Label>
+                          <Label htmlFor="created_by">Created by</Label>
                           <Input
                             placeholder="ex: John Doe"
                             className="text-sm w-[85%]"
-                            id="createdBy"
-                            name="createdBy"
+                            id="created_by"
+                            name="created_by"
                             onChange={handleInputChange}
                           />
                         </div>
