@@ -41,10 +41,10 @@ interface TicketFormDataType {
   ticket_severity: string;
   summary: string;
   description: string;
-  file_attachment: File | string;
+  file_attachment: string[];
   comment_text: string;
-  start_date: Date | null;
-  end_date: Date | null;
+  start_date: string | null;
+  end_date: string | null;
   assignee: string;
   created_by: string;
 }
@@ -64,7 +64,7 @@ const TicketCreate = () => {
     ticket_severity: "",
     summary: "",
     description: "",
-    file_attachment: "",
+    file_attachment: [],
     comment_text: "",
     start_date: null,
     end_date: null,
@@ -78,9 +78,9 @@ const TicketCreate = () => {
     { label: "Pending", value: "Pending" },
   ];
   const ticketStateData = [
-    { label: "Todo", value: "Todo" },
+    { label: "ToDo", value: "ToDo" },
     { label: "InProgress", value: "InProgress" },
-    { label: "Canceled", value: "Canceled" },
+    { label: "Cancelled", value: "Cancelled" },
     { label: "Resolved", value: "Resolved" },
     { label: "OnHold", value: "OnHold" },
   ];
@@ -103,57 +103,36 @@ const TicketCreate = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, files } = e.target as HTMLInputElement;
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: files ? files[0] : value,
+      [name]: files
+        ? Array.from(files).map((file) => URL.createObjectURL(file))
+        : value,
     }));
-    console.log(formData);
   };
-  const fileList = [""]
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const data = new FormData();
-
-    // Append all fields
-    data.append("ticket_status", formData.ticket_status);
-    data.append("ticket_state", formData.ticket_state);
-    data.append("ticket_severity", formData.ticket_severity);
-    data.append("summary", formData.summary);
-    data.append("description", formData.description);
-    data.append("comment_text", formData.comment_text);
-    data.append("assignee", formData.assignee);
-    data.append("created_by", formData.created_by);
-    data.append("start_date", formData.start_date?.toISOString() || "");
-    data.append("end_date", formData.end_date?.toISOString() || "");
-    data.append("file_attachment",JSON.stringify(fileList) ); 
-
-    // Append file as file object (if exists)
-    // if (formData.file_attachment) {
-    //   data.append(
-    //     "file_attachment",
-    //     formData.file_attachment,
-    //     formData.file_attachment.name
-    //   );
-    // } else {
-    //   data.append("file_attachment", ""); 
-    // }
-    console.log('data',data)
+    console.log("data", formData);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:9002/api/ticketing/create-ticket",
-        data,
+        "/api/ticketing/create-ticket",
+        formData,
         {
           headers: {
-          "Content-Type": "application/json",
-        },
+            "Content-Type": "application/json",
+          },
         }
       );
-      console.log("Ticket created successfully:", response.data);
+      console.log("Ticket created successfully:", response);
     } catch (error) {
       console.error("Error creating ticket:", error);
     }
+     navigate("/tickets")
   };
+ 
 
   // console.log('bold:',bold,'italic:',italic,'underline:',underline,'strikethrough:',strikethrough,'numbering:',numbering,'pointing:',pointing);
   return (
@@ -248,33 +227,41 @@ const TicketCreate = () => {
                             onChange={handleInputChange}
                           />
                         </div>
-                        {formData.file_attachment && (
-                          <div className="w-[300px] h-[200px] grid gap-2 relative">
-                            {/* here image will displayed */}
-                            <span className="absolute right-3 top-1 z-0 hover:z-10 ">
-                              <FontAwesomeIcon
-                                icon={faTrash}
-                                className="text-red-500 "
-                                onClick={() => {
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    ["file_attachment"]: "",
-                                  }));
-                                  setKeyval((prev) => prev + 1);
-                                }}
-                              />
-                            </span>
-                            {formData.file_attachment instanceof File && (
-                              <img
-                                src={URL.createObjectURL(
-                                  formData.file_attachment
+                        <>
+                          {formData.file_attachment &&
+                            formData.file_attachment.length > 0 &&
+                            formData.file_attachment.some((url) => url) && ( //  check for non-empty strings
+                              <div className="w-[200px] h-[200px] grid gap-2">
+                                {/* Render images */}
+                                {formData.file_attachment.map((url, idx) =>
+                                  url ? (
+                                    <div className="relative w-full h-full  " key={idx} >
+                                      <img
+                                        
+                                        src={url}
+                                        alt={`Attachment ${idx}`}
+                                        className="w-32 h-32 object-cover rounded"
+                                      />
+                                      <span className="absolute right-20 top-1 z-0 hover:z-10 ">
+                                        <FontAwesomeIcon
+                                          icon={faTrash}
+                                          className="text-red-500 cursor-pointer"
+                                          onClick={() =>
+                                            setFormData((prev) => ({
+                                              ...prev,
+                                              file_attachment: [],
+                                            }))
+                                          }
+                                        />
+                                      </span>
+                                    </div>
+                                  ) : null
                                 )}
-                                alt="Preview"
-                                className="w-32 h-32 object-cover rounded"
-                              />
+
+                                {/* Render trash icon only if images exist */}
+                              </div>
                             )}
-                          </div>
-                        )}
+                        </>
                       </div>
                       <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                         {/* comments */}
@@ -371,18 +358,18 @@ const TicketCreate = () => {
                             >
                               <Calendar
                                 mode="single"
-                                selected={formData.start_date ?? undefined}
+                                selected={
+                                  formData.start_date
+                                    ? new Date(formData.start_date)
+                                    : undefined
+                                }
                                 captionLayout="dropdown"
                                 onSelect={(date) => {
                                   if (!date) return;
-                                  setFormData((prevData) => ({
-                                    ...prevData,
-                                    start_date:
-                                      date instanceof Date
-                                        ? date
-                                        : new Date(date),
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    start_date: date.toISOString(),
                                   }));
-                                  setOpen(false);
                                 }}
                               />
                             </PopoverContent>
@@ -400,7 +387,9 @@ const TicketCreate = () => {
                                 className="w-48 justify-between font-normal"
                               >
                                 {formData.end_date
-                                  ? formData.end_date.toLocaleDateString()
+                                  ? new Date(
+                                      formData.end_date
+                                    ).toLocaleDateString()
                                   : "Select date"}
                                 <ChevronDownIcon />
                               </Button>
@@ -411,18 +400,18 @@ const TicketCreate = () => {
                             >
                               <Calendar
                                 mode="single"
-                                selected={formData.end_date ?? undefined}
+                                selected={
+                                  formData.end_date
+                                    ? new Date(formData.end_date)
+                                    : undefined
+                                }
                                 captionLayout="dropdown"
                                 onSelect={(date) => {
                                   if (!date) return;
-                                  setFormData((prevData) => ({
-                                    ...prevData,
-                                    end_date:
-                                      date instanceof Date
-                                        ? date
-                                        : new Date(date),
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    end_date: date.toISOString(),
                                   }));
-                                  setOpen(false);
                                 }}
                               />
                             </PopoverContent>

@@ -10,8 +10,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { SelectSearch } from "@/components/ui/SelectSearch";
 import { useNavigate } from "react-router-dom";
+import { TicketsStore } from "@/Zustand/TicketsStore";
+
+interface TicketHeadProps {
+  setRefresh: (value : boolean) => void;
+}
 
 const TicketsHead = () => {
+  const {refreshTickets} = TicketsStore()
   const navigate = useNavigate();
   const severityData = [
     { label: "All Severity", value: "All Severity" },
@@ -35,19 +41,19 @@ const TicketsHead = () => {
           <Input className="pl-8" />
         </span>
         <span>
-          <SelectSearch SelectSearchData={severityData} title={"All Severity"} size = {"sm"} />
+          <SelectSearch SelectSearchData={severityData} title={"All Severity"} size = {"sm"} value = {""} onChange={()=>{}} />
         </span>
         <span>
-          <SelectSearch SelectSearchData={StatusData} title={"All Status"} size = {"sm"}/>
+          <SelectSearch SelectSearchData={StatusData} title={"All Status"} size = {"sm"}  value = {""} onChange={()=>{}}/>
         </span>
         
-        <span className="p-1.5 outline-1 rounded shadow">
-          <FontAwesomeIcon icon={faRefresh} />
+        <span className="p-1.5 outline-1 rounded shadow cursor-pointer" onClick={()=>refreshTickets()}>
+          <FontAwesomeIcon icon={faRefresh}  />
         </span>
-        <span className="p-1.5 outline-1 rounded shadow">
+        <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
           <FontAwesomeIcon icon={faCodeMerge} />
         </span>
-        <Button className="p-0 bg-blue-500 hover:bg-blue-800" onClick={()=>navigate('/createTicket')}>
+        <Button className="p-0 bg-blue-500 hover:bg-blue-800 cursor-pointer" onClick={()=>navigate('/createTicket')}>
           <FontAwesomeIcon icon={faPlus} className="text-xs" />
           Create
         </Button>
