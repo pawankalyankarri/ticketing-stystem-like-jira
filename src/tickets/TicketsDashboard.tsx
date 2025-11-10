@@ -1,15 +1,61 @@
 import { Card } from "@/components/ui/card";
 import TicketsHead from "./ticketsHeader/TicketsHead";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import DisplayTickets from "./DisplayTickets";
+import { TicketsStore, type TicketType } from "@/Zustand/TicketsStore";
+import { DndContext, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+
+export interface ColumnsType {
+  id: string;
+  title: string;
+}
 
 const TicketsDashboard = () => {
-  useEffect(()=>{
-    axios.get("http://127.0.0.1:9002/api/ticketing").then((res)=>console.log(res)).catch(err=>console.log(err))
+  const [allTickets, setAllTickets] = useState([]);
+  const [refresh, setRefresh] = useState<boolean>(true);
+  const mountRef = useRef<boolean>(false);
 
-  },[])
+  const Columns: ColumnsType[] = [
+    { id: "ToDo", title: "ToDo" },
+    { id: "InProgress", title: "InProgress" },
+    { id: "Cancelled", title: "Cancelled" },
+    { id: "Resolved", title: "Resolved" },
+    { id: "OnHold", title: "OnHold" },
+  ];
+
+  const { tickets, loading, refreshTickets, getTickets } = TicketsStore();
+  useEffect(() => {
+    if (mountRef.current) return;
+    mountRef.current = true;
+    // axios
+    //   .get("/api/ticketing")
+    //   .then((res) => setAllTickets(res.data.data))
+    //   .catch((err) => console.log(err));
+    getTickets(); // i think need to change here ============>>>>>>>>>>
+  }, []);
+
+  const todoTickets = tickets.filter(
+    (obj: any) => obj?.ticket_state === "ToDo"
+  );
+  const inProgressTickets = tickets.filter(
+    (obj: any) => obj?.ticket_state === "InProgress"
+  );
+  const canceledTickets = tickets.filter(
+    (obj: any) => obj?.ticket_state === "Cancelled"
+  );
+  const resolvedTickets = tickets.filter(
+    (obj: any) => obj?.ticket_state === "Resolved"
+  );
+  const onHoldTickets = tickets.filter(
+    (obj: any) => obj?.ticket_state === "OnHold"
+  );
+
+  function handleDragEnd(event: DragEndEvent) {
+    console.log("event", event);
+  }
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0 w-full h-full ">
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0 w-full h-full overflow-hidden ">
       <div className="w-full h-min">
         {/* tickets header filters */}
         <TicketsHead />
@@ -20,32 +66,93 @@ const TicketsDashboard = () => {
         <div className="bg-muted/50 aspect-video rounded-xl h-20 w-full " />
       </div>
       <div className=" min-h-screen flex-1 rounded-xl md:min-h-min grid grid-cols-5 gap-4 text-xs">
+        <DndContext onDragEnd={handleDragEnd} >
+          {Columns.map((column: ColumnsType) => {
+            return (
+              <DisplayTickets
+              key={column.id}
+                column={column}
+                tickets={tickets.filter(
+                  (ticket: TicketType) => ticket.ticket_state === column.id
+                )}
+              />
+            );
+          })}
+        </DndContext>
+      </div>
+      {/* <div className=" min-h-screen flex-1 rounded-xl md:min-h-min grid grid-cols-5 gap-4 text-xs">
         <div className="bg-gray-50/20 aspect-video rounded-xl h-full w-full ">
-          <Card className="p-1.5 rounded-sm bg-gray-50 ">
-            <span className="uppercase font-bold text-gray-500">todo</span>
+          <Card className="p-1.5 rounded-sm bg-gray-50">
+            <div className="w-full h-full flex justify-between">
+              <span className="uppercase font-bold text-gray-500">todo</span>
+              <span className="outline-1 px-1 bg-white font-bold rounded-full">
+                {todoTickets.length > 0 ? todoTickets.length : "0"}
+              </span>
+            </div>
           </Card>
+          <div className="w-full h-full  hover:overflow-auto">
+            <DisplayTickets tickets={todoTickets} />
+          </div>
         </div>
         <div className="bg-blue-50/20 aspect-video rounded-xl h-full w-full">
           <Card className="p-1.5 rounded-sm bg-blue-100">
-            <span className="uppercase font-bold text-blue-500">inprocess</span>
+            <div className="w-full h-full flex justify-between">
+              <span className="uppercase font-bold text-blue-500">
+                inprocess
+              </span>
+              <span className="outline-1 px-1 bg-white font-bold rounded-full">
+                {inProgressTickets.length > 0 ? inProgressTickets.length : "0"}
+              </span>
+            </div>
           </Card>
+          <div className="w-full h-full hover:overflow-auto">
+            <DisplayTickets tickets={inProgressTickets} />
+          </div>
         </div>
         <div className="bg-red-50/20 aspect-video rounded-xl h-full w-full ">
           <Card className="p-1.5 rounded-sm bg-red-100">
-            <span className="uppercase font-bold text-red-500">canceled</span>
+            <div className="w-full h-full flex justify-between">
+              <span className="uppercase font-bold text-red-500">canceled</span>
+              <span className="outline-1 px-1 bg-white font-bold rounded-full">
+                {canceledTickets.length > 0 ? canceledTickets.length : "0"}
+              </span>
+            </div>
           </Card>
+          <div className="w-full h-full hover:overflow-auto">
+            <DisplayTickets tickets={canceledTickets} />
+          </div>
         </div>
         <div className="bg-green-50/20 aspect-video rounded-xl h-full w-full ">
           <Card className="p-1.5 rounded-sm bg-green-100">
-            <span className="uppercase font-bold text-green-500">resolved</span>
+            <div className="w-full h-full flex justify-between">
+              <span className="uppercase font-bold text-green-500">
+                resolved
+              </span>
+              <span className="outline-1 px-1 bg-white font-bold rounded-full">
+                {resolvedTickets.length > 0 ? resolvedTickets.length : "0"}
+              </span>
+            </div>
           </Card>
+          <div className="w-full h-full hover:overflow-auto">
+            <DisplayTickets tickets={resolvedTickets} />
+          </div>
         </div>
         <div className=" bg-orange-50/20 aspect-video rounded-xl h-full w-full ">
           <Card className="p-1.5 rounded-sm bg-orange-100">
-            <span className="uppercase font-bold text-orange-500">onhold</span>
+            <div className="w-full h-full flex justify-between">
+              <span className="uppercase font-bold text-orange-500">
+                onhold
+              </span>
+              <span className="outline-1 px-1 bg-white font-bold rounded-full">
+                {onHoldTickets.length > 0 ? onHoldTickets.length : "0"}
+              </span>
+            </div>
           </Card>
+          <div className="w-full h-full hover:overflow-auto">
+            <DisplayTickets tickets={onHoldTickets} />
+          </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
