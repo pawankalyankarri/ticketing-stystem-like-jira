@@ -13,7 +13,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import TicketsDashboard from "./tickets/TicketsDashboard"
 import { Outlet } from "react-router-dom"
 
 export default function Page() {

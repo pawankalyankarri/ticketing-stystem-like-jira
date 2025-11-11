@@ -99,7 +99,7 @@ const DisplayTicket = ({ column, tickets }: ColumnTypeProp) => {
           </span>
         </div>
       </Card>
-      <div className="w-full h-full  hover:overflow-auto">
+      <div className="w-full h-full  hover:overflow-auto thin-scrollbar p-1">
         <div className="grid gap-3 mt-3 text-xs">
           {tickets.map((item: TicketType) => {
             // const date = new Date(item.start_date);

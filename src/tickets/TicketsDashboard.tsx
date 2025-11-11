@@ -35,23 +35,26 @@ const TicketsDashboard = () => {
     getTickets(); // i think need to change here ============>>>>>>>>>>
   }, []);
 
-  const todoTickets = tickets.filter(
-    (obj: any) => obj?.ticket_state === "ToDo"
-  );
-  const inProgressTickets = tickets.filter(
-    (obj: any) => obj?.ticket_state === "InProgress"
-  );
-  const canceledTickets = tickets.filter(
-    (obj: any) => obj?.ticket_state === "Cancelled"
-  );
-  const resolvedTickets = tickets.filter(
-    (obj: any) => obj?.ticket_state === "Resolved"
-  );
-  const onHoldTickets = tickets.filter(
-    (obj: any) => obj?.ticket_state === "OnHold"
-  );
+  // const todoTickets = tickets.filter(
+  //   (obj: any) => obj?.ticket_state === "ToDo"
+  // );
+  // const inProgressTickets = tickets.filter(
+  //   (obj: any) => obj?.ticket_state === "InProgress"
+  // );
+  // const canceledTickets = tickets.filter(
+  //   (obj: any) => obj?.ticket_state === "Cancelled"
+  // );
+  // const resolvedTickets = tickets.filter(
+  //   (obj: any) => obj?.ticket_state === "Resolved"
+  // );
+  // const onHoldTickets = tickets.filter(
+  //   (obj: any) => obj?.ticket_state === "OnHold"
+  // );
 
   function handleDragEnd(event: DragEndEvent) {
+    const {active,over} = event
+    if(!over)return;
+    if(active.id === over.id)return ;
     console.log("event", event);
   }
   return (
