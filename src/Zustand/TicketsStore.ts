@@ -1,7 +1,7 @@
 import axios from "axios";
-import {create} from "zustand";
+import { create } from "zustand";
 
- export type TicketType = {
+export type TicketType = {
   assignee: string;
   comment_attachment_path: string;
   comment_id: string;
@@ -26,36 +26,42 @@ import {create} from "zustand";
   ticket_state: string;
   ticket_status: string;
   updated_at: string;
-}
+};
 
 export type TicketHistory = {
   action?: string;
   updated_by?: string;
   updated_at?: string;
   [key: string]: any;
-}
+};
 
 interface TicketState {
-    tickets : TicketType[],
-    loading : boolean,
-    error : string | null,
-    getTickets : () => void;
-    refreshTickets : () => void;
+  tickets: TicketType[];
+  setTickets : (tickets:TicketType[])=>void
+  loading: boolean;
+  setLoading : (value:boolean)=>void;
+  error: string | null;
+  setError : (value:string)=>void;
+  getTickets: () => void;
+  refreshTickets: () => void;
 }
 
-export const TicketsStore = create<TicketState>((set,get) => ({
-    tickets : [],
-    loading : false,
-    error : null,
-    getTickets : async () => {
-        set({loading : true, error : null})
-        
-        await axios.get("/api/ticketing").then((res)=>set({tickets : res.data.data,loading : false})).catch((err)=>set({error:err.message,loading:false}))
-        
-    },
-    refreshTickets : async () => {
-        await get().getTickets()
-    }
+export const TicketsStore = create<TicketState>((set, get) => ({
+  tickets: [],
+  setTickets : (tickets)=>set({tickets}),
+  loading: false,
+  setLoading : (value)=>set({loading:value}),
+  error: null,
+  setError : (value)=>set({error: value}),
+  getTickets: async () => {
+    set({ loading: true, error: null });
 
-
-}) )
+    await axios
+      .get("/api/ticketing")
+      .then((res) => set({ tickets: res.data.data, loading: false }))
+      .catch((err) => set({ error: err.message, loading: false }));
+  },
+  refreshTickets: async () => {
+    await get().getTickets();
+  },
+}));

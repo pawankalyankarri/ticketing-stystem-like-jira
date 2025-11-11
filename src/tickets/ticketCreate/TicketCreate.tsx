@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface TicketFormDataType {
   ticket_status: string;
@@ -96,7 +97,7 @@ const TicketCreate = () => {
       ...prevData,
       [name]: value,
     }));
-    console.log(formData);
+    // console.log(formData);
   };
 
   const handleInputChange = (
@@ -117,22 +118,25 @@ const TicketCreate = () => {
 
     console.log("data", formData);
     try {
-      const response = await axios.post(
-        "/api/ticketing/create-ticket",
-        formData,
-        {
+      await axios
+        .post("/api/ticketing/create-ticket", formData, {
           headers: {
             "Content-Type": "application/json",
           },
-        }
-      );
-      console.log("Ticket created successfully:", response);
+        })
+        .then((res) => {
+          res.status === 200
+            ? toast.success(res.data.message || "Ticket created successfully!")
+            : toast.warning(res.data.message);
+          navigate("/tickets");
+        })
+        .catch((err) => console.log("err", err));
     } catch (error) {
+      
       console.error("Error creating ticket:", error);
     }
-     navigate("/tickets")
+    
   };
- 
 
   // console.log('bold:',bold,'italic:',italic,'underline:',underline,'strikethrough:',strikethrough,'numbering:',numbering,'pointing:',pointing);
   return (
@@ -235,9 +239,11 @@ const TicketCreate = () => {
                                 {/* Render images */}
                                 {formData.file_attachment.map((url, idx) =>
                                   url ? (
-                                    <div className="relative w-full h-full  " key={idx} >
+                                    <div
+                                      className="relative w-full h-full  "
+                                      key={idx}
+                                    >
                                       <img
-                                        
                                         src={url}
                                         alt={`Attachment ${idx}`}
                                         className="w-32 h-32 object-cover rounded"

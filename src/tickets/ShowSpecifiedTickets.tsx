@@ -6,11 +6,13 @@ import { useDraggable } from "@dnd-kit/core";
 import { faEye, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Calendar } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SpecifiedTicketsProps {
   item: TicketType;
 }
 const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
+  const navigate = useNavigate()
   const date = new Date(item.start_date);
   const options: Intl.DateTimeFormatOptions = {
     month: "short",
@@ -24,6 +26,8 @@ const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
   const style = transform
     ? { transform: `translate(${transform.x}px,${transform.y}px)` }
     : undefined;
+
+
   return (
     <Card
       key={item.id}
@@ -50,14 +54,16 @@ const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
         </span>
 
         <div className="flex gap-1">
-          <span className="cursor-pointer">
-            <FontAwesomeIcon icon={faEye} className="bg-gray-500" />
+          <span className="cursor-pointer" >
+            <FontAwesomeIcon icon={faEye} className="text-gray-500" />
           </span>
           <span className="cursor-pointer">
-            <FontAwesomeIcon icon={faPen} className="bg-gray-500" />
+            <FontAwesomeIcon icon={faPen} className="text-gray-500" />
           </span>
-          <span className="cursor-pointer">
-            <FontAwesomeIcon icon={faTrash} className="bg-gray-500" />
+          <span className="cursor-pointer" onPointerDown={(e) => e.stopPropagation()} >
+            <FontAwesomeIcon icon={faTrash} className="text-gray-500" onClick={()=>{
+            navigate(`/deleteTicket/${item.ticket_id}`)
+           }} />
           </span>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { SelectSearch } from "@/components/ui/SelectSearch";
 import { useNavigate } from "react-router-dom";
 import { TicketsStore } from "@/Zustand/TicketsStore";
+import { UseTickets } from "../hooks/UseTickets";
 
 interface TicketHeadProps {
   setRefresh: (value : boolean) => void;
@@ -18,6 +19,7 @@ interface TicketHeadProps {
 
 const TicketsHead = () => {
   const {refreshTickets} = TicketsStore()
+  const {fetchAllTickets}  = UseTickets()
   const navigate = useNavigate();
   const severityData = [
     { label: "All Severity", value: "All Severity" },
@@ -47,7 +49,7 @@ const TicketsHead = () => {
           <SelectSearch SelectSearchData={StatusData} title={"All Status"} size = {"sm"}  value = {""} onChange={()=>{}}/>
         </span>
         
-        <span className="p-1.5 outline-1 rounded shadow cursor-pointer" onClick={()=>refreshTickets()}>
+        <span className="p-1.5 outline-1 rounded shadow cursor-pointer" onClick={()=>fetchAllTickets()}>
           <FontAwesomeIcon icon={faRefresh}  />
         </span>
         <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
