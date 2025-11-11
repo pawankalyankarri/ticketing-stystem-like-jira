@@ -14,30 +14,17 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { UseTickets } from "../hooks/UseTickets";
 
 const DeleteTicket = () => {
-  const [open, setOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const params = useParams();
+  const {deleteTicket} = UseTickets()
   const { id } = params;
-  useEffect(() => {
-    setOpen(true);
-  }, []);
-  async function deleteTicket() {
-    await axios
-      .post("/api/ticketing/delete-ticket", {delete_id : id})
-      .then((res) => {
-        res.data.status ? toast.success(res.data.message) : toast.error(res.data.message)
-      })
-      .catch((err) => {
-        console.log(err);
-      });
 
-    navigate("/tickets");
-  }
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open>
       <AlertDialogTrigger asChild></AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -51,15 +38,19 @@ const DeleteTicket = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel
-            onClick={() => {
-              navigate("/tickets");
-            }}
+          onClick={()=>navigate("/tickets")}
           >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => {
-              deleteTicket();
+            onClick={async() => {
+              if(id){
+                await deleteTicket(id)
+                navigate("/tickets")
+              }
+              else{
+                toast.warning("ticket id is undefined")
+              }
             }}
           >
             Continue

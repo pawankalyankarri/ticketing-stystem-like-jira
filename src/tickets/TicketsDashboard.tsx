@@ -5,6 +5,7 @@ import axios from "axios";
 import DisplayTickets from "./DisplayTickets";
 import { TicketsStore, type TicketType } from "@/Zustand/TicketsStore";
 import { DndContext, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { UseTickets } from "./hooks/UseTickets";
 
 export interface ColumnsType {
   id: string;
@@ -15,6 +16,7 @@ const TicketsDashboard = () => {
   const [allTickets, setAllTickets] = useState([]);
   const [refresh, setRefresh] = useState<boolean>(true);
   const mountRef = useRef<boolean>(false);
+  const {UpdateTicketStatus} = UseTickets()
 
   const Columns: ColumnsType[] = [
     { id: "ToDo", title: "ToDo" },
@@ -55,7 +57,9 @@ const TicketsDashboard = () => {
     const {active,over} = event
     if(!over)return;
     if(active.id === over.id)return ;
-    console.log("event", event);
+    // console.log("event", event);
+    // console.log(event.active.id)
+    if(event.over)UpdateTicketStatus({ticket_id : String(event.active.id),ticket_state : String(event.over.id)})
   }
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0 w-full h-full overflow-hidden ">

@@ -21,10 +21,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import {
   Bold,
-  CalendarIcon,
   ChevronDownIcon,
   Italic,
   List,
@@ -32,9 +30,8 @@ import {
   Strikethrough,
   Underline,
 } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { UseTickets } from "../hooks/UseTickets";
 
 export interface TicketFormDataType {
@@ -51,8 +48,9 @@ export interface TicketFormDataType {
   created_by: string;
 }
 
-const TicketCreate = () => {
+const UpdateTicket = () => {
   const [open, setOpen] = useState<Boolean>(false);
+  const params = useParams();
   const [keyval, setKeyval] = useState<number>(0);
   const [bold, setBold] = useState<boolean>(false);
   const [italic, setItalic] = useState<boolean>(false);
@@ -73,7 +71,7 @@ const TicketCreate = () => {
     assignee: "",
     created_by: "",
   });
-  const {CreateTicket} = UseTickets()
+  const { CreateTicket, EditTicket, GetTicket } = UseTickets();
   const navigate = useNavigate();
   const ticketStatusData = [
     { label: "Open", value: "Open" },
@@ -93,6 +91,21 @@ const TicketCreate = () => {
     { label: "High", value: "High" },
     { label: "Critical", value: "Critical" },
   ];
+
+  useEffect(() => {
+    if(!params.id)return
+    const fetchTicket = async()=>{
+        try{
+            const res = await GetTicket(params.id!);
+            console.log('res',res);
+        }
+        catch(err){
+            console.log('err',err)
+        }
+    }
+    fetchTicket()
+    
+  }, []);
 
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData((prevData) => ({
@@ -119,32 +132,11 @@ const TicketCreate = () => {
     e.preventDefault();
 
     console.log("data", formData);
-    // try {
-    //   await axios
-    //     .post("/api/ticketing/create-ticket", formData, {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //     })
-    //     .then((res) => {
-    //       res.status === 200
-    //         ? toast.success(res.data.message || "Ticket created successfully!")
-    //         : toast.warning(res.data.message);
-    //       navigate("/tickets");
-    //     })
-    //     .catch((err) => console.log("err", err));
-    // } catch (error) {
-      
-    //   console.error("Error creating ticket:", error);
-    // }
 
-    await CreateTicket({data:formData,fileStr:formData.file_attachment[0]??""})
-    navigate("/tickets")
-
-    
+    // await CreateTicket({data:formData,fileStr:formData.file_attachment[0]??""})
+    // navigate("/tickets")
   };
 
-  // console.log('bold:',bold,'italic:',italic,'underline:',underline,'strikethrough:',strikethrough,'numbering:',numbering,'pointing:',pointing);
   return (
     <div>
       <Dialog
@@ -484,4 +476,4 @@ const TicketCreate = () => {
     </div>
   );
 };
-export default TicketCreate;
+export default UpdateTicket;
