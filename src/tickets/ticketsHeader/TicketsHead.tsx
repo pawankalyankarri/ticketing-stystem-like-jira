@@ -18,7 +18,7 @@ interface TicketHeadProps {
 }
 
 const TicketsHead = () => {
-  const {refreshTickets} = TicketsStore()
+  // const {refreshTickets} = TicketsStore()
   const {fetchAllTickets}  = UseTickets()
   const navigate = useNavigate();
   const severityData = [
@@ -40,7 +40,7 @@ const TicketsHead = () => {
       <div className="flex justify-end gap-2 items-center">
         <span className="relative flex justify-center items-center ">
           <FontAwesomeIcon icon={faSearch} className="absolute left-2" />
-          <Input className="pl-8" />
+          <Input className="pl-8 text-xs" />
         </span>
         <span>
           <SelectSearch SelectSearchData={severityData} title={"All Severity"} size = {"sm"} value = {""} onChange={()=>{}} />

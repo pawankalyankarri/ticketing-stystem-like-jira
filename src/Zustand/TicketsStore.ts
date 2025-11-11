@@ -14,7 +14,7 @@ export type TicketType = {
   file_attachment: string[];
   file_attachment_id: string;
   file_attachment_name: string;
-  id: number;
+  id: string;
   merge_history: any | null;
   merge_status: boolean;
   start_date: string;
