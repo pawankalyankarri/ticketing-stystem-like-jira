@@ -3,9 +3,12 @@ import TicketsHead from "./ticketsHeader/TicketsHead";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import DisplayTickets from "./DisplayTickets";
-import { TicketsStore, type TicketType } from "@/Zustand/TicketsStore";
-import { DndContext, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
-import { UseTickets } from "./hooks/UseTickets";
+import {
+  DndContext,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import { UseTickets, type TicketType } from "./hooks/UseTickets";
 
 export interface ColumnsType {
   id: string;
@@ -16,7 +19,7 @@ const TicketsDashboard = () => {
   const [allTickets, setAllTickets] = useState([]);
   const [refresh, setRefresh] = useState<boolean>(true);
   const mountRef = useRef<boolean>(false);
-  const {UpdateTicketStatus} = UseTickets()
+  const { UpdateTicketStatus, fetchAllTickets, GetTicket } = UseTickets();
 
   const Columns: ColumnsType[] = [
     { id: "ToDo", title: "ToDo" },
@@ -26,7 +29,7 @@ const TicketsDashboard = () => {
     { id: "OnHold", title: "OnHold" },
   ];
 
-  const { tickets, loading, refreshTickets, getTickets } = TicketsStore();
+  // const { tickets, getTickets } = TicketsStore();
   useEffect(() => {
     if (mountRef.current) return;
     mountRef.current = true;
@@ -34,7 +37,12 @@ const TicketsDashboard = () => {
     //   .get("/api/ticketing")
     //   .then((res) => setAllTickets(res.data.data))
     //   .catch((err) => console.log(err));
-    getTickets(); // i think need to change here ============>>>>>>>>>>
+    // getTickets(); // i think need to change here ============>>>>>>>>>>
+    const fetchingTickets = async () => {
+      const response = await fetchAllTickets();
+      setAllTickets(response);
+    };
+    fetchingTickets();
   }, []);
 
   // const todoTickets = tickets.filter(
@@ -53,16 +61,33 @@ const TicketsDashboard = () => {
   //   (obj: any) => obj?.ticket_state === "OnHold"
   // );
 
-  function handleDragEnd(event: DragEndEvent) {
-    const {active,over} = event
-    if(!over)return;
-    if(active.id === over.id)return ;
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    // console.log('active',active)
+    // console.log('over',over)
+    if (!over) return;
+    if (active.id === over.id) return;
     // console.log("event", event);
     // console.log(event.active.id)
-    if(event.over)UpdateTicketStatus({ticket_id : String(event.active.id),ticket_state : String(event.over.id)})
+    const ticketDetails = await GetTicket(String(active.id));
+    // console.log("tkt", ticketDetails);
+    if (ticketDetails.ticket_state !== over.id) {
+      if (event.over)
+        UpdateTicketStatus({
+          ticket_id: String(event.active.id),
+          ticket_state: String(event.over.id),
+        });
+    }
+    // if (event.over)
+
+    //   UpdateTicketStatus({
+    //     ticket_id: String(event.active.id),
+    //     ticket_state: String(event.over.id),
+    //   });
   }
+  // console.log('tickets',tickets)
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0 w-full h-full overflow-hidden ">
+    <div className="flex flex-col gap-4 p-4 pt-0 w-full h-full overflow-hidden bg-gray-50">
       <div className="w-full h-min">
         {/* tickets header filters */}
         <TicketsHead />
@@ -72,14 +97,14 @@ const TicketsDashboard = () => {
         <div className="bg-muted/50 aspect-video rounded-xl  h-20 w-full" />
         <div className="bg-muted/50 aspect-video rounded-xl h-20 w-full " />
       </div>
-      <div className=" min-h-screen flex-1 rounded-xl md:min-h-min grid grid-cols-5 gap-4 text-xs">
-        <DndContext onDragEnd={handleDragEnd} >
+      <div className="flex-1 rounded-xl  w-full flex gap-4 text-xs overflow-x-auto">
+        <DndContext onDragEnd={handleDragEnd}>
           {Columns.map((column: ColumnsType) => {
             return (
               <DisplayTickets
-              key={column.id}
+                key={column.id}
                 column={column}
-                tickets={tickets.filter(
+                tickets={allTickets.filter(
                   (ticket: TicketType) => ticket.ticket_state === column.id
                 )}
               />

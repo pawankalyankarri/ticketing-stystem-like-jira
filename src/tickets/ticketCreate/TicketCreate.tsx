@@ -148,6 +148,7 @@ const TicketCreate = () => {
   return (
     <div>
       <Dialog
+        open
         defaultOpen={true}
         onOpenChange={(isOpen) => !isOpen && navigate("/tickets")}
       >

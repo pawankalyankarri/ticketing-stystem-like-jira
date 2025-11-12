@@ -121,7 +121,7 @@
 
 /* global.css */
 .thin-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 0px;
 }
 
 .thin-scrollbar::-webkit-scrollbar-thumb {

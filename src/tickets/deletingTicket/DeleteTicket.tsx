@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { TicketsStore } from "@/Zustand/TicketsStore";
+// import { TicketsStore } from "@/Zustand/TicketsStore";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -53,7 +53,7 @@ const DeleteTicket = () => {
               }
             }}
           >
-            Continue
+            Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
