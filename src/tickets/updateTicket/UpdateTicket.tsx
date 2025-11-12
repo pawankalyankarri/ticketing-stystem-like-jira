@@ -33,6 +33,7 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { UseTickets } from "../hooks/UseTickets";
+import { toast } from "sonner";
 
 export interface TicketFormDataType {
   ticket_status: string;
@@ -58,6 +59,7 @@ const UpdateTicket = () => {
   const [strikethrough, setStrikethrough] = useState<boolean>(false);
   const [numbering, setNumbering] = useState<boolean>(false);
   const [pointing, setPointing] = useState<boolean>(false);
+  const [update_id,setUpdate_id] = useState<string>("")
   const [formData, setFormData] = useState<TicketFormDataType>({
     ticket_status: "",
     ticket_state: "",
@@ -93,19 +95,32 @@ const UpdateTicket = () => {
   ];
 
   useEffect(() => {
-    if(!params.id)return
-    const fetchTicket = async()=>{
-        try{
-            const res = await GetTicket(params.id!);
-            console.log('res',res);
-        }
-        catch(err){
-            console.log('err',err)
-        }
-    }
-    fetchTicket()
-    
-  }, []);
+    if (!params.id) return;
+    const fetchTicket = async () => {
+      try {
+        const res = await GetTicket(params.id!);
+        console.log("res", res);
+        setFormData({
+          ticket_status: res.ticket_status,
+          ticket_state: res.ticket_state,
+          ticket_severity: res.ticket_severity,
+          summary: res.summary,
+          description: res.description,
+          file_attachment: res.file_attachment,
+          comment_text: res.comment_text,
+          start_date: res.start_date,
+          end_date: res.end_date,
+          assignee: res.assignee,
+          created_by: res.created_by,
+        });
+        setUpdate_id(String(res.id))
+      } catch (err) {
+        console.log("err", err);
+      }
+    };
+    fetchTicket();
+  }, [params.id]);
+  // console.log(formData);
 
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData((prevData) => ({
@@ -132,22 +147,29 @@ const UpdateTicket = () => {
     e.preventDefault();
 
     console.log("data", formData);
+    const updatedData = {
+      ...formData,
+      ["update_id"] :update_id
+    }
+    const res = await EditTicket(updatedData);
+    // console.log('res',res)
+    res?.status === 200 ? toast.success(res.data.message || "Ticket Updated Successfully!") : toast.warning("Not Updated!")
+    navigate("/tickets")
 
     // await CreateTicket({data:formData,fileStr:formData.file_attachment[0]??""})
     // navigate("/tickets")
   };
-
+  // console.log('formdata', formData)
   return (
     <div>
       <Dialog
+        open
         defaultOpen={true}
-        onOpenChange={(isOpen) => !isOpen && navigate("/tickets")}
+        onOpenChange={(value) => {
+          setOpen(value);
+          if (!value) navigate("/tickets"); //  navigate when closed
+        }}
       >
-        <DialogOverlay
-          onClick={() => {
-            navigate("/createTicket");
-          }}
-        />
         <DialogContent className="h-[95%] min-w-[80%] overflow-y-auto  ">
           <DialogHeader>
             <DialogTitle>Create New Ticket </DialogTitle>
@@ -201,6 +223,7 @@ const UpdateTicket = () => {
                             name="summary"
                             placeholder="Enter Ticket Summary"
                             className="text-sm"
+                            value={formData.summary}
                             onChange={handleInputChange}
                           />
                         </div>
@@ -212,6 +235,7 @@ const UpdateTicket = () => {
                             placeholder="Provide Ticket Description"
                             className="h-16 text-sm resize-none"
                             rows={2}
+                            value={formData.description}
                             onChange={handleInputChange}
                           />
                         </div>
@@ -232,10 +256,13 @@ const UpdateTicket = () => {
                         <>
                           {formData.file_attachment &&
                             formData.file_attachment.length > 0 &&
-                            formData.file_attachment.some((url) => url) && ( //  check for non-empty strings
+                            formData.file_attachment.some(
+                              (url) => url.trim() !== ""
+                            ) && ( //  check for non-empty strings
                               <div className="w-[200px] h-[200px] grid gap-2">
                                 {/* Render images */}
                                 {formData.file_attachment.map((url, idx) =>
+                                
                                   url ? (
                                     <div
                                       className="relative w-full h-full  "
@@ -329,6 +356,7 @@ const UpdateTicket = () => {
                               )}
                               rows={1}
                               name="comment_text"
+                              value={formData.comment_text}
                               onChange={handleInputChange}
                             />
                           </div>
@@ -438,6 +466,7 @@ const UpdateTicket = () => {
                             className="text-sm w-[85%]"
                             id="created_by"
                             name="created_by"
+                            value={formData.created_by}
                             onChange={handleInputChange}
                           />
                         </div>
@@ -462,7 +491,7 @@ const UpdateTicket = () => {
                           className="hover:text-green-500 font-bold w-[70%]  uppercase"
                           variant={"outline"}
                         >
-                          Create Ticket
+                          Update Ticket
                         </Button>
                       </div>
                     </div>

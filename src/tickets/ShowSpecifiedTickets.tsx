@@ -6,22 +6,36 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import type { TicketType } from "@/Zustand/TicketsStore";
 import { useDraggable } from "@dnd-kit/core";
-import { faEye, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEllipsisV,
+  faEye,
+  faPen,
+  faPenToSquare,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TooltipArrow } from "@radix-ui/react-tooltip";
 import { Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { UseTickets } from "./hooks/UseTickets";
+import { UseTickets, type TicketType } from "./hooks/UseTickets";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 
 interface SpecifiedTicketsProps {
   item: TicketType;
 }
 const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
   const navigate = useNavigate();
-  const {EditTicket} = UseTickets()
+  const { EditTicket } = UseTickets();
   const date = new Date(item.start_date);
   const options: Intl.DateTimeFormatOptions = {
     month: "short",
@@ -36,24 +50,26 @@ const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
     ? { transform: `translate(${transform.x}px,${transform.y}px)` }
     : undefined;
 
+  function copyTicketId(tktId: string) {
+    navigator.clipboard
+      .writeText(tktId)
+      .then(() => {
+        // console.log('copied',tktId)
+        toast.success("Ticket ID Copied!");
+      })
+      .catch(() => {
+        console.log("Failed to Copy", tktId);
+      });
+  }
 
-  function copyTicketId (tktId:string){
-    navigator.clipboard.writeText(tktId).then(()=>{
-      console.log('copied',tktId)
-      toast.success("Ticket ID Copied!")
-    }).catch(()=>{
-      console.log('Failed to Copy',tktId)
-    })
-  }
-  
-  function handleEditTicket(tktid:string){
-      EditTicket(tktid)
-  }
+  // function handleEditTicket(tktid:string){
+  //     EditTicket(tktid)
+  // }
 
   return (
     <Card
       key={item.id}
-      className="w-full h-full px-2 text-xs gap-2 "
+      className="w-full h-full px-2 text-xs cursor-pointer flex gap-4 group"
       ref={setNodeRef}
       {...listeners}
       {...attributes}
@@ -62,7 +78,7 @@ const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
       <div className="w-full h-full flex justify-between">
         <span
           className={cn(
-            "p-0.5 px-1 rounded-2xl outline-1 text-xs",
+            " outline-1 text-xs inline-block h-fit rounded-2xl p-0.5",
             item.ticket_severity === "Low"
               ? "bg-green-100 text-green-500"
               : item.ticket_severity === "High"
@@ -75,8 +91,9 @@ const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
           {item.ticket_severity}
         </span>
 
-        <div className="flex gap-1" onPointerDown={(e) => e.stopPropagation()}>
-          <Tooltip>
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100" onPointerDown={(e) => e.stopPropagation()}>
+        
+           {/* <Tooltip>
             <TooltipTrigger asChild>
               <span className="cursor-pointer">
                 <FontAwesomeIcon icon={faEye} className="text-gray-500" />
@@ -85,19 +102,19 @@ const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
             <TooltipContent>
               <p>View Ticket</p>
             </TooltipContent>
-          </Tooltip>
-          <Tooltip>
+          </Tooltip> */}
+          <Tooltip >
             <TooltipTrigger asChild>
               <span className="cursor-pointer" onClick={()=>
                 navigate(`/editTicket/${item.id}`)}>
-                <FontAwesomeIcon icon={faPen} className="text-gray-500" />
+                <FontAwesomeIcon icon={faPenToSquare} className="text-gray-500 z-0" size="lg" />
               </span>
             </TooltipTrigger>
             <TooltipContent>
               <p>Edit Ticket</p>
             </TooltipContent>
           </Tooltip>
-          <Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger asChild>
               <span
                 className="cursor-pointer"
@@ -115,15 +132,48 @@ const ShowSpecifiedTickets = ({ item }: SpecifiedTicketsProps) => {
             <TooltipContent>
               <p>Delete Ticket</p>
             </TooltipContent>
-          </Tooltip>
+          </Tooltip>  */}
+
+          {/* <Menubar className="border-0 shadow-none bg-transparent">
+            <MenubarMenu>
+              <MenubarTrigger asChild>
+                <div className="p-0 cursor-pointer border-none focus:outline-none focus:ring-0 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent data-[state=close]:bg-transparent focus-visible:bg-transparent focus:bg-transparent active:bg-transparent">
+                  <FontAwesomeIcon icon={faEllipsisV} />
+                </div>
+              </MenubarTrigger>
+              <MenubarContent>
+                {/* <MenubarItem>
+                  New Tab <MenubarShortcut>⌘T</MenubarShortcut>
+                </MenubarItem> 
+                <MenubarItem
+                  onClick={() => {
+                    navigate(`/deleteTicket/${item.ticket_id}`);
+                  }}
+                >
+                  Delete
+                </MenubarItem>
+                <MenubarSeparator />
+                <MenubarItem onClick={() => navigate(`/editTicket/${item.id}`)}>
+                  Edit
+                </MenubarItem>
+                <MenubarSeparator />
+                <MenubarItem>Share</MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar> */}
         </div>
       </div>
-      <div className=" w-full " onPointerDown={(e) => e.stopPropagation()}>
+      <div className=" w-full ">
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className=" cursor-pointer hover:text-blue-800 pl-2" onClick={()=>copyTicketId(item.ticket_id)}>{item.ticket_id}</span>
+            <span
+              className=" cursor-pointer hover:text-blue-800 pl-2"
+              onClick={() => copyTicketId(item.ticket_id)}
+            >
+              {item.ticket_id}
+            </span>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent onPointerDown={(e) => e.stopPropagation()}>
             <p>{item.ticket_id}</p>
           </TooltipContent>
         </Tooltip>
