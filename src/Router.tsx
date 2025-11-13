@@ -4,6 +4,7 @@ import { useRoutes } from "react-router-dom";
 import TicketsDashboard from "./tickets/TicketsDashboard";
 import DeleteTicket from "./tickets/deletingTicket/DeleteTicket";
 import UpdateTicket from "./tickets/updateTicket/UpdateTicket";
+import OpenTicket from "./tickets/openTicket/OpenTicket";
 export const  AllRoutes = () => {
     const routes = [
         {
@@ -23,6 +24,10 @@ export const  AllRoutes = () => {
                 {
                     path : "deleteTicket/:id",
                     element : <DeleteTicket/>,
+                },
+                {
+                    path : "view/:id",
+                    element : <OpenTicket/>
                 },
                 {
                     path : "editTicket/:id",

@@ -58,7 +58,7 @@ const TicketsHead = () => {
   }
 
   return (
-    <Card className="p-1.5 rounded grid grid-cols-2 text-sm">
+    <Card className="p-1.5 rounded grid grid-cols-2 text-sm w-full h-full bg-transparent">
       <div className=""></div>
       <div className="flex justify-end gap-2 items-center">
         <span className="relative flex justify-center items-center ">
