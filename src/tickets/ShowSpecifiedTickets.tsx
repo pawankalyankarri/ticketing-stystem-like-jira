@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -12,6 +12,7 @@ import {
   faEye,
   faPen,
   faPenToSquare,
+  faShare,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -65,6 +66,15 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
   //     EditTicket(tktid)
   // }
 
+  function showText(text: string) {
+    const txtCnt = text.length;
+    if (txtCnt > 40) {
+      return text.slice(40) + "...";
+    } else {
+      return text;
+    }
+  }
+
   return (
     <>
       <motion.div
@@ -87,14 +97,14 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
           damping: 30,
         }}
         className={cn(
-          "w-full h-full px-2 text-xs cursor-pointer flex gap-4 group"
+          "w-full h-full px-2 text-xs cursor-pointer flex gap-1 group"
         )}
       >
         <Card
           // key={item.id}
-          onClick={()=>navigate(`/view/${item.id}`)}
+          onClick={() => navigate(`/view/${item.id}`)}
           className={cn(
-            "w-full h-full px-2 text-xs cursor-pointer flex gap-4 group"
+            "w-full min-h-48 max-h-48 px-2 text-xs cursor-pointer flex gap-4 group"
             // isDragging ? "opacity-0 pointer-events-none" : ""
           )}
           // ref={setNodeRef}
@@ -137,18 +147,38 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
                   <span
                     className="cursor-pointer"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      navigate(`/editTicket/${item.id}`)}}
+                      e.stopPropagation();
+                      navigate(`/editTicket/${item.id}`);
+                    }}
                   >
                     <FontAwesomeIcon
                       icon={faPenToSquare}
-                      className="text-gray-500 z-0"
+                      className="text-green-600 z-0"
                       size="lg"
                     />
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Edit Ticket</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faShare}
+                      className="text-blue-700 z-0"
+                      size="lg"
+                    />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Share</p>
                 </TooltipContent>
               </Tooltip>
               <>
@@ -202,33 +232,40 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
               </>
             </div>
           </div>
-          <div className=" w-full text-sm text-black dark:text-white">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span
-                  className=" cursor-pointer hover:text-blue-800 pl-2"
-                  onClick={() => copyTicketId(item.ticket_id)}
-                >
-                  {item.ticket_id}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent onPointerDown={(e) => e.stopPropagation()}>
-                <p>{item.ticket_id}</p>
-              </TooltipContent>
-            </Tooltip>
-            <div className="font-bold capitalize">{item.summary}</div>
-            <div className="capitalize">{item.description}</div>
-          </div>
+          <CardContent className="px-1 py-1">
+            <div className=" w-full text-sm text-black dark:text-white">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className=" cursor-pointer hover:text-blue-800 "
+                    onClick={() => copyTicketId(item.ticket_id)}
+                  >
+                    {item.ticket_id}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent onPointerDown={(e) => e.stopPropagation()}>
+                  <p>{item.ticket_id}</p>
+                </TooltipContent>
+              </Tooltip>
+              <div className="font-bold capitalize  text-wrap">
+                {item.summary.length > 35
+                  ? `${item.summary.slice(0, 35)}...`
+                  : item.summary}
+              </div>
+            </div>
+          </CardContent>
           <Separator className="" />
-          <div className="w-full h-full flex gap-2 justify-between">
-            <span className="p-0.5 rounded-2xl outline-1">
-              {item.ticket_status}
-            </span>
-            <span className="flex gap-1">
-              <Calendar className="w-[15px] h-[15px]" />
-              {formatted}
-            </span>
-          </div>
+          <CardFooter className="px-1">
+            <div className="w-full h-full flex gap-2 justify-between">
+              <span className="p-0.5 rounded-2xl outline-1">
+                {item.ticket_status}
+              </span>
+              <span className="flex gap-1">
+                <Calendar className="w-[15px] h-[15px]" />
+                {formatted}
+              </span>
+            </div>
+          </CardFooter>
         </Card>
       </motion.div>
     </>
