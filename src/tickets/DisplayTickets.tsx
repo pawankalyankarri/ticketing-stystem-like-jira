@@ -75,16 +75,19 @@
 import { Card } from "@/components/ui/card";
 import type { ColumnsType } from "./TicketsDashboard";
 import { useDroppable } from "@dnd-kit/core";
-import ShowSpecifiedTickets from "./ShowSpecifiedTickets";
 import { cn } from "@/lib/utils";
 import type { TicketType } from "./hooks/UseTickets";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { motion } from "motion/react";
+import ShowSpecifiedTickets from "./ShowSpecifiedTickets";
 interface ColumnTypeProp {
   column: ColumnsType;
   tickets: TicketType[];
+  activeId?: string | null;
 }
 
-const DisplayTicket = ({ column, tickets }: ColumnTypeProp) => {
+const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
   const { setNodeRef } = useDroppable({
     id: column.id,
   });
@@ -93,50 +96,79 @@ const DisplayTicket = ({ column, tickets }: ColumnTypeProp) => {
     ToDo: "text-gray-500 ",
     InProgress: "text-blue-500",
     Cancelled: "text-red-500",
-    Resolved : "text-green-500",
-    OnHold : "text-orange-500"
+    Resolved: "text-green-500",
+    OnHold: "text-orange-500",
   };
   const columBgColors: Record<string, string> = {
-    ToDo: "bg-gray-100 outline-gray-100 ",
-    InProgress: "bg-blue-100 outline-blue-100",
-    Cancelled: "bg-red-100",
-    Resolved : "bg-green-100",
-    OnHold : "bg-orange-100"
+    ToDo: "bg-gray-500 outline-gray-100 ",
+    InProgress: "bg-blue-500 outline-blue-100",
+    Cancelled: "bg-red-500",
+    Resolved: "bg-green-500",
+    OnHold: "bg-orange-500",
   };
   const columnColors: Record<string, string> = {
     ToDo: "bg-gray-50/20",
     InProgress: "bg-blue-50/20",
     Cancelled: "bg-red-50/20",
-    Resolved : "bg-green-50/20",
-    OnHold : "bg-orange-50/20"
+    Resolved: "bg-green-50/20",
+    OnHold: "bg-orange-50/20",
   };
   return (
     <div
-      className={cn(" aspect-video rounded-xl h-full min-w-[300px] overflow-hidden bg-gray-200")}
+      className={cn(
+        " aspect-video rounded-xl h-full min-w-[300px] overflow-hidden bg-gray-200"
+      )}
       ref={setNodeRef}
     >
-      <Card className={cn("p-1.5 rounded-sm bg-transparent")}>
+      <Card
+        className={cn(
+          "p-1.5 rounded-sm bg-transparent",
+          columBgColors[column.title] || "bg-gray-200"
+        )}
+      >
         <div className={cn("w-full h-full flex justify-between py-2")}>
-          <span
-            className={cn(
-              "uppercase font-bold",
-              columnTextColors[column.title] || "text-gray-500"
-            )}
-          >
-            {column.title}
-          </span>
-          <span className="outline-1 px-1 bg-white font-bold rounded-full">
-            {tickets.length > 0 ? tickets.length : "0"}
-          </span>
+          <div className="flex gap-3 px-1 items-center">
+            <span className="outline-1 px-2 py-1 bg-white font-bold rounded-full text-sm">
+              {tickets.length > 0 ? tickets.length : "0"}
+            </span>
+            <span className={cn("uppercase font-bold text-white text-sm")}>
+              {column.title}
+            </span>
+          </div>
+          <div className=" px-1 flex items-center">
+            <FontAwesomeIcon
+              icon={faPlus}
+              className="font-bold text-white cursor-pointer"
+              size="xl"
+            />
+          </div>
         </div>
       </Card>
       <div className="w-full h-full  hover:overflow-auto thin-scrollbar p-1">
         <div className="grid gap-1 mt-3 text-xs">
-          {tickets.map((item: TicketType) => {
-            return (
-              <ShowSpecifiedTickets item={item} key={item.id} />
-            );
-          })}
+          {tickets
+            .filter((item) => String(item.id) !== String(activeId)) // <-- hide the card being dragged
+            .map((item: TicketType) => {
+              return (
+                <motion.div
+                  key={item.id}
+                  layout // this enables smooth position transition
+                  initial={{ opacity: 1, scale: 1 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  // exit={{ opacity: 0 }}
+                  transition={{
+                    layout: { type: "spring", stiffness: 500, damping: 35 },
+                    // default: { duration: 0.2 },
+                  }}
+                >
+                  <ShowSpecifiedTickets
+                    item={item}
+                    
+                    // isDragging={activeId === String(item.id)}
+                  />
+                </motion.div>
+              );
+            })}
         </div>
       </div>
     </div>

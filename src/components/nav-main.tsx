@@ -47,7 +47,7 @@ export function NavMain({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title} onClick={() => navigate("/tickets")}>
+                <SidebarMenuButton tooltip={item.title} onClick={() => navigate("/tickets")} className="font-bold capitalize">
                   <FontAwesomeIcon icon={faTicket} />
                   <span >{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />

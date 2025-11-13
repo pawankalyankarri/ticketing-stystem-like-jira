@@ -49,9 +49,9 @@ interface CreateTicketDataProps {
 }
 
 export const UseTickets = () => {
-  const [tickets,setTickets] = useState<TicketType[]>([])
-  const [error,setError] = useState<string>("")
-  const [loading,setLoading] = useState<boolean>(false)
+  const [tickets, setTickets] = useState<TicketType[]>([]);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   // const { setTickets, setLoading, setError } = TicketsStore();
   const mountRef = useRef<boolean>(false);
@@ -63,7 +63,7 @@ export const UseTickets = () => {
       const res = await axios.get("/api/ticketing");
       if (res.status === 200) {
         setTickets(res.data.data);
-        return res.data.data
+        return res.data.data;
       }
     } catch (err: any) {
       setError(err?.message || "fetchalltickets error");
@@ -72,8 +72,6 @@ export const UseTickets = () => {
       setLoading(false);
     }
   }, []);
-
-
 
   const deleteTicket = useCallback(async (ticketStrId: string) => {
     try {
@@ -90,18 +88,31 @@ export const UseTickets = () => {
 
   const UpdateTicketStatus = useCallback(
     async ({ ticket_id, ticket_state }: UpdateTicketStatusProps) => {
-      // console.log(ticket_id, ticket_state);
+      console.log(ticket_id, ticket_state);
       try {
         const response = await axios.post("/api/ticketing/drag-card", {
           ticket_id,
           ticket_state,
         });
-        console.log('updateticketstatus',response);
+        console.log("updateticketstatus", response);
+        // if(response.status == 200){
+        //   await fetchAllTickets()
+        // }
+        // if (response.status === 200) {
+        //   setTickets((prev) =>
+        //     prev.map((ticket) =>
+        //       ticket.id === ticket_id
+        //         ? { ...ticket, ticket_state } // update state locally
+        //         : ticket
+        //     )
+        //   );
+        // }
+        return response;
       } catch (err) {
         console.log("err", err);
       }
     },
-    []
+    [fetchAllTickets]
   );
 
   const CreateTicket = useCallback(
