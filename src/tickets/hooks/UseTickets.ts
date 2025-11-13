@@ -58,7 +58,7 @@ export const UseTickets = () => {
 
   const fetchAllTickets = useCallback(async () => {
     // if(mountRef.current)return
-    // setLoading(true);
+    setLoading(true);
     try {
       const res = await axios.get("/api/ticketing");
       if (res.status === 200) {
@@ -89,6 +89,7 @@ export const UseTickets = () => {
   const UpdateTicketStatus = useCallback(
     async ({ ticket_id, ticket_state }: UpdateTicketStatusProps) => {
       console.log(ticket_id, ticket_state);
+      setLoading(true)
       try {
         const response = await axios.post("/api/ticketing/drag-card", {
           ticket_id,
@@ -111,12 +112,16 @@ export const UseTickets = () => {
       } catch (err) {
         console.log("err", err);
       }
+      finally{
+        setLoading(false)
+      }
     },
     [fetchAllTickets]
   );
 
   const CreateTicket = useCallback(
     async ({ data, fileStr }: CreateTicketDataProps) => {
+      setLoading(true)
       try {
         const response = await axios.post(
           "/api/ticketing/create-ticket",
@@ -140,11 +145,17 @@ export const UseTickets = () => {
       } catch (error) {
         console.error("Error creating ticket:", error);
       }
+      finally{
+        setLoading(false)
+      }
     },
     []
   );
 
   const GetTicket = useCallback(async (tktId: string) => {
+    if(mountRef.current)return
+    mountRef.current = true
+    setLoading(true)
     try {
       const response = await axios.get(`/api/ticketing/${tktId}`);
       console.log("getticket", response);
@@ -152,10 +163,14 @@ export const UseTickets = () => {
     } catch (err) {
       console.log("getticket", err);
     }
+    finally{
+      setLoading(false)
+    }
   }, []);
 
   const EditTicket = useCallback(async (data: TicketFormDataType) => {
     console.log("data", data);
+    setLoading(true)
     try {
       data.file_attachment.length === 0 ? data.file_attachment.push("") : "";
       const response = await axios.post("/api/ticketing/update-ticket", data);
@@ -163,6 +178,9 @@ export const UseTickets = () => {
       return response;
     } catch (err) {
       console.log("edittkt", err);
+    }
+    finally{
+      setLoading(false)
     }
   }, []);
 

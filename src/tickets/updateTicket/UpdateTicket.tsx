@@ -151,10 +151,11 @@ const UpdateTicket = () => {
       ...formData,
       ["update_id"] :update_id
     }
+    navigate("/tickets")
     const res = await EditTicket(updatedData);
     // console.log('res',res)
     res?.status === 200 ? toast.success(res.data.message || "Ticket Updated Successfully!") : toast.warning("Not Updated!")
-    navigate("/tickets")
+    
 
     // await CreateTicket({data:formData,fileStr:formData.file_attachment[0]??""})
     // navigate("/tickets")

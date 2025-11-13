@@ -25,7 +25,7 @@ interface Option {
 interface SelectSearchProps {
   SelectSearchData: Option[];
   title: string;
-  size: "sm" | "md";
+  size: "sm" | "md" | "xs";
   value: string; 
   onChange: (value: string) => void; 
 }
@@ -39,7 +39,7 @@ export function SelectSearch({SelectSearchData,title,size,value,onChange} : Sele
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn(" justify-between text-xs",size === 'sm' ? "w-[100px]" : "w-[220px]")}
+          className={cn(" justify-between text-xs",size === 'xs' ? "w-[100px]" : size === "sm" ? "w-[150px]" :  "w-[220px]")}
         >
           {value
             ? SelectSearchData.find((data) => data.value === value)?.label
@@ -47,7 +47,7 @@ export function SelectSearch({SelectSearchData,title,size,value,onChange} : Sele
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn(" p-0", size === 'sm' ? "w-[100px]" : "w-[220px]")} >
+      <PopoverContent className={cn(" p-0", size === 'xs' ? "w-[100px]" : size === "sm" ? "w-[150px]" : "w-[220px]")} >
         <Command className="text-xs">
           <CommandInput placeholder="Search Here..." className="h-9 text-xs" />
           <CommandList>

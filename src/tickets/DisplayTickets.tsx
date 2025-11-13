@@ -79,8 +79,10 @@ import { cn } from "@/lib/utils";
 import type { TicketType } from "./hooks/UseTickets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { motion } from "motion/react";
+// import { motion } from "motion/react";
 import ShowSpecifiedTickets from "./ShowSpecifiedTickets";
+import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+
 interface ColumnTypeProp {
   column: ColumnsType;
   tickets: TicketType[];
@@ -146,6 +148,7 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
       </Card>
       <div className="w-full h-full  hover:overflow-auto thin-scrollbar p-1">
         <div className="grid gap-1 mt-3 text-xs">
+
           {tickets
             .filter((item) => String(item.id) !== String(activeId)) // <-- hide the card being dragged
             .map((item: TicketType) => {
@@ -169,6 +172,7 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
                 </motion.div>
               );
             })}
+
         </div>
       </div>
     </div>

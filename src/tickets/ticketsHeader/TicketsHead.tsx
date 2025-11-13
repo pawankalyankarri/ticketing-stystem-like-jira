@@ -12,6 +12,7 @@ import { SelectSearch } from "@/components/ui/SelectSearch";
 import { useNavigate } from "react-router-dom";
 import { UseTickets, type TicketType } from "../hooks/UseTickets";
 import { useEffect, useState, type InputEvent } from "react";
+import { cn } from "@/lib/utils";
 
 interface TicketHeadProps {
   setRefresh: (value: boolean) => void;
@@ -20,7 +21,7 @@ interface TicketHeadProps {
 const TicketsHead = () => {
   const [ticketId, setTicketId] = useState<string>("");
   const [allTickets, setAllTickets] = useState<TicketType[]>([])
-  const { fetchAllTickets } = UseTickets();
+  const { fetchAllTickets,loading } = UseTickets();
   // const { tickets, setTickets } = TicketsStore();
   const navigate = useNavigate();
 
@@ -73,7 +74,7 @@ const TicketsHead = () => {
           <SelectSearch
             SelectSearchData={severityData}
             title={"All Severity"}
-            size={"sm"}
+            size={"xs"}
             value={""}
             onChange={() => {}}
           />
@@ -82,7 +83,7 @@ const TicketsHead = () => {
           <SelectSearch
             SelectSearchData={StatusData}
             title={"All Status"}
-            size={"sm"}
+            size={"xs"}
             value={""}
             onChange={() => {}}
           />
@@ -92,7 +93,7 @@ const TicketsHead = () => {
           className="p-1.5 outline-1 rounded shadow cursor-pointer"
           onClick={() => fetchAllTickets()}
         >
-          <FontAwesomeIcon icon={faRefresh} />
+          <FontAwesomeIcon icon={faRefresh} className={cn(loading ? "animate-spin":"")}/>
         </span>
         <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
           <FontAwesomeIcon icon={faCodeMerge} />
