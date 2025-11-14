@@ -149,7 +149,7 @@ export const UseTickets = () => {
         setLoading(false)
       }
     },
-    []
+    [fetchAllTickets]
   );
 
   const GetTicket = useCallback(async (tktId: string) => {
@@ -166,7 +166,7 @@ export const UseTickets = () => {
     finally{
       setLoading(false)
     }
-  }, []);
+  }, [fetchAllTickets]);
 
   const EditTicket = useCallback(async (data: TicketFormDataType) => {
     console.log("data", data);
@@ -182,7 +182,7 @@ export const UseTickets = () => {
     finally{
       setLoading(false)
     }
-  }, []);
+  }, [fetchAllTickets]);
 
   return {
     tickets,

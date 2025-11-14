@@ -279,7 +279,7 @@ const TicketCreate = () => {
                   <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                     {/* comments */}
                     <div className="w-full h-full grid  p-0">
-                      <div className="border-1 border-black">
+                      <div className="border-1 border-gray-200 rounded">
                         <ToggleGroup type="multiple">
                           <ToggleGroupItem
                             value="bold"
@@ -326,7 +326,7 @@ const TicketCreate = () => {
                           </ToggleGroupItem>
                         </ToggleGroup>
                       </div>
-                      <div className="border-x-1 border-b-1 border-black">
+                      <div className="border-x-1 border-b-1 border-gray-200 rounded">
                         <Textarea
                           placeholder="Add Comment..."
                           className={cn(
@@ -456,7 +456,7 @@ const TicketCreate = () => {
                 <div className="w-full h-full grid grid-cols-2">
                   <div className="w-full h-full">
                     <span
-                      className="cursor-pointer px-5 w-[70%] hover:bg-gray-50 uppercase hover:text-red-500 font-bold inline-flex items-center justify-center rounded-md border border-input  py-2 text-sm transition-colorshover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:pointer-events-none"
+                      className="cursor-pointer px-5 w-[70%] hover:bg-gray-50 uppercase font-bold inline-flex items-center justify-center rounded-md border border-input  py-2 text-sm transition-colorshover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:pointer-events-none"
                       onClick={() => {
                         navigate("/tickets");
                       }}
@@ -466,7 +466,7 @@ const TicketCreate = () => {
                   </div>
                   <div className="w-full h-full">
                     <Button
-                      className="hover:text-green-500 font-bold w-[70%]  uppercase"
+                      className=" font-bold w-[70%]  uppercase"
                       variant={"outline"}
                     >
                       Create Ticket

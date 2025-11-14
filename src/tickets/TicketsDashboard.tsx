@@ -16,6 +16,9 @@ import {
 import { UseTickets, type TicketType } from "./hooks/UseTickets";
 import ShowSpecifiedTickets from "./ShowSpecifiedTickets";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
+import { Divide } from "lucide-react";
+import { Outlet, useLocation } from "react-router-dom";
 
 export interface ColumnsType {
   id: string;
@@ -24,8 +27,10 @@ export interface ColumnsType {
 
 const TicketsDashboard = () => {
   const [allTickets, setAllTickets] = useState<TicketType[]>([]);
-  const [refresh, setRefresh] = useState<boolean>(true);
+  const [refresh, setRefresh] = useState<boolean>(false);
+  const [noTkts, setNoTkts] = useState<boolean>(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const location = useLocation();
 
   const mountRef = useRef<boolean>(false);
   const { UpdateTicketStatus, fetchAllTickets, GetTicket } = UseTickets();
@@ -33,26 +38,30 @@ const TicketsDashboard = () => {
   const Columns: ColumnsType[] = [
     { id: "ToDo", title: "ToDo" },
     { id: "InProgress", title: "InProgress" },
-    { id: "Cancelled", title: "Cancelled" },
-    { id: "Resolved", title: "Resolved" },
     { id: "OnHold", title: "OnHold" },
+    { id: "Resolved", title: "Resolved" },
+    { id: "Cancelled", title: "Cancelled" },
   ];
 
   // const { tickets, getTickets } = TicketsStore();
   useEffect(() => {
-    if (mountRef.current) return;
-    mountRef.current = true;
-    // axios
-    //   .get("/api/ticketing")
-    //   .then((res) => setAllTickets(res.data.data))
-    //   .catch((err) => console.log(err));
-    // getTickets(); // i think need to change here ============>>>>>>>>>>
+    // if (mountRef.current) return;
+    // mountRef.current = true;
+    console.log("running");
     const fetchingTickets = async () => {
       const response = await fetchAllTickets();
+      if (response.length == 0) setNoTkts(true);
+
       setAllTickets(response);
     };
     fetchingTickets();
-  }, []);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    setRefresh((prev) => !prev);
+  }, [location.pathname]);
+
+
 
   // const todoTickets = tickets.filter(
   //   (obj: any) => obj?.ticket_state === "ToDo"
@@ -95,17 +104,23 @@ const TicketsDashboard = () => {
 
     // If ticket is dropped in same column, do nothing
     if (draggedTicket.ticket_state === String(over.id)) {
-      setActiveId(null); 
+      setActiveId(null);
       return;
     }
     if (event.over) {
-      setAllTickets((prev) =>
-        prev.map((ticket) =>
-          ticket.id === active.id
-            ? { ...ticket, ticket_state: String(over.id) }
-            : ticket
-        )
-      );
+      setAllTickets((prev) => {
+        const draggedTicket = prev.find(
+          (t) => String(t.id) === String(active.id)
+        );
+        if (!draggedTicket) return prev;
+
+        const otherTickets = prev.filter((t) => t.id !== active.id);
+
+        return [
+          { ...draggedTicket, ticket_state: String(over.id) },
+          ...otherTickets,
+        ];
+      });
 
       setActiveId(null);
 
@@ -125,44 +140,57 @@ const TicketsDashboard = () => {
     <div className="flex flex-col gap-4 p-4 pt-0 w-full h-full overflow-hidden">
       <div className="w-full h-fit">
         {/* tickets header filters */}
-        <TicketsHead />
+        <Outlet />
+        <TicketsHead setTickets={setAllTickets} tickets={allTickets} />
       </div>
       {/* <div className="grid auto-rows-min  gap-4 md:grid-cols-3">
         <div className="bg-muted/50 aspect-video rounded-xl h-20 w-full" />
         <div className="bg-muted/50 aspect-video rounded-xl  h-20 w-full" />
         <div className="bg-muted/50 aspect-video rounded-xl h-20 w-full " />
       </div> */}
-      <div className="flex-1 rounded-xl  w-full flex gap-4 text-xs overflow-x-auto">
-        <DndContext
-          sensors={sensors}
-          onDragEnd={handleDragEnd}
-          onDragStart={(event) => setActiveId(String(event.active.id))}
-        >
-          {Columns.map((column: ColumnsType) => {
-            return (
-              <DisplayTickets
-                key={column.id}
-                column={column}
-                activeId={activeId}
-                tickets={allTickets.filter(
-                  (ticket: TicketType) => ticket.ticket_state === column.id
-                )}
-              />
-            );
-          })}
-          <DragOverlay>
-            {activeId
-              ? allTickets.find((t) => String(t.id) === String(activeId)) && (
-                  <ShowSpecifiedTickets
-                    item={
-                      allTickets.find((t) => String(t.id) === String(activeId))!
-                    }
-                  />
-                )
-              : null}
-          </DragOverlay>
-        </DndContext>
-      </div>
+      {allTickets.length === 0 ? (
+        <div className="flex justify-center pt-20 h-screen">
+          {noTkts ? (
+            <div className="font-bold">No Tickets</div>
+          ) : (
+            <Spinner className=" w-9 h-9" />
+          )}
+        </div>
+      ) : (
+        <div className="flex-1 rounded-xl  w-full flex gap-4 text-xs overflow-x-auto">
+          <DndContext
+            sensors={sensors}
+            onDragEnd={handleDragEnd}
+            onDragStart={(event) => setActiveId(String(event.active.id))}
+          >
+            {Columns.map((column: ColumnsType) => {
+              return (
+                <DisplayTickets
+                  key={column.id}
+                  column={column}
+                  activeId={activeId}
+                  tickets={allTickets.filter(
+                    (ticket: TicketType) => ticket.ticket_state === column.id
+                  )}
+                />
+              );
+            })}
+            <DragOverlay dropAnimation={null}>
+              {activeId
+                ? allTickets.find((t) => String(t.id) === String(activeId)) && (
+                    <ShowSpecifiedTickets
+                      item={
+                        allTickets.find(
+                          (t) => String(t.id) === String(activeId)
+                        )!
+                      }
+                    />
+                  )
+                : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      )}
       {/* <div className=" min-h-screen flex-1 rounded-xl md:min-h-min grid grid-cols-5 gap-4 text-xs">
         <div className="bg-gray-50/20 aspect-video rounded-xl h-full w-full ">
           <Card className="p-1.5 rounded-sm bg-gray-50">

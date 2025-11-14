@@ -11,16 +11,19 @@ import { Input } from "@/components/ui/input";
 import { SelectSearch } from "@/components/ui/SelectSearch";
 import { useNavigate } from "react-router-dom";
 import { UseTickets, type TicketType } from "../hooks/UseTickets";
-import { useEffect, useState, type InputEvent } from "react";
+import { useEffect, useState, type Dispatch, type InputEvent, type SetStateAction } from "react";
 import { cn } from "@/lib/utils";
 
 interface TicketHeadProps {
-  setRefresh: (value: boolean) => void;
+  tickets : TicketType[],
+  setTickets : Dispatch<SetStateAction<TicketType[]>>,
 }
 
-const TicketsHead = () => {
+const TicketsHead = ({tickets,setTickets} : TicketHeadProps) => {
   const [ticketId, setTicketId] = useState<string>("");
-  const [allTickets, setAllTickets] = useState<TicketType[]>([])
+  // const [allTickets, setAllTickets] = useState<TicketType[]>([])
+  const [severity,setSeverity] = useState<string>("All Severity")
+  const [tStatus,setTStatus] = useState<string>("All Status")
   const { fetchAllTickets,loading } = UseTickets();
   // const { tickets, setTickets } = TicketsStore();
   const navigate = useNavigate();
@@ -35,7 +38,7 @@ const TicketsHead = () => {
     { label: "Critical", value: "Critical" },
   ];
   const StatusData = [
-    { label: "All Status", value: "All " },
+    { label: "All Status", value: "All Status" },
     { label: "Open", value: "Open" },
     { label: "Close", value: "Close" },
     { label: "Pending", value: "Pending" },
@@ -51,14 +54,48 @@ const TicketsHead = () => {
   async function ticketIdSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
     setTicketId(value);
+    console.log(value)
+    const res = await fetchAllTickets()
 
-    const filteredTickets = allTickets.filter((item) =>
-      item.ticket_id.toLowerCase().includes(value.toLowerCase())
+    const filteredTickets = res.filter((item:TicketType) =>
+      item.ticket_id.toLowerCase().includes(value.toLowerCase()) || item.summary.toLowerCase().includes(value.toLowerCase())
     );
-    // setTickets(filteredTickets);
+    setTickets(filteredTickets);
+  }
+  const refreshTickets = async () => {
+    const res = await fetchAllTickets()
+    setTickets(res)
+    setSeverity("All Severity")
+    setTStatus("All Status")
+    setTicketId("")
+  }
+  
+   async function handleSeverityChange(val:string){
+      setSeverity(val)
+      console.log('val',val)
+      const res = await fetchAllTickets()
+      if(val === "" || val === "All Severity"){
+        setTickets(res)
+        return
+      }
+      const tkts = res.filter((t:TicketType)=>t.ticket_severity === val)
+      setTickets(tkts)
+
+  }
+   async function handleStatusChange(val:string){
+      setTStatus(val)
+      console.log('val',val)
+      const res = await fetchAllTickets()
+      if(val === "" || val === "All Status"){
+        setTickets(res)
+        return
+      }
+      const tkts = res.filter((t:TicketType)=>t.ticket_status === val)
+      setTickets(tkts)
+
   }
 
-  return (
+  return ( 
     <Card className="p-1.5 rounded grid grid-cols-2 text-sm w-full h-full bg-transparent">
       <div className=""></div>
       <div className="flex justify-end gap-2 items-center">
@@ -75,8 +112,8 @@ const TicketsHead = () => {
             SelectSearchData={severityData}
             title={"All Severity"}
             size={"xs"}
-            value={""}
-            onChange={() => {}}
+            value={severity}
+            onChange={handleSeverityChange}
           />
         </span>
         <span>
@@ -84,14 +121,14 @@ const TicketsHead = () => {
             SelectSearchData={StatusData}
             title={"All Status"}
             size={"xs"}
-            value={""}
-            onChange={() => {}}
+            value={tStatus}
+            onChange={handleStatusChange}
           />
         </span>
 
         <span
           className="p-1.5 outline-1 rounded shadow cursor-pointer"
-          onClick={() => fetchAllTickets()}
+          onClick={refreshTickets}
         >
           <FontAwesomeIcon icon={faRefresh} className={cn(loading ? "animate-spin":"")}/>
         </span>
@@ -100,7 +137,7 @@ const TicketsHead = () => {
         </span>
         <Button
           className="p-0 bg-blue-500 hover:bg-blue-800 cursor-pointer"
-          onClick={() => navigate("/createTicket")}
+          onClick={() => navigate("/tickets/createTicket")}
         >
           <FontAwesomeIcon icon={faPlus} className="text-xs" />
           Create
