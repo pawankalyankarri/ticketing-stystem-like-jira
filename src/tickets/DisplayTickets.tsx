@@ -90,7 +90,7 @@ interface ColumnTypeProp {
 }
 
 const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
-  const { setNodeRef } = useDroppable({
+  const { setNodeRef,isOver } = useDroppable({
     id: column.id,
   });
 
@@ -118,7 +118,7 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
   return (
     <div
       className={cn(
-        " aspect-video rounded-xl h-full min-w-[300px] overflow-hidden bg-gray-200"
+        " aspect-video rounded-xl h-full min-w-[300px] overflow-hidden bg-gray-200",isOver ? "bg-blue-100 border-dashed border-2 border-black" : ""
       )}
       ref={setNodeRef}
     >
@@ -146,8 +146,8 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
           </div>
         </div>
       </Card>
-      <div className="w-full h-full  hover:overflow-auto thin-scrollbar p-1">
-        <div className="grid gap-1 mt-3 text-xs">
+      <div className="flex flex-col h-[calc(100%-60px)] p-1 overflow-auto thin-scrollbar gap-1">
+        {/* <div className="grid gap-1 flex-1 mt-1 text-xs"> */}
 
           {tickets
             .filter((item) => String(item.id) !== String(activeId)) // <-- hide the card being dragged
@@ -160,7 +160,7 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
                   animate={{ opacity: 1, scale: 1 }}
                   // exit={{ opacity: 0 }}
                   transition={{
-                    layout: { type: "spring", stiffness: 500, damping: 35 },
+                    layout: { type: "spring", stiffness: 300, damping: 25 },
                     // default: { duration: 0.2 },
                   }}
                 >
@@ -173,7 +173,7 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
               );
             })}
 
-        </div>
+        {/* </div> */}
       </div>
     </div>
   );

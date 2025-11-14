@@ -66,19 +66,9 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
   //     EditTicket(tktid)
   // }
 
-  function showText(text: string) {
-    const txtCnt = text.length;
-    if (txtCnt > 40) {
-      return text.slice(40) + "...";
-    } else {
-      return text;
-    }
-  }
-
   return (
     <>
       <motion.div
-        key={item.id}
         ref={setNodeRef}
         {...listeners}
         {...attributes}
@@ -88,23 +78,22 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
             : undefined,
           zIndex: isDragging ? 9999 : "auto",
         }}
-        drag
-        animate={{ opacity: isDragging ? 0 : 1, rotate: isDragging ? 5 : 0 }}
+        animate={{
+          scale: isDragging ? 1.05 : 1,
+          rotate: isDragging ? 3 : 0,
+        }}
         transition={{
-          duration: 0.2,
           type: "spring",
           stiffness: 500,
-          damping: 30,
+          damping: 50,
         }}
-        className={cn(
-          "w-full h-full px-2 text-xs cursor-pointer flex gap-1 group"
-        )}
+        className="w-full px-2 cursor-pointer flex gap-1"
       >
         <Card
           // key={item.id}
-          onClick={() => navigate(`/view/${item.id}`)}
+          onClick={() => navigate(`/tickets/view/${item.id}`)}
           className={cn(
-            "w-full min-h-48 max-h-48 px-2 text-xs cursor-pointer flex gap-4 group"
+            "w-full min-h-40 max-h-40 px-2 py-2 text-xs cursor-pointer flex gap-2 group"
             // isDragging ? "opacity-0 pointer-events-none" : ""
           )}
           // ref={setNodeRef}
@@ -112,7 +101,7 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
           // {...attributes}
           // style={style}
         >
-          <div className="w-full h-full flex justify-between">
+          <div className="w-full flex justify-between">
             <span
               className={cn(
                 " outline-1 text-xs inline-block h-fit rounded-2xl p-0.5",
@@ -148,7 +137,7 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
                     className="cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/editTicket/${item.id}`);
+                      navigate(`/tickets/editTicket/${item.id}`);
                     }}
                   >
                     <FontAwesomeIcon
@@ -232,30 +221,37 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
               </>
             </div>
           </div>
-          <CardContent className="px-1 py-1">
+          <CardContent className="px-1 ">
             <div className=" w-full text-sm text-black dark:text-white">
               <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger
+                  asChild
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
                   <span
                     className=" cursor-pointer hover:text-blue-800 "
-                    onClick={() => copyTicketId(item.ticket_id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyTicketId(item.ticket_id);
+                    }}
                   >
                     {item.ticket_id}
                   </span>
                 </TooltipTrigger>
-                <TooltipContent onPointerDown={(e) => e.stopPropagation()}>
+                <TooltipContent>
                   <p>{item.ticket_id}</p>
                 </TooltipContent>
               </Tooltip>
               <div className="font-bold capitalize  text-wrap">
-                {item.summary.length > 35
-                  ? `${item.summary.slice(0, 35)}...`
+                {item.summary.length > 75
+                  ? `${item.summary.slice(0, 75)}...`
                   : item.summary}
               </div>
             </div>
           </CardContent>
-          <Separator className="" />
-          <CardFooter className="px-1">
+
+          <CardFooter className="px-1 flex flex-col gap-1 mt-auto">
+            <Separator className="" />
             <div className="w-full h-full flex gap-2 justify-between">
               <span className="p-0.5 rounded-2xl outline-1">
                 {item.ticket_status}
