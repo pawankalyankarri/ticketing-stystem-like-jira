@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import { Divide } from "lucide-react";
 import { Outlet, useLocation } from "react-router-dom";
+import type { TicketFormDataType } from "./updateTicket/UpdateTicket";
 
 export interface ColumnsType {
   id: string;
@@ -33,7 +34,7 @@ const TicketsDashboard = () => {
   const location = useLocation();
 
   const mountRef = useRef<boolean>(false);
-  const { UpdateTicketStatus, fetchAllTickets, GetTicket } = UseTickets();
+  const { UpdateTicketStatus, fetchAllTickets, GetTicket,EditTicket } = UseTickets();
 
   const Columns: ColumnsType[] = [
     { id: "ToDo", title: "ToDo" },
@@ -55,11 +56,11 @@ const TicketsDashboard = () => {
       setAllTickets(response);
     };
     fetchingTickets();
-  }, [location.pathname]);
+  }, []);
 
-  useEffect(() => {
-    setRefresh((prev) => !prev);
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   setRefresh((prev) => !prev);
+  // }, [location.pathname]);
 
 
 
@@ -87,54 +88,119 @@ const TicketsDashboard = () => {
     })
   );
 
-  async function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    // console.log("active", active);
-    // console.log("over", over);
-    if (!over) return;
-    if (active.id === over.id) return;
-    // console.log("event", event);
-    // console.log(event.active.id)
+  // async function handleDragEnd(event: DragEndEvent) {
+  //   const { active, over } = event;
+  //   // console.log("active", active);
+  //   // console.log("over", over);
+  //   if (!over) return;
+  //   if (active.id === over.id) return;
+  //   // console.log("event", event);
+  //   // console.log(event.active.id)
 
-    // dragged ticket
-    const draggedTicket = allTickets.find(
-      (t) => String(t.id) === String(active.id)
-    );
-    if (!draggedTicket) return;
+  //   // dragged ticket
+  //   const draggedTicket = allTickets.find(
+  //     (t) => String(t.id) === String(active.id)
+  //   );
+  //   if (!draggedTicket) return;
 
-    // If ticket is dropped in same column, do nothing
-    if (draggedTicket.ticket_state === String(over.id)) {
-      setActiveId(null);
-      return;
-    }
-    if (event.over) {
-      setAllTickets((prev) => {
-        const draggedTicket = prev.find(
-          (t) => String(t.id) === String(active.id)
-        );
-        if (!draggedTicket) return prev;
+  //   // If ticket is dropped in same column, do nothing
+  //   if (draggedTicket.ticket_state === String(over.id)) {
+  //     setActiveId(null);
+  //     return;
+  //   }
+  //   if (event.over) {
+  //     setAllTickets((prev) => {
+  //       const draggedTicket = prev.find(
+  //         (t) => String(t.id) === String(active.id)
+  //       );
+  //       if (!draggedTicket) return prev;
 
-        const otherTickets = prev.filter((t) => t.id !== active.id);
+  //       const otherTickets = prev.filter((t) => t.id !== active.id);
 
-        return [
-          { ...draggedTicket, ticket_state: String(over.id) },
-          ...otherTickets,
-        ];
-      });
+  //       return [
+  //         { ...draggedTicket, ticket_state: String(over.id) },
+  //         ...otherTickets,
+  //       ];
+  //     });
 
-      setActiveId(null);
+  //     setActiveId(null);
 
-      const res = await UpdateTicketStatus({
-        ticket_id: String(event.active.id),
-        ticket_state: String(event.over.id),
-      });
-      console.log("res", res);
-      if (res?.status === 200) {
-        toast.success(res.data.message);
-      }
-    }
-  }
+  //     // const res = await UpdateTicketStatus({
+  //     //   ticket_id: String(event.active.id),
+  //     //   ticket_state: String(event.over.id),
+  //     // });
+  //     // const res = await EditTicket()
+  //     let ticketDetails = allTickets.find((tkt:TicketType)=>tkt.id === String(event.active.id))
+  //     const updatedTicket = {...ticketDetails,ticket_state:String(event.over.id)}
+  //     console.log(updatedTicket)
+  //     const res = await EditTicket(updatedTicket)
+  //     console.log('tktd',updatedTicket)
+  //     console.log("res", res);
+  //     if (res?.status === 200) {
+  //       toast.success(res.data.message);
+  //     }
+  //   }
+  // }
   // console.log('tickets',tickets)
+
+
+
+  
+
+async function handleDragEnd(event: DragEndEvent) {
+  const { active, over } = event;
+  if (!over) return;
+
+  const oldTicket = allTickets.find(
+    (t) => String(t.id) === String(active.id)
+  );
+  if (!oldTicket) return;
+
+  const newState = String(over.id);
+
+  if (oldTicket.ticket_state === newState) return;
+
+  // Update UI immediately
+  setAllTickets((prev) =>
+    prev.map((t) =>
+      String(t.id) === String(active.id)
+        ? { ...t, ticket_state: newState }
+        : t
+    )
+  );
+
+  setTimeout(() => setActiveId(null), 0);
+
+
+  // update object
+  const updatedTicket = {
+    update_id: String(oldTicket.id),       
+    ticket_status: oldTicket.ticket_status,
+    ticket_state: newState,
+    ticket_severity: oldTicket.ticket_severity,
+    summary: oldTicket.summary,
+    description: oldTicket.description,
+    file_attachment: oldTicket.file_attachment ?? [""],
+    comment_text: oldTicket.comment_text,
+    start_date: oldTicket.start_date,
+    end_date: oldTicket.end_date,
+    assignee: oldTicket.assignee,
+    created_by: oldTicket.created_by,
+  };
+
+  console.log("sending:", updatedTicket);
+
+  
+  const res = await EditTicket(updatedTicket);
+
+  if (res?.status === 200) {
+    toast.success(res.data.message);
+  } else {
+    toast.error("Failed to update ticket");
+  }
+}
+
+
 
   return (
     <div className="flex flex-col gap-4 p-4 pt-0 w-full h-full overflow-hidden">

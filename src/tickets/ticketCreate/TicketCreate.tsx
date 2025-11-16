@@ -106,12 +106,12 @@ const TicketCreate = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, files } = e.target as HTMLInputElement;
-
+    console.log('file',files)
     setFormData((prevData) => ({
       ...prevData,
       [name]: files
-        ? Array.from(files).map((file) => URL.createObjectURL(file))
-        : value,
+        ? Array.from(files)
+        : value, //URL.createObjectURL(file)
     }));
   };
 
@@ -140,7 +140,7 @@ const TicketCreate = () => {
 
     await CreateTicket({
       data: formData,
-      fileStr: formData.file_attachment[0] ?? "",
+      fileStr: formData.file_attachment[0],
     });
     navigate("/tickets");
   };

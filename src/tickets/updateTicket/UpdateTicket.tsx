@@ -47,6 +47,7 @@ export interface TicketFormDataType {
   end_date: string | null;
   assignee: string;
   created_by: string;
+  update_id? : string;
 }
 
 const UpdateTicket = () => {

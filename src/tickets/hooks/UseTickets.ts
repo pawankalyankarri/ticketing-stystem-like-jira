@@ -139,7 +139,7 @@ export const UseTickets = () => {
           ticket_id: tktId,
           file_path: fileStr,
         });
-        // console.log('res',res)
+        console.log('res',res)
         toast.success(response.data.Message || "Ticket Created successfully!");
         fetchAllTickets();
       } catch (error) {
