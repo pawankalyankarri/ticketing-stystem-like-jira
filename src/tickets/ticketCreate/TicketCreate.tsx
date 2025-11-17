@@ -60,6 +60,10 @@ const TicketCreate = () => {
   const [strikethrough, setStrikethrough] = useState<boolean>(false);
   const [numbering, setNumbering] = useState<boolean>(false);
   const [pointing, setPointing] = useState<boolean>(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [fileFields, setFilefields] = useState<string[]>([]);
+  const [fileObjects, setFileObjects] = useState<File[]>([]); // actual files
+
   const [formData, setFormData] = useState<TicketFormDataType>({
     ticket_status: "",
     ticket_state: "",
@@ -102,48 +106,62 @@ const TicketCreate = () => {
     // console.log(formData);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newFileNames = Array.from(files).map((file) => file.name);
+
+    setImages((prev) => [...prev, ...newFileNames]);
+    setFilefields(Array.from(files).map((file) => URL.createObjectURL(file)));
+
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   file_attachment: [...images, ...newFileNames],
+    // }));
+    const fileList = Array.from(files);
+    const names = fileList.map((file) => file.name);
+
+    setFileObjects((prev) => [...prev, ...fileList]);
+
+    // update form data
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   file_attachment: [...prev.file_attachment, ...names],
+    // }));
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value, files } = e.target as HTMLInputElement;
+    const { name, value } = e.target as HTMLInputElement;
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: files
-        ? Array.from(files).map((file) => URL.createObjectURL(file))
-        : value,
+      [name]: value,
     }));
   };
+  // console.log("formdata", formData, images);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     console.log("data", formData);
-    // try {
-    //   await axios
-    //     .post("/api/ticketing/create-ticket", formData, {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //     })
-    //     .then((res) => {
-    //       res.status === 200
-    //         ? toast.success(res.data.message || "Ticket created successfully!")
-    //         : toast.warning(res.data.message);
-    //       navigate("/tickets");
-    //     })
-    //     .catch((err) => console.log("err", err));
-    // } catch (error) {
+    setFormData((prev) => ({
+      ...prev,
+      file_attachment: images,
+    }));
 
-    //   console.error("Error creating ticket:", error);
-    // }
-
-    await CreateTicket({
+    const res = await CreateTicket({
       data: formData,
-      fileStr: formData.file_attachment[0] ?? "",
+      files: fileObjects,
     });
-    navigate("/tickets");
+    if (res?.status === 200) {
+      window.dispatchEvent(new Event("ticketsUpdated"));
+      navigate("/tickets");
+    }
   };
+  // console.log("filefields", fileFields);
 
   // console.log('bold:',bold,'italic:',italic,'underline:',underline,'strikethrough:',strikethrough,'numbering:',numbering,'pointing:',pointing);
   return (
@@ -235,16 +253,17 @@ const TicketCreate = () => {
                         name="file_attachment"
                         className="text-sm"
                         key={keyval}
-                        onChange={handleInputChange}
+                        multiple
+                        onChange={handleImageChange}
                       />
                     </div>
                     <>
-                      {formData.file_attachment &&
-                        formData.file_attachment.length > 0 &&
-                        formData.file_attachment.some((url) => url) && ( //  check for non-empty strings
+                      {fileFields &&
+                        fileFields.length > 0 &&
+                        fileFields.some((url) => url) && ( //  check for non-empty strings
                           <div className="w-[200px] h-[200px] grid gap-2">
                             {/* Render images */}
-                            {formData.file_attachment.map((url, idx) =>
+                            {fileFields.map((url, idx) =>
                               url ? (
                                 <div
                                   className="relative w-full h-full  "
@@ -259,12 +278,12 @@ const TicketCreate = () => {
                                     <FontAwesomeIcon
                                       icon={faTrash}
                                       className="text-red-500 cursor-pointer"
-                                      onClick={() =>
-                                        setFormData((prev) => ({
-                                          ...prev,
-                                          file_attachment: [],
-                                        }))
-                                      }
+                                      // onClick={() =>
+                                      //   setFormData((prev) => ({
+                                      //     ...prev,
+                                      //     file_attachment: [],
+                                      //   }))
+                                      // }
                                     />
                                   </span>
                                 </div>

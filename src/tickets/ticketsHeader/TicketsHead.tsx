@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCodeMerge,
+  faGrip,
+  faListUl,
   faPlus,
   faRefresh,
   faSearch,
@@ -17,9 +19,11 @@ import { cn } from "@/lib/utils";
 interface TicketHeadProps {
   tickets : TicketType[],
   setTickets : Dispatch<SetStateAction<TicketType[]>>,
+  gridCols : boolean;
+  setGridCols : Dispatch<SetStateAction<boolean>>; 
 }
 
-const TicketsHead = ({tickets,setTickets} : TicketHeadProps) => {
+const TicketsHead = ({tickets,setTickets,gridCols,setGridCols} : TicketHeadProps) => {
   const [ticketId, setTicketId] = useState<string>("");
   // const [allTickets, setAllTickets] = useState<TicketType[]>([])
   const [severity,setSeverity] = useState<string>("All Severity")
@@ -45,7 +49,7 @@ const TicketsHead = ({tickets,setTickets} : TicketHeadProps) => {
   ];
 
   // useEffect(()=>{
-  //   setAllTickets(tickets)
+  //   setTickets(tickets)
   // },[])
 
   // console.log('alltic',allTickets)
@@ -135,6 +139,8 @@ const TicketsHead = ({tickets,setTickets} : TicketHeadProps) => {
         <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
           <FontAwesomeIcon icon={faCodeMerge} />
         </span>
+        <span onClick={()=>setGridCols(false)}><FontAwesomeIcon icon={faGrip} /></span>
+        <span onClick={()=>setGridCols(true)}><FontAwesomeIcon icon={faListUl} /></span>
         <Button
           className="p-0 bg-blue-500 hover:bg-blue-800 cursor-pointer"
           onClick={() => navigate("/tickets/createTicket")}

@@ -47,6 +47,7 @@ export interface TicketFormDataType {
   end_date: string | null;
   assignee: string;
   created_by: string;
+  update_id? : string;
 }
 
 const UpdateTicket = () => {
@@ -142,7 +143,7 @@ const UpdateTicket = () => {
         : value,
     }));
   };
-
+  console.log('file',formData.file_attachment)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -151,11 +152,12 @@ const UpdateTicket = () => {
       ...formData,
       ["update_id"] :update_id
     }
-    navigate("/tickets")
+    
     const res = await EditTicket(updatedData);
     // console.log('res',res)
     res?.status === 200 ? toast.success(res.data.message || "Ticket Updated Successfully!") : toast.warning("Not Updated!")
-    
+    window.dispatchEvent(new Event("ticketsUpdated"));
+    navigate("/tickets")
 
     // await CreateTicket({data:formData,fileStr:formData.file_attachment[0]??""})
     // navigate("/tickets")
@@ -270,7 +272,7 @@ const UpdateTicket = () => {
                                       key={idx}
                                     >
                                       <img
-                                        src={url}
+                                        src={`/api/files/${url}`}
                                         alt={`Attachment ${idx}`}
                                         className="w-32 h-32 object-cover rounded"
                                       />
@@ -294,6 +296,7 @@ const UpdateTicket = () => {
                               </div>
                             )}
                         </>
+                        
                       </div>
                       <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                         {/* comments */}
@@ -349,7 +352,7 @@ const UpdateTicket = () => {
                             <Textarea
                               placeholder="Add Comment..."
                               className={cn(
-                                "h-10 text-sm resize-none border-0  outline-0",
+                                "h-10 text-sm resize-none  border-0  outline-0",
                                 bold && "font-bold!",
                                 italic && "italic",
                                 underline && "underline",
