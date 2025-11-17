@@ -20,6 +20,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { Divide } from "lucide-react";
 import { Outlet, useLocation } from "react-router-dom";
 import type { TicketFormDataType } from "./updateTicket/UpdateTicket";
+import { cn } from "@/lib/utils";
+import  DisplayOrderedTickets from "./displayorderedtickets/DisplayOrderedTickets";
 
 export interface ColumnsType {
   id: string;
@@ -31,10 +33,12 @@ const TicketsDashboard = () => {
   const [refresh, setRefresh] = useState<boolean>(false);
   const [noTkts, setNoTkts] = useState<boolean>(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [gridCols, setGridCols] = useState<boolean>(false);
   const location = useLocation();
 
   const mountRef = useRef<boolean>(false);
-  const { UpdateTicketStatus, fetchAllTickets, GetTicket,EditTicket } = UseTickets();
+  const { UpdateTicketStatus, fetchAllTickets, GetTicket, EditTicket } =
+    UseTickets();
 
   const Columns: ColumnsType[] = [
     { id: "ToDo", title: "ToDo" },
@@ -43,11 +47,12 @@ const TicketsDashboard = () => {
     { id: "Resolved", title: "Resolved" },
     { id: "Cancelled", title: "Cancelled" },
   ];
+  // console.log('loc',location.pathname)
 
   // const { tickets, getTickets } = TicketsStore();
   useEffect(() => {
-    // if (mountRef.current) return;
-    // mountRef.current = true;
+    if (mountRef.current) return;
+    mountRef.current = true;
     console.log("running");
     const fetchingTickets = async () => {
       const response = await fetchAllTickets();
@@ -58,11 +63,20 @@ const TicketsDashboard = () => {
     fetchingTickets();
   }, []);
 
+  useEffect(() => {
+    const handler = async() => {
+      const res = await fetchAllTickets(); // re-fetch tickets
+      setAllTickets(res)
+    };
+
+    window.addEventListener("ticketsUpdated", handler);
+
+    return () => window.removeEventListener("ticketsUpdated", handler);
+  }, []);
+
   // useEffect(() => {
   //   setRefresh((prev) => !prev);
   // }, [location.pathname]);
-
-
 
   // const todoTickets = tickets.filter(
   //   (obj: any) => obj?.ticket_state === "ToDo"
@@ -143,71 +157,71 @@ const TicketsDashboard = () => {
   // }
   // console.log('tickets',tickets)
 
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over) return;
 
+    const oldTicket = allTickets.find(
+      (t) => String(t.id) === String(active.id)
+    );
+    if (!oldTicket) return;
 
-  
+    const newState = String(over.id);
 
-async function handleDragEnd(event: DragEndEvent) {
-  const { active, over } = event;
-  if (!over) return;
+    if (oldTicket.ticket_state === newState) {
+      setActiveId(null);
+      return;
+    }
 
-  const oldTicket = allTickets.find(
-    (t) => String(t.id) === String(active.id)
-  );
-  if (!oldTicket) return;
+    // Update UI immediately
+    setAllTickets((prev) =>
+      prev.map((t) =>
+        String(t.id) === String(active.id)
+          ? { ...t, ticket_state: newState }
+          : t
+      )
+    );
 
-  const newState = String(over.id);
+    setTimeout(() => setActiveId(null), 0);
 
-  if (oldTicket.ticket_state === newState) return;
+    // update object
+    const updatedTicket = {
+      update_id: String(oldTicket.id),
+      ticket_status: oldTicket.ticket_status,
+      ticket_state: newState,
+      ticket_severity: oldTicket.ticket_severity,
+      summary: oldTicket.summary,
+      description: oldTicket.description,
+      file_attachment: oldTicket.file_attachment ?? [""],
+      comment_text: oldTicket.comment_text,
+      start_date: oldTicket.start_date,
+      end_date: oldTicket.end_date,
+      assignee: oldTicket.assignee,
+      created_by: oldTicket.created_by,
+    };
 
-  // Update UI immediately
-  setAllTickets((prev) =>
-    prev.map((t) =>
-      String(t.id) === String(active.id)
-        ? { ...t, ticket_state: newState }
-        : t
-    )
-  );
+    console.log("sending:", updatedTicket);
 
-  setTimeout(() => setActiveId(null), 0);
+    const res = await EditTicket(updatedTicket);
 
-
-  // update object
-  const updatedTicket = {
-    update_id: String(oldTicket.id),       
-    ticket_status: oldTicket.ticket_status,
-    ticket_state: newState,
-    ticket_severity: oldTicket.ticket_severity,
-    summary: oldTicket.summary,
-    description: oldTicket.description,
-    file_attachment: oldTicket.file_attachment ?? [""],
-    comment_text: oldTicket.comment_text,
-    start_date: oldTicket.start_date,
-    end_date: oldTicket.end_date,
-    assignee: oldTicket.assignee,
-    created_by: oldTicket.created_by,
-  };
-
-  console.log("sending:", updatedTicket);
-
-  
-  const res = await EditTicket(updatedTicket);
-
-  if (res?.status === 200) {
-    toast.success(res.data.message);
-  } else {
-    toast.error("Failed to update ticket");
+    if (res?.status === 200) {
+      toast.success(res.data.message);
+    } else {
+      toast.error("Failed to update ticket");
+    }
   }
-}
-
-
 
   return (
     <div className="flex flex-col gap-4 p-4 pt-0 w-full h-full overflow-hidden">
       <div className="w-full h-fit">
         {/* tickets header filters */}
         <Outlet />
-        <TicketsHead setTickets={setAllTickets} tickets={allTickets} />
+        <TicketsHead
+          setTickets={setAllTickets}
+          tickets={allTickets}
+          gridCols={gridCols}
+          setGridCols={setGridCols}
+        />
       </div>
       {/* <div className="grid auto-rows-min  gap-4 md:grid-cols-3">
         <div className="bg-muted/50 aspect-video rounded-xl h-20 w-full" />
@@ -223,21 +237,28 @@ async function handleDragEnd(event: DragEndEvent) {
           )}
         </div>
       ) : (
-        <div className="flex-1 rounded-xl  w-full flex gap-4 text-xs overflow-x-auto">
-          <DndContext
+        <div
+          className={cn(
+            "flex-1 rounded-xl  w-full flex gap-4 text-xs overflow-x-auto",
+            
+          )}
+        >
+         { gridCols ? <DisplayOrderedTickets allTickets={allTickets}/> :  <DndContext
             sensors={sensors}
             onDragEnd={handleDragEnd}
             onDragStart={(event) => setActiveId(String(event.active.id))}
           >
             {Columns.map((column: ColumnsType) => {
+              const columnTickets = allTickets.filter(
+                (ticket: TicketType) => ticket.ticket_state === column.id
+              );
               return (
                 <DisplayTickets
                   key={column.id}
                   column={column}
                   activeId={activeId}
-                  tickets={allTickets.filter(
-                    (ticket: TicketType) => ticket.ticket_state === column.id
-                  )}
+                 
+                  tickets={columnTickets}
                 />
               );
             })}
@@ -245,6 +266,7 @@ async function handleDragEnd(event: DragEndEvent) {
               {activeId
                 ? allTickets.find((t) => String(t.id) === String(activeId)) && (
                     <ShowSpecifiedTickets
+                      
                       item={
                         allTickets.find(
                           (t) => String(t.id) === String(activeId)
@@ -254,7 +276,7 @@ async function handleDragEnd(event: DragEndEvent) {
                   )
                 : null}
             </DragOverlay>
-          </DndContext>
+          </DndContext>}
         </div>
       )}
       {/* <div className=" min-h-screen flex-1 rounded-xl md:min-h-min grid grid-cols-5 gap-4 text-xs">

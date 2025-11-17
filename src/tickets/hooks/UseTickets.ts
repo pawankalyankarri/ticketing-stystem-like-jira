@@ -45,7 +45,7 @@ export type TicketHistory = {
 
 interface CreateTicketDataProps {
   data: TicketFormDataType;
-  fileStr: string;
+  fileStr: File[];
 }
 
 export const UseTickets = () => {
@@ -89,7 +89,7 @@ export const UseTickets = () => {
   const UpdateTicketStatus = useCallback(
     async ({ ticket_id, ticket_state }: UpdateTicketStatusProps) => {
       console.log(ticket_id, ticket_state);
-      setLoading(true)
+      setLoading(true);
       try {
         const response = await axios.post("/api/ticketing/drag-card", {
           ticket_id,
@@ -111,78 +111,136 @@ export const UseTickets = () => {
         return response;
       } catch (err) {
         console.log("err", err);
-      }
-      finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     },
     [fetchAllTickets]
   );
 
-  const CreateTicket = useCallback(
-    async ({ data, fileStr }: CreateTicketDataProps) => {
-      setLoading(true)
-      try {
-        const response = await axios.post(
-          "/api/ticketing/create-ticket",
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+  // const CreateTicket = useCallback(
+  //   async ({ data, fileStr }: CreateTicketDataProps) => {
+  //     setLoading(true);
+  //     console.log(data,fileStr)
+  //     try {
+  //       const response = await axios.post(
+  //         "/api/ticketing/create-ticket",
+  //         data,
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
 
-        console.log("resp", response.data);
-        const tktId = response.data.Ticket.ticket_id;
-        const res = await axios.post("/api/ticketing/attach-file", {
-          ticket_id: tktId,
-          file_path: fileStr,
+  //       console.log("resp", response.data);
+  //       const tktId = response.data.Ticket.ticket_id;
+  //       const res = await axios.post(
+  //         "/api/ticketing/attach-file",
+  //         {
+  //           ticket_id: tktId,
+  //           file_path: fileStr,
+  //         },
+  //         {
+  //           headers: { "Content-Type": "multipart/form-data" },
+  //         }
+  //       );
+  //       console.log("res", res);
+  //       toast.success(response.data.Message || "Ticket Created successfully!");
+  //       await fetchAllTickets();
+  //       return res
+  //     } catch (error) {
+  //       console.error("Error creating ticket:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [fetchAllTickets]
+  // );
+
+
+const CreateTicket = useCallback(
+  async ({ data, files }: { data: any; files: File[] }) => {
+    setLoading(true);
+    console.log('data,files',data,files)
+
+    try {
+      //  Create Ticket (JSON)
+      const response = await axios.post(
+        "/api/ticketing/create-ticket",
+        data,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      console.log('response',response)
+      const tktId = response.data.Ticket.ticket_id;
+      console.log('tktid',typeof tktId)
+
+      // Upload each file one-by-one
+      // for (const file of files) {
+        // const fd = new FormData();
+        // fd.append("id", tktId);
+        // fd.append("uploadfile", files[0]);
+
+        // console.log('fd',fd)
+        // setTimeout(()=>{},1000)
+        const res = await axios.post("/api/ticketing/attach-file",{'ticket_id' : tktId,"uploadfile": files[0]}, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
-        console.log('res',res)
-        toast.success(response.data.Message || "Ticket Created successfully!");
-        fetchAllTickets();
-      } catch (error) {
-        console.error("Error creating ticket:", error);
-      }
-      finally{
-        setLoading(false)
+      // }
+        console.log('fileres',res)
+      toast.success("Ticket created with attachments");
+      await fetchAllTickets();
+
+      return response;
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  },
+  [fetchAllTickets]
+);
+
+
+
+  const GetTicket = useCallback(
+    async (tktId: string) => {
+      if (mountRef.current) return;
+      mountRef.current = true;
+      setLoading(true);
+      try {
+        const response = await axios.get(`/api/ticketing/${tktId}`);
+        console.log("getticket", response);
+        return response.data;
+      } catch (err) {
+        console.log("getticket", err);
+      } finally {
+        setLoading(false);
       }
     },
     [fetchAllTickets]
   );
 
-  const GetTicket = useCallback(async (tktId: string) => {
-    if(mountRef.current)return
-    mountRef.current = true
-    setLoading(true)
-    try {
-      const response = await axios.get(`/api/ticketing/${tktId}`);
-      console.log("getticket", response);
-      return response.data;
-    } catch (err) {
-      console.log("getticket", err);
-    }
-    finally{
-      setLoading(false)
-    }
-  }, [fetchAllTickets]);
-
-  const EditTicket = useCallback(async (data: TicketFormDataType) => {
-    console.log("data", data);
-    setLoading(true)
-    try {
-      data.file_attachment.length === 0 ? data.file_attachment.push("") : "";
-      const response = await axios.post("/api/ticketing/update-ticket", data);
-      console.log("edittkt", response);
-      return response;
-    } catch (err) {
-      console.log("edittkt", err);
-    }
-    finally{
-      setLoading(false)
-    }
-  }, [fetchAllTickets]);
+  const EditTicket = useCallback(
+    async (data: TicketFormDataType) => {
+      console.log("data", data);
+      setLoading(true);
+      try {
+        data.file_attachment.length === 0 ? data.file_attachment.push("") : "";
+        const response = await axios.post("/api/ticketing/update-ticket", data);
+        console.log("edittkt", response);
+        // await fetchAllTickets()
+        return response;
+      } catch (err) {
+        console.log("edittkt", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchAllTickets]
+  );
 
   return {
     tickets,
