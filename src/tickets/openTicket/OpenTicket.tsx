@@ -140,7 +140,7 @@ const OpenTicket = () => {
     >
       {ticketDetails && (
         <DialogContent className="w-full! sm:w-[90%]! max-w-none! h-[90%]! border-0! shadow-none! focus-visible:outline-none! focus-visible:ring-0 gap-2 p-0 ">
-          <DialogHeader className=" gap-0 sticky bg-gray-200 max-w-full py-3 h-fit">
+          <DialogHeader className=" gap-0 sticky bg-gray-200 max-w-full py-3 h-fit rounded">
             <DialogTitle className="w-full px-2 flex justify-between items-center  ">
               <span className="border-2 border-orange-400 text-orange-400 p-1 text-sm px-2 rounded ">
                 {ticketDetails.ticket_status}

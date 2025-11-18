@@ -200,9 +200,9 @@ const TicketsDashboard = () => {
       created_by: oldTicket.created_by,
     };
 
-    console.log("sending:", updatedTicket);
+    // console.log("sending:", updatedTicket);
 
-    const res = await EditTicket(updatedTicket);
+    const res = await UpdateTicketStatus(updatedTicket);
 
     if (res?.status === 200) {
       toast.success(res.data.message);
