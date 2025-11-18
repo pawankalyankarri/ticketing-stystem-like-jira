@@ -6,6 +6,8 @@ import DeleteTicket from "./tickets/deletingTicket/DeleteTicket";
 import UpdateTicket from "./tickets/updateTicket/UpdateTicket";
 import OpenTicket from "./tickets/openTicket/OpenTicket";
 import { Children } from "react";
+import CreateBoard from "./UserProfile/CreateBoard/CreateBoard";
+import CreateWorkflow from "./UserProfile/CreateWorkflow/CreateWorkflow";
 export const AllRoutes = () => {
   const routes = [
     {
@@ -29,6 +31,14 @@ export const AllRoutes = () => {
               path: "editTicket/:id",
               element: <UpdateTicket />,
             },
+            {
+              path : "createBoard",
+              element : <CreateBoard/>
+            },
+            {
+              path : "createWorkflow",
+              element : <CreateWorkflow/>
+            }
           ],
         },
 

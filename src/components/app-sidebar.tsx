@@ -25,6 +25,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { faTableColumns, faTicket } from "@fortawesome/free-solid-svg-icons";
 
 // This is sample data.
 const data = {
@@ -54,9 +55,23 @@ const data = {
     {
       title: "tickets",
       url: "#",
-      icon: SquareTerminal,
+      icon: faTicket,
+      navigate : "/tickets",
       isActive: true,
     },
+    {
+      title : "Board",
+      url : "#",
+      icon : faTableColumns,
+      navigate : "/tickets",
+      items : [
+        {
+          title : "b1",
+          url : "#"
+        }
+      ]
+
+    }
   ],
   projects: [],
 };

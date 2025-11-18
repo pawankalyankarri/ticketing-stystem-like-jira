@@ -19,8 +19,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 interface Option {
-  label: string
-  value: string
+  label?: string
+  value?: string
+  id? :string,
+  title? : string
 }
 interface SelectSearchProps {
   SelectSearchData: Option[];

@@ -16,7 +16,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faTicket } from "@fortawesome/free-solid-svg-icons"
+import { faTicket, type IconDefinition } from "@fortawesome/free-solid-svg-icons"
 import { useNavigate } from "react-router-dom"
 
 export function NavMain({
@@ -25,8 +25,9 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: LucideIcon
+    icon?: IconDefinition
     isActive?: boolean
+    navigate? : string,
     items?: {
       title: string
       url: string
@@ -48,14 +49,14 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={item.title} onClick={() => navigate("/tickets")} className="font-bold capitalize">
-                  <FontAwesomeIcon icon={faTicket} />
+                  {item.icon && <FontAwesomeIcon icon={item.icon} />}
                   <span >{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                {/* <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
+                <SidebarMenuSub>
+                  {item.items && item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
                         <a href={subItem.url}>
@@ -64,7 +65,7 @@ export function NavMain({
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
-                </SidebarMenuSub> */}
+                </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>

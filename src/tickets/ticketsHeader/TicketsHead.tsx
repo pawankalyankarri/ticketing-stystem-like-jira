@@ -139,8 +139,8 @@ const TicketsHead = ({tickets,setTickets,gridCols,setGridCols} : TicketHeadProps
         <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
           <FontAwesomeIcon icon={faCodeMerge} />
         </span>
-        <span onClick={()=>setGridCols(false)}><FontAwesomeIcon icon={faGrip} /></span>
-        <span onClick={()=>setGridCols(true)}><FontAwesomeIcon icon={faListUl} /></span>
+        <span onClick={()=>setGridCols(false)} className="cursor-pointer"><FontAwesomeIcon icon={faGrip} /></span>
+        <span onClick={()=>setGridCols(true)} className="cursor-pointer"><FontAwesomeIcon icon={faListUl} /></span>
         <Button
           className="p-0 bg-blue-500 hover:bg-blue-800 cursor-pointer"
           onClick={() => navigate("/tickets/createTicket")}

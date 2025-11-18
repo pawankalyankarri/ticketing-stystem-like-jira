@@ -14,6 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Outlet } from "react-router-dom"
+import UserProfilePage from "./UserProfile/UserProfilePage"
 
 export default function Page() {
   return (
@@ -41,6 +42,7 @@ export default function Page() {
               </BreadcrumbList>
             </Breadcrumb> */}
           </div>
+          <div className="w-full flex justify-end items-end mr-2"><UserProfilePage/></div>
         </header>
         {/* here everyting  will be rendered */}
         

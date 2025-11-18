@@ -243,8 +243,8 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
                 </TooltipContent>
               </Tooltip>
               <div className="font-bold capitalize  text-wrap">
-                {item.summary.length > 75
-                  ? `${item.summary.slice(0, 75)}...`
+                {item.summary.length > 55
+                  ? `${item.summary.slice(0, 55)}...`
                   : item.summary}
               </div>
             </div>
