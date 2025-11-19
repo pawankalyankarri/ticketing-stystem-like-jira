@@ -15,25 +15,26 @@ import { MultiSelectCom } from "@/components/ui/MultiSelectCom";
 import { useEffect, useState } from "react";
 import { DropdownSearch } from "@/components/ui/dropdownSearch";
 import { BoardWorkflowAPI } from "../boardWorkflowAPI/BoardWorkflowAPI";
+import { toast } from "sonner";
 
 interface BoardFormDataType {
-  boardName: string;
-  boardOwner: string;
-  workflowId: string;
-  access: string[];
+  board_name: string;
+  board_owner: string;
+  workflow_id: string;
+  access?: string[];
 }
 const CreateBoard = () => {
   const [formdata, setFormdata] = useState<BoardFormDataType>({
-    boardName: "",
-    boardOwner: "",
-    workflowId: "",
-    access: [],
+    board_name: "",
+    board_owner: "",
+    workflow_id: "",
+    
   });
 
   const [workflowOptions, setWorkflowOptions] = useState([]);
 
   const navigate = useNavigate();
-  const { FetchWorkflows } = BoardWorkflowAPI();
+  const { FetchWorkflows,CreateBoard } = BoardWorkflowAPI();
 
   // const workflowOptions = [
   //   { value: "1", label: "w1" },
@@ -41,9 +42,16 @@ const CreateBoard = () => {
   //   { value: "3", label: "w3" },
   // ];
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log("formdata", formdata);
+    const res = await CreateBoard(formdata)
+    console.log('res',res)
+    if(res?.status){
+      toast.success(res.data.message||"Board created successfully")
+    }
+   
+
   }
 
   useEffect(() => {
@@ -65,7 +73,7 @@ const CreateBoard = () => {
   // console.log('workflows',workflowOptions)
   return (
     <Dialog open={true}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] min-h-96 ">
         <DialogHeader>
           <DialogTitle>Create Board</DialogTitle>
           <DialogDescription>
@@ -74,24 +82,24 @@ const CreateBoard = () => {
           </DialogDescription>
         </DialogHeader>
         <form className="overflow-y-auto" onSubmit={handleSubmit}>
-          <div className="grid gap-4">
+          <div className="grid gap-4 overflow-y-auto">
             <div className="grid gap-3">
               <Label htmlFor="bn">Board Name</Label>
               <Input
                 id="bn"
                 name="bn"
-                value={formdata.boardName}
+                value={formdata.board_name}
                 onChange={(e) =>
                   setFormdata((prev) => ({
                     ...prev,
-                    boardName: e.target.value,
+                    board_name: e.target.value,
                   }))
                 }
               />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="adm">Board Owner</Label>
-              <Input id="adm" name="adm" value={formdata.boardOwner} onChange={(e)=>setFormdata((prev)=>({...prev,boardOwner:e.target.value}))} />
+              <Input id="adm" name="adm" value={formdata.board_owner} onChange={(e)=>setFormdata((prev)=>({...prev,board_owner:e.target.value}))} />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="wn">Workflow Name</Label>
@@ -107,10 +115,10 @@ const CreateBoard = () => {
               <DropdownSearch
                 dropdownData={workflowOptions}
                 title="Workflow"
-                value={formdata.workflowId}
+                value={formdata.workflow_id}
                 size="370"
                 onChange={(val) =>
-                  setFormdata({ ...formdata, workflowId: val })
+                  setFormdata({ ...formdata, workflow_id: val })
                 }
               />
             </div>

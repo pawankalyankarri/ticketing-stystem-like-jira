@@ -9,6 +9,7 @@ import { Children } from "react";
 import CreateBoard from "./UserProfile/CreateBoard/CreateBoard";
 import CreateWorkflow from "./UserProfile/CreateWorkflow/CreateWorkflow";
 import WorkflowStatusSelect from "./UserProfile/CreateWorkflow/workflowStatusSelect";
+import BoardsPage from "./UserProfile/Boards/BoardsPage";
 export const AllRoutes = () => {
   const routes = [
     {
@@ -47,6 +48,10 @@ export const AllRoutes = () => {
             }
 
           ],
+        },
+        {
+          path : "boards",
+          element : <BoardsPage/>
         },
 
         {

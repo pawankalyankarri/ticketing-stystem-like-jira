@@ -28,6 +28,9 @@ import {
 import { faTableColumns, faTicket } from "@fortawesome/free-solid-svg-icons";
 
 // This is sample data.
+
+
+
 const data = {
   user: {
     name: "shadcn",
@@ -77,6 +80,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+
   return (
     
       <Sidebar collapsible="icon" {...props} className="text-white">

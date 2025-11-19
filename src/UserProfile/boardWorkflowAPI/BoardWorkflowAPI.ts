@@ -1,5 +1,6 @@
 import axios, { type AxiosResponse } from "axios"
 import { useCallback } from "react"
+import { toast } from "sonner";
 interface CreateWorkflowProps {
     workflow_name: string,
   created_by: string
@@ -7,6 +8,13 @@ interface CreateWorkflowProps {
 interface CreateWorkflowStatusProps{
     workflow_id : string,
     name : string[]
+}
+
+interface CreateBoardProps{
+  board_name: string;
+  board_owner: string;
+  workflow_id: string;
+
 }
 export const BoardWorkflowAPI = () =>{
     const CreateWorkflow = useCallback(async(data : CreateWorkflowProps)=>{
@@ -53,10 +61,33 @@ export const BoardWorkflowAPI = () =>{
         }
     },[])
 
+    const FetchAllBoards = useCallback(async()=>{
+        try{
+            const res = await axios.get("/api/boards")
+            return res
+        }
+        catch(err){
+            console.log("err fetchboard",err)
+        }
+    },[])
+
+    const CreateBoard = useCallback(async(data :CreateBoardProps )=>{
+        try{
+            const res = await axios.post("/api/boards/add-board",data)
+            return res
+        }
+        catch(err){
+            toast.error("Board is not created")
+            console.log("err fetchboard",err)
+        }
+    },[])
+
     return {
         CreateWorkflow,
         FetchWorkflows,
         GetWorkflowStatus,
         CreateWorkflowStatus,
+        FetchAllBoards,
+        CreateBoard
     }
 }
