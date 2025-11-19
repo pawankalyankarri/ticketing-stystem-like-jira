@@ -13,28 +13,34 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { DropdownSearch } from "@/components/ui/dropdownSearch";
 import { useState } from "react";
+import { BoardWorkflowAPI } from "../boardWorkflowAPI/BoardWorkflowAPI";
 
 const CreateWorkflow = () => {
-  const [formdata,setFormdata] = useState({
-    workflowName : "",
-    createdBy : ""
-  
-  })
+  const [formdata, setFormdata] = useState({
+    workflow_name: "",
+    created_by: "",
+  });
   const navigate = useNavigate();
+  const { CreateWorkflow } = BoardWorkflowAPI();
 
-  function handleSubmit(e:React.FormEvent<HTMLFormElement>){
-    e.preventDefault()
-    console.log('form',formdata)
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    // console.log("form", formdata);
+    const res = await CreateWorkflow(formdata)
+    if(res?.status === 200){
+    const wfId = res.data.workflow_id
+    navigate(`/tickets/statusSelect/${wfId} `);
+    }
+    
   }
 
   return (
     <Dialog open={true}>
-      
-        {/* <DialogTrigger asChild>
+      {/* <DialogTrigger asChild>
           <Button variant="outline">Open Dialog</Button>
         </DialogTrigger> */}
-        <DialogContent className="overflow-y-auto">
-          <div className="">
+      <DialogContent className="overflow-y-auto">
+        <div className="">
           <DialogHeader>
             <DialogTitle>Create Workflow</DialogTitle>
             <DialogDescription>
@@ -42,47 +48,59 @@ const CreateWorkflow = () => {
               done. */}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit}>
-          <div className="grid gap-4">
-            <div className="grid gap-3">
-              {/* <Label htmlFor="wn">Workflow Name</Label> */}
-              <Input id="wn" name="wn" placeholder="Workflow Name" value={formdata.workflowName} onChange={(e)=>setFormdata((prev)=>({...prev,'workflowName': e.target.value}))}/>
+          <form onSubmit={handleSubmit} className="mt-2">
+            <div className="grid gap-4">
+              <div className="grid gap-3">
+                {/* <Label htmlFor="wn">Workflow Name</Label> */}
+                <Input
+                  id="wn"
+                  name="wn"
+                  placeholder="Workflow Name"
+                  value={formdata.workflow_name}
+                  onChange={(e) =>
+                    setFormdata((prev) => ({
+                      ...prev,
+                      workflow_name: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="grid gap-3">
+                <Input
+                  id="cb"
+                  name="cb"
+                  placeholder="Created by"
+                  value={formdata.created_by}
+                  onChange={(e) =>
+                    setFormdata((prev) => ({
+                      ...prev,
+                      created_by: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="flex justify-end w-full gap-5">
+                <DialogFooter className="w-auto">
+                  <DialogClose asChild>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/tickets")}
+                      className="cursor-pointer"
+                    >
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+                <div className="w-auto flex gap-5 justify-end">
+                  <Button type="submit" className="cursor-pointer">
+                    Create workflow
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="grid gap-3">
-              <Input id="cb" name="cb" placeholder="Created by" value={formdata.createdBy} onChange={(e)=>setFormdata((prev)=>({...prev,'createdBy':e.target.value}))} />
-            </div>
-
-            <div className="w-full flex justify-end"> 
-              <Button type="submit" className="cursor-pointer">
-              Create workflow
-            </Button>
-            </div>
-
-             
-            <div className="flex w-full max-w-sm items-center gap-2">
-              <Input type="text" placeholder="Enter Status..." />
-              <Button type="submit" variant="outline">
-                Add
-              </Button>
-            </div>
-          </div>
-           </form>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                variant="outline"
-                onClick={() => navigate("/tickets")}
-                className="cursor-pointer"
-              >
-                Cancel
-              </Button>
-            </DialogClose>
-            
-          </DialogFooter>
-          </div>
-
-        </DialogContent>
-      
+          </form>
+        </div>
+      </DialogContent>
     </Dialog>
   );
 };

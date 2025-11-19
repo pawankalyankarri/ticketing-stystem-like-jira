@@ -40,7 +40,7 @@ const UserProfilePage = () => {
                   className="cursor-pointer"
                   onClick={() => navigate("/tickets/createBoard")}
                 >
-                  Crate Board
+                  Create Board
                 </DropdownMenuItem>
                 <DropdownMenuItem>More</DropdownMenuItem>
               </DropdownMenuSubContent>
@@ -56,7 +56,7 @@ const UserProfilePage = () => {
                   className="cursor-pointer"
                   onClick={() => navigate("/tickets/createWorkflow")}
                 >
-                  Crate Workflow
+                  Create Workflow
                 </DropdownMenuItem>
                 <DropdownMenuItem>More</DropdownMenuItem>
               </DropdownMenuSubContent>

@@ -8,6 +8,7 @@ import OpenTicket from "./tickets/openTicket/OpenTicket";
 import { Children } from "react";
 import CreateBoard from "./UserProfile/CreateBoard/CreateBoard";
 import CreateWorkflow from "./UserProfile/CreateWorkflow/CreateWorkflow";
+import WorkflowStatusSelect from "./UserProfile/CreateWorkflow/workflowStatusSelect";
 export const AllRoutes = () => {
   const routes = [
     {
@@ -38,7 +39,13 @@ export const AllRoutes = () => {
             {
               path : "createWorkflow",
               element : <CreateWorkflow/>
+            },
+            {
+              path : "statusSelect/:wfId",
+              element : <WorkflowStatusSelect/>
+
             }
+
           ],
         },
 
