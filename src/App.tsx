@@ -19,26 +19,13 @@ import { useEffect, useState } from "react"
 import { BoardWorkflowAPI } from "./UserProfile/boardWorkflowAPI/BoardWorkflowAPI"
 
 export default function Page() {
-  const [allBoards,setAllBoards] = useState([])
-  const {FetchAllBoards} = BoardWorkflowAPI()
   
-  useEffect(()=>{
-    const GetAllBoards = async() => {
-      const response = await FetchAllBoards()
-      console.log(response)
-      if(response?.status === 200){
-        setAllBoards(response.data.data)
-      }
-    }
-    GetAllBoards()
-  },[])
-  console.log('boards',allBoards)
 
   return (
     <SidebarProvider  >
       <AppSidebar  />
       <SidebarInset className="overflow-hidden bg-gray-100">
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <header className="flex h-fit py-0.5 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-fit">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator

@@ -49,6 +49,7 @@ const CreateBoard = () => {
     console.log('res',res)
     if(res?.status){
       toast.success(res.data.message||"Board created successfully")
+      navigate("/tickets")
     }
    
 

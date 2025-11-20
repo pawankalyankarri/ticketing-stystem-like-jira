@@ -18,6 +18,7 @@ import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
+import { useEffect,useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -26,6 +27,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { faTableColumns, faTicket } from "@fortawesome/free-solid-svg-icons";
+import { BoardWorkflowAPI } from "@/UserProfile/boardWorkflowAPI/BoardWorkflowAPI";
 
 // This is sample data.
 
@@ -62,25 +64,42 @@ const data = {
       navigate : "/tickets",
       isActive: true,
     },
-    {
-      title : "Board",
-      url : "#",
-      icon : faTableColumns,
-      navigate : "/tickets",
-      items : [
-        {
-          title : "b1",
-          url : "#"
-        }
-      ]
+    // {
+    //   title : "Board",
+    //   url : "#",
+    //   icon : faTableColumns,
+    //   navigate : "/tickets",
+    //   items : [
+    //     {
+    //       title : "b1",
+    //       url : "#"
+    //     }
+    //   ]
 
-    }
+    // }
   ],
   projects: [],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [allBoards,setAllBoards] = useState([])
+  const {FetchAllBoardsWithWorkflows} = BoardWorkflowAPI()
+  
+  useEffect(()=>{
+    const GetAllBoards = async() => {
+      const response = await FetchAllBoardsWithWorkflows()
+      console.log(response)
+      if(response?.status === 200){
+        setAllBoards(response.data.data)
+      }
+    }
+    GetAllBoards()
+  },[])
+  console.log('boards',allBoards)
 
+  if(!allBoards){
+    return null
+  }
 
   return (
     
@@ -90,7 +109,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={data.navMain} />
-          {/* <NavProjects projects={data.projects} /> */}
+          <NavProjects boards={allBoards} />
         </SidebarContent>
         <SidebarFooter>
           <NavUser user={data.user} />

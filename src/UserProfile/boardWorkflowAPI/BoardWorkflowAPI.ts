@@ -71,6 +71,16 @@ export const BoardWorkflowAPI = () =>{
         }
     },[])
 
+     const FetchAllBoardsWithWorkflows = useCallback(async()=>{
+        try{
+            const res = await axios.get("/api/boards/boards")
+            return res
+        }
+        catch(err){
+            console.log("err fetchboard",err)
+        }
+    },[])
+
     const CreateBoard = useCallback(async(data :CreateBoardProps )=>{
         try{
             const res = await axios.post("/api/boards/add-board",data)
@@ -88,6 +98,7 @@ export const BoardWorkflowAPI = () =>{
         GetWorkflowStatus,
         CreateWorkflowStatus,
         FetchAllBoards,
-        CreateBoard
+        CreateBoard,
+        FetchAllBoardsWithWorkflows,
     }
 }

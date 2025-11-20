@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { motion } from "motion/react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SetStateAction } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BoardWorkflowAPI } from "../boardWorkflowAPI/BoardWorkflowAPI";
 
@@ -20,7 +19,6 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragOverlay,
 } from "@dnd-kit/core";
 import {
   restrictToVerticalAxis,
@@ -38,45 +36,124 @@ import { CSS } from "@dnd-kit/utilities";
 import { Input } from "@/components/ui/input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripVertical, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SelectItemIndicator } from "@radix-ui/react-select";
+import { Check } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-function SortableItem({ id }: { id: string }) {
+interface StateStatusDataType{
+  ticket_state: string,
+  ticket_status: string,
+}
+interface idtype {
+  ticket_state: string;
+  ticket_status: string;
+}
+interface SortableItemProps {
+  status: string[];
+  id: string;
+  setStateStatusData : React.Dispatch<SetStateAction<StateStatusDataType[]>>
+}
+
+function SortableItem({ id, status,setStateStatusData }: SortableItemProps) {
+  const [value, setValue] = useState<string>(status[0] ?? "");
+  const [open, setOpen] = useState<boolean>(false);
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    width: "200px",
-    padding: "8px",
     background: "white",
-    border: "1px solid #ccc",
-    borderRadius: "6px",
   };
 
+  function handleValueChange(key:string,value:string){
+      console.log('key,val',key,value)
+      setStateStatusData((prev)=>prev.map(item=>item.ticket_state === key ? {...item,ticket_status:value} : item))
+  }
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="capitalize flex gap-2 items-center cursor-grab"
+      className="capitalize flex gap-5 items-center cursor-grab w-full justify-center "
     >
-      <FontAwesomeIcon icon={faGripVertical} />
-      {id}
+      <div className="border-2 border-black p-2 w-[200px] rounded flex gap-2 items-center ">
+        <FontAwesomeIcon icon={faGripVertical} />
+        {id}
+      </div>
+      <div className="border-2  border-black p-2 w-[200px] rounded flex gap-2 items-center">
+        <FontAwesomeIcon icon={faGripVertical} />
+        <div className="w-full">
+          {/* <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger asChild>
+              <div className="cursor-pointer">{value || "Select Status"}</div>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuRadioGroup value={value} onValueChange={setValue}>
+                {status.map((item) => (
+                  <DropdownMenuRadioItem key={item} value={item}>
+                    {item}
+                    <SelectItemIndicator>
+                      <Check className="h-4 w-4 ml-2" />
+                    </SelectItemIndicator>
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu> */}
+          <Select onValueChange={(val)=>{
+            handleValueChange(id,val)
+          }}>
+            <SelectTrigger className=" border-0 w-full p-1">
+              <SelectValue
+                placeholder={status[0]}
+                className="text-black font-bold"
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {status.map((item, idx) => {
+                return (
+                  <SelectItem value={item} key={idx}>
+                    {item}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
   );
 }
 
 const WorkflowStatusSelect = () => {
   const [open, setOpen] = useState<boolean>(true);
-  const [statusData, setStatusData] = useState<string[]>([]);
+  const [stateData, setStateData] = useState<string[]>([]);
+  const [status, setStatus] = useState<string[]>([]);
   const [newStatus, setNewStatus] = useState<string>("");
+  const [stateStatusData, setStateStatusData] = useState<StateStatusDataType[]>([]);
   const params = useParams();
-  const [activeId, setActiveId] = useState<string | null>(null);
   const [data, setData] = useState({
     workflow_id: params.wfId ?? "",
-    name: statusData,
+    workflow_order: [] as StateStatusDataType[],
   });
+
   const navigate = useNavigate();
 
   const { GetWorkflowStatus, CreateWorkflowStatus } = BoardWorkflowAPI();
@@ -85,15 +162,24 @@ const WorkflowStatusSelect = () => {
     const getStatus = async () => {
       const response = await GetWorkflowStatus();
       if (response?.status === 200) {
-        setStatusData(response.data.flow);
+        console.log("response", response);
+        const workflow = response.data.workflow ?? [];
+        setStateData(workflow);
+        setStatus(response.data.status ?? []);
+        const initialStatusData = workflow.map((item: any) => ({
+          ticket_state: item,
+          ticket_status: "open",
+        }));
+        setStateStatusData(initialStatusData);
       }
     };
     getStatus();
   }, []);
 
+  console.log("statusstatedata", stateStatusData);
   useEffect(() => {
-    setData((prev) => ({ ...prev, name: statusData }));
-  }, [statusData]);
+    setData((prev) => ({ ...prev, workflow_order: stateStatusData }));
+  }, [stateStatusData]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -106,31 +192,41 @@ const WorkflowStatusSelect = () => {
       return;
     }
     if (active.id !== over.id) {
-      const oldIndex = statusData.findIndex((item) => item === active.id);
-      const newIndex = statusData.findIndex((item) => item === over.id);
+      console.log("active", active);
+      console.log("over", over);
+      const oldIndex = stateStatusData.findIndex(
+        (item:any) => item.ticket_state === active.id
+      );
+      const newIndex = stateStatusData.findIndex(
+        (item:any) => item.ticket_state === over.id
+      );
 
-      const updateStatus = arrayMove(statusData, oldIndex, newIndex);
-
-      setStatusData(updateStatus);
+      const updated = arrayMove(stateStatusData, oldIndex, newIndex);
+      setStateStatusData(updated);
+      
       // setData((prev) => ({ ...prev, name: updateStatus }));
     }
   };
 
   function AddNewStatus() {
-    setStatusData((prev) => {
-      const updated = [...prev, newStatus];
-      // setData((prevData) => ({ ...prevData, name: updated }));
-      return updated;
-    });
+    // setStateData((prev) => {
+    //   const updated = [...prev, newStatus];
+    //   // setData((prevData) => ({ ...prevData, name: updated }));
+    //   return updated;
+    // });
+
+    setStateStatusData((prev)=>[...prev,{ticket_state:newStatus,ticket_status:"open"}])
     setNewStatus("");
   }
 
   async function handleCrateWorkflow() {
     console.log("dta", data);
-    const res = await CreateWorkflowStatus(data);
-    console.log("response addnuewfun", res);
+    // const res = await CreateWorkflowStatus(data);
+    // console.log("response created workflowstatus", res);
+    // toast.success(res?.data.message);
+    // navigate("/tickets");
   }
-  console.log(statusData);
+  console.log(stateData);
   return (
     <Dialog
       open={open}
@@ -139,7 +235,7 @@ const WorkflowStatusSelect = () => {
         if (!isOpen) navigate("/tickets");
       }}
     >
-      <DialogContent className="  w-full h-[80%] overflow-hidden overflow-y-auto p-2">
+      <DialogContent className="  min-w-[60%] h-[80%] overflow-hidden overflow-y-auto p-2">
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -175,13 +271,21 @@ const WorkflowStatusSelect = () => {
             // onDragCancel={() => setActiveId(null)}
           >
             <SortableContext
-              items={statusData}
+              items={stateStatusData.map((item: any) => item.ticket_state)}
               strategy={verticalListSortingStrategy}
             >
               <div className="flex flex-col gap-3 justify-start items-center mt-4 h-[300px] overflow-y-auto overflow-x-hidden ">
-                {statusData.map((item) => (
-                  <SortableItem key={item} id={item} />
-                ))}
+                {stateStatusData
+                  ? stateStatusData.map((item: any) => (
+                      <SortableItem
+                        key={item.ticket_state}
+                        id={item.ticket_state}
+                        status={status}
+                        setStateStatusData = {setStateStatusData}
+
+                      />
+                    ))
+                  : ""}
               </div>
             </SortableContext>
             {/* <DragOverlay>
@@ -198,7 +302,12 @@ const WorkflowStatusSelect = () => {
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value)}
               />
-              <Button type="submit" variant="outline" onClick={AddNewStatus}>
+              <Button
+                type="submit"
+                variant="outline"
+                onClick={AddNewStatus}
+                className="cursor-pointer"
+              >
                 Add
               </Button>
             </div>

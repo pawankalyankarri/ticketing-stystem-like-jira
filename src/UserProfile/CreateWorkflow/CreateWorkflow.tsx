@@ -29,6 +29,7 @@ const CreateWorkflow = () => {
     const res = await CreateWorkflow(formdata)
     if(res?.status === 200){
     const wfId = res.data.workflow_id
+    console.log('res workflow created',res)
     navigate(`/tickets/statusSelect/${wfId} `);
     }
     
