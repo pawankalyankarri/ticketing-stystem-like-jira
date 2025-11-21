@@ -125,7 +125,7 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
       <Card
         className={cn(
           "p-1.5 rounded-sm bg-transparent",
-          columBgColors[column.title] || "bg-gray-200"
+          columBgColors[column.title] || "bg-gray-400"
         )}
       >
         <div className={cn("w-full h-full flex justify-between py-2")}>

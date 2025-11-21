@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { DropdownSearch } from "@/components/ui/dropdownSearch";
 import { useState } from "react";
 import { BoardWorkflowAPI } from "../boardWorkflowAPI/BoardWorkflowAPI";
+import { toast } from "sonner";
 
 const CreateWorkflow = () => {
   const [formdata, setFormdata] = useState({
@@ -28,7 +29,13 @@ const CreateWorkflow = () => {
     // console.log("form", formdata);
     const res = await CreateWorkflow(formdata)
     if(res?.status === 200){
+      console.log('res',res)
+    if(!res?.data.status){
+      toast.warning(res.data.message)
+      return
+    }
     const wfId = res.data.workflow_id
+    console.log('res workflow created',res)
     navigate(`/tickets/statusSelect/${wfId} `);
     }
     
@@ -55,6 +62,7 @@ const CreateWorkflow = () => {
                 <Input
                   id="wn"
                   name="wn"
+                  required
                   placeholder="Workflow Name"
                   value={formdata.workflow_name}
                   onChange={(e) =>
@@ -70,6 +78,7 @@ const CreateWorkflow = () => {
                   id="cb"
                   name="cb"
                   placeholder="Created by"
+                  required
                   value={formdata.created_by}
                   onChange={(e) =>
                     setFormdata((prev) => ({

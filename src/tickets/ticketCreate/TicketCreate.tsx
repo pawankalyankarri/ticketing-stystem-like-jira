@@ -79,24 +79,17 @@ const TicketCreate = () => {
   });
   const { CreateTicket } = UseTickets();
   const navigate = useNavigate();
-  const ticketStatusData = [
-    { label: "Open", value: "Open" },
-    { label: "Close", value: "Close" },
-    { label: "Pending", value: "Pending" },
-  ];
+  const ticketStatusData = ["Open", "Close", "Pending"];
   const ticketStateData = [
-    { label: "ToDo", value: "ToDo" },
-    { label: "InProgress", value: "InProgress" },
-    { label: "Cancelled", value: "Cancelled" },
-    { label: "Resolved", value: "Resolved" },
-    { label: "OnHold", value: "OnHold" },
+    "ToDo",
+    "InProgress",
+    "Cancelled",
+    "Resolved",
+    "OnHold",
   ];
-  const ticketSeverityData = [
-    { label: "Low", value: "Low" },
-    { label: "Medium", value: "Medium" },
-    { label: "High", value: "High" },
-    { label: "Critical", value: "Critical" },
-  ];
+  const ticketSeverityData = ["Low", "Medium", "High", "Critical"];
+
+  const assigneeData = ["Charan", "shiva", "Ram", "Hari"];
 
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData((prevData) => ({
@@ -207,6 +200,7 @@ const TicketCreate = () => {
                           size={"md"}
                           value={formData.ticket_state}
                           onChange={handleSelectChange("ticket_state")}
+                          required={true}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -217,6 +211,7 @@ const TicketCreate = () => {
                           size={"md"}
                           value={formData.ticket_severity}
                           onChange={handleSelectChange("ticket_severity")}
+                          required={true}
                         />
                       </div>
                     </div>
@@ -298,7 +293,7 @@ const TicketCreate = () => {
                   <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                     {/* comments */}
                     <div className="w-full h-full grid  p-0">
-                      <div className="border-1 border-gray-200 rounded">
+                      <div className="border border-gray-200 rounded">
                         <ToggleGroup type="multiple">
                           <ToggleGroupItem
                             value="bold"
@@ -345,7 +340,7 @@ const TicketCreate = () => {
                           </ToggleGroupItem>
                         </ToggleGroup>
                       </div>
-                      <div className="border-x-1 border-b-1 border-gray-200 rounded">
+                      <div className="border-x border-b border-gray-200 rounded">
                         <Textarea
                           placeholder="Add Comment..."
                           className={cn(
@@ -450,7 +445,7 @@ const TicketCreate = () => {
                     <div className="grid gap-2">
                       <Label>Assignee</Label>
                       <SelectSearch
-                        SelectSearchData={ticketStatusData}
+                        SelectSearchData={assigneeData}
                         title={"Select Assignee"}
                         size={"md"}
                         value={formData.assignee}
@@ -458,7 +453,7 @@ const TicketCreate = () => {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="created_by">Created by</Label>
+                      <Label htmlFor="created_by">Reporter</Label>
                       <Input
                         placeholder="ex: John Doe"
                         className="text-sm w-[85%]"

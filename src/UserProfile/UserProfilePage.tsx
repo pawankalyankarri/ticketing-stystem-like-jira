@@ -16,9 +16,9 @@ import { useNavigate } from "react-router-dom";
 const UserProfilePage = () => {
   const navigate = useNavigate();
   return (
-    <div>
+    <div className="">
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex gap-2 justify-center items-center">
+        <DropdownMenuTrigger className="flex gap-2 justify-center items-center border-0 outline-0">
           <Avatar className="cursor-pointer">
             <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white ">
               A
@@ -64,7 +64,7 @@ const UserProfilePage = () => {
           </DropdownMenuSub>
 
 
-
+          <DropdownMenuItem className="cursor-pointer" onClick={()=>navigate("/addUser")}>Add User</DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer">Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
