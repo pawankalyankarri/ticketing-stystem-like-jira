@@ -254,7 +254,7 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
             <Separator className="" />
             <div className="w-full h-full flex gap-2 justify-between">
               <span className="p-0.5 rounded-2xl outline-1">
-                {item.ticket_status}
+                {item.ticket_status} 
               </span>
               <span className="flex gap-1">
                 <Calendar className="w-[15px] h-[15px]" />

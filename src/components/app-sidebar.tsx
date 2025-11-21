@@ -18,7 +18,7 @@ import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
-import { useEffect,useState } from "react";
+import { useEffect,useState,useRef } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -84,18 +84,22 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [allBoards,setAllBoards] = useState([])
   const {FetchAllBoardsWithWorkflows} = BoardWorkflowAPI()
+  const mountRef = useRef<boolean>(false)
   
   useEffect(()=>{
+    if(mountRef.current) return
+    mountRef.current = true
     const GetAllBoards = async() => {
       const response = await FetchAllBoardsWithWorkflows()
       console.log(response)
       if(response?.status === 200){
+        console.log('boardsres',response)
         setAllBoards(response.data.data)
       }
     }
     GetAllBoards()
   },[])
-  console.log('boards',allBoards)
+  // console.log('boards',allBoards)
 
   if(!allBoards){
     return null

@@ -7,7 +7,7 @@ interface CreateWorkflowProps {
 }
 interface CreateWorkflowStatusProps{
     workflow_id : string,
-    name : string[]
+    workflow_order : {ticket_state : string,ticket_status : string}[]
 }
 
 interface CreateBoardProps{
@@ -38,19 +38,9 @@ export const BoardWorkflowAPI = () =>{
         catch(err){
             console.log('err fetchworkflow',err)
         }
-    },[])
+    },[CreateWorkflow])
 
-    const GetWorkflowStatus = useCallback(async():Promise<AxiosResponse<any>|undefined>=>{
-        try{
-            const res = await axios.get("/api/workflow-status/workflow-status/")
-            return res
-        }
-        catch(err){
-            console.log('err getworkflowstatus',err)
-        }
-    },[])
-
-    const CreateWorkflowStatus = useCallback(async(data:CreateWorkflowStatusProps)=>{
+     const CreateWorkflowStatus = useCallback(async(data:CreateWorkflowStatusProps)=>{
         try{
             const res = await axios.post("/api/workflow-status/update-order",data)
             console.log(res)
@@ -61,12 +51,36 @@ export const BoardWorkflowAPI = () =>{
         }
     },[])
 
+    const GetWorkflowStatus = useCallback(async():Promise<AxiosResponse<any>|undefined>=>{
+        try{
+            const res = await axios.get("/api/workflow-status/workflow-status/")
+            return res
+        }
+        catch(err){
+            console.log('err getworkflowstatus',err)
+        }
+    },[CreateWorkflowStatus])
+
+   
+
     const FetchAllBoards = useCallback(async()=>{
         try{
             const res = await axios.get("/api/boards")
             return res
         }
         catch(err){
+            console.log("err fetchboard",err)
+        }
+    },[])
+
+
+    const CreateBoard = useCallback(async(data :CreateBoardProps )=>{
+        try{
+            const res = await axios.post("/api/boards/add-board",data)
+            return res
+        }
+        catch(err){
+            toast.error("Board is not created")
             console.log("err fetchboard",err)
         }
     },[])
@@ -79,18 +93,9 @@ export const BoardWorkflowAPI = () =>{
         catch(err){
             console.log("err fetchboard",err)
         }
-    },[])
+    },[CreateBoard])
 
-    const CreateBoard = useCallback(async(data :CreateBoardProps )=>{
-        try{
-            const res = await axios.post("/api/boards/add-board",data)
-            return res
-        }
-        catch(err){
-            toast.error("Board is not created")
-            console.log("err fetchboard",err)
-        }
-    },[])
+    
 
     return {
         CreateWorkflow,

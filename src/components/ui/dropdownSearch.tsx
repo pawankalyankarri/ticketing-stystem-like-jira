@@ -77,7 +77,7 @@ export function DropdownSearch({
           )}
         >
           {value
-            ? dropdownData.find((data) => data.value === value)?.label
+            ? dropdownData.find((data) => String(data.value) === String(value))?.label
             : `Select ${title}`}
           <ChevronsUpDown className="opacity-50" />
         </Button>
@@ -87,17 +87,22 @@ export function DropdownSearch({
         style={{ width: size ? `${size}px` : "200px" }}
       >
         <Command>
-          <CommandInput placeholder={`Search ${title}...`} className="h-9" />
+          <CommandInput
+            placeholder={`Search ${title}...`}
+            className="h-9"
+            required
+          />
           <CommandList>
             <CommandEmpty>Not found.</CommandEmpty>
             <CommandGroup>
               {dropdownData.map((data) => (
                 <CommandItem
+                  aria-required
                   key={data.value}
                   value={data.value}
                   onSelect={() => {
                     if (value === data.value) {
-                      onChange(""); 
+                      onChange("");
                     } else {
                       onChange(data.value);
                     }

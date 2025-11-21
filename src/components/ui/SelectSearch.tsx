@@ -30,12 +30,22 @@ interface SelectSearchProps {
   size: "sm" | "md" | "xs";
   value: string; 
   onChange: (value: string) => void; 
+  required? :boolean
 }
-export function SelectSearch({SelectSearchData,title,size,value,onChange} : SelectSearchProps) {
+export function SelectSearch({SelectSearchData,title,size,value,onChange,required} : SelectSearchProps) {
   const [open, setOpen] = React.useState(false)
 
   return (
+    <>
+    {required && <input
+        type="text"
+        value={value}
+        required
+        readOnly
+        className="hidden"
+      />}
     <Popover open={open} onOpenChange={setOpen} >
+      
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -79,5 +89,6 @@ export function SelectSearch({SelectSearchData,title,size,value,onChange} : Sele
         </Command>
       </PopoverContent>
     </Popover>
+    </>
   )
 }

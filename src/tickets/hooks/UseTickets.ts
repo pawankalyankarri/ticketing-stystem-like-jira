@@ -94,7 +94,7 @@ async (data: TicketFormDataType) => {
         data.file_attachment.length === 0 ? data.file_attachment.push("") : "";
         const response = await axios.post("/api/ticketing/update-ticket", data);
         console.log("edittkt", response);
-
+        
        
         
         return response;

@@ -85,12 +85,13 @@ function SortableItem({ id, status,setStateStatusData }: SortableItemProps) {
       setStateStatusData((prev)=>prev.map(item=>item.ticket_state === key ? {...item,ticket_status:value} : item))
   }
   return (
-    <div
+    <motion.div
+      whileDrag={{rotate :2}}
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="capitalize flex gap-5 items-center cursor-grab w-full justify-center "
+      className="capitalize flex gap-5 items-center cursor-grab w-full justify-center border-0 outline-0"
     >
       <div className="border-2 border-black p-2 w-[200px] rounded flex gap-2 items-center ">
         <FontAwesomeIcon icon={faGripVertical} />
@@ -138,7 +139,7 @@ function SortableItem({ id, status,setStateStatusData }: SortableItemProps) {
           </Select>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -176,7 +177,7 @@ const WorkflowStatusSelect = () => {
     getStatus();
   }, []);
 
-  console.log("statusstatedata", stateStatusData);
+  // console.log("statusstatedata", stateStatusData);
   useEffect(() => {
     setData((prev) => ({ ...prev, workflow_order: stateStatusData }));
   }, [stateStatusData]);
@@ -214,26 +215,33 @@ const WorkflowStatusSelect = () => {
     //   // setData((prevData) => ({ ...prevData, name: updated }));
     //   return updated;
     // });
+    if(newStatus.trim()!== ""){
+      setStateStatusData((prev)=>[...prev,{ticket_state:newStatus,ticket_status:"open"}])
 
-    setStateStatusData((prev)=>[...prev,{ticket_state:newStatus,ticket_status:"open"}])
+    }
+    else{
+        toast.warning("Enter Proper State name!")
+    }
+    
+
     setNewStatus("");
   }
 
   async function handleCrateWorkflow() {
     console.log("dta", data);
-    // const res = await CreateWorkflowStatus(data);
-    // console.log("response created workflowstatus", res);
-    // toast.success(res?.data.message);
-    // navigate("/tickets");
+    const res = await CreateWorkflowStatus(data);
+    console.log("response created workflowstatus", res);
+    toast.success(res?.data.message);
+    navigate("/tickets");
   }
-  console.log(stateData);
+  // console.log(stateData);
   return (
     <Dialog
       open={open}
-      onOpenChange={(isOpen) => {
-        setOpen(isOpen);
-        if (!isOpen) navigate("/tickets");
-      }}
+      // onOpenChange={(isOpen) => {
+      //   setOpen(isOpen);
+      //   ;
+      // }}
     >
       <DialogContent className="  min-w-[60%] h-[80%] overflow-hidden overflow-y-auto p-2">
         <motion.div
@@ -249,7 +257,7 @@ const WorkflowStatusSelect = () => {
           <DialogHeader className="w-full ">
             <div className="w-full float-right">
               <FontAwesomeIcon
-                onClick={() => navigate("/tickets")}
+                onClick={() => toast.warning("Create Workflow status !")}
                 icon={faXmark}
                 className="cursor-pointer float-right p-1"
               />

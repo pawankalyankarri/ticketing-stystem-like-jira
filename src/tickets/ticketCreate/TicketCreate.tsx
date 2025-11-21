@@ -152,6 +152,7 @@ const TicketCreate = () => {
       file_attachment: images,
     }));
 
+
     const res = await CreateTicket({
       data: formData,
       files: fileObjects,
@@ -197,6 +198,7 @@ const TicketCreate = () => {
                           size={"md"}
                           value={formData.ticket_status}
                           onChange={handleSelectChange("ticket_status")}
+                          
                         />
                       </div>
                       <div className="grid gap-2">
@@ -207,6 +209,7 @@ const TicketCreate = () => {
                           size={"md"}
                           value={formData.ticket_state}
                           onChange={handleSelectChange("ticket_state")}
+                          required ={true}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -217,6 +220,7 @@ const TicketCreate = () => {
                           size={"md"}
                           value={formData.ticket_severity}
                           onChange={handleSelectChange("ticket_severity")}
+                          required ={true}
                         />
                       </div>
                     </div>

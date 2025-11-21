@@ -44,6 +44,11 @@ const CreateBoard = () => {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // console.log(formdata)
+    if(formdata.workflow_id.trim() === ""){
+      toast.warning("Please Select Workflow! ")
+      return
+    }
     console.log("formdata", formdata);
     const res = await CreateBoard(formdata)
     console.log('res',res)
@@ -74,7 +79,7 @@ const CreateBoard = () => {
   // console.log('workflows',workflowOptions)
   return (
     <Dialog open={true}>
-      <DialogContent className="sm:max-w-[425px] min-h-96 ">
+      <DialogContent className="sm:max-w-[425px] max-h-[80vh]  ">
         <DialogHeader>
           <DialogTitle>Create Board</DialogTitle>
           <DialogDescription>
@@ -82,13 +87,14 @@ const CreateBoard = () => {
               done. */}
           </DialogDescription>
         </DialogHeader>
-        <form className="overflow-y-auto" onSubmit={handleSubmit}>
+        <form className=" w-full max-h-[70vh] overflow-y-auto" onSubmit={handleSubmit}>
           <div className="grid gap-4 overflow-y-auto">
             <div className="grid gap-3">
               <Label htmlFor="bn">Board Name</Label>
               <Input
                 id="bn"
                 name="bn"
+                required
                 value={formdata.board_name}
                 onChange={(e) =>
                   setFormdata((prev) => ({
@@ -100,7 +106,7 @@ const CreateBoard = () => {
             </div>
             <div className="grid gap-3">
               <Label htmlFor="adm">Board Owner</Label>
-              <Input id="adm" name="adm" value={formdata.board_owner} onChange={(e)=>setFormdata((prev)=>({...prev,board_owner:e.target.value}))} />
+              <Input id="adm" name="adm" required value={formdata.board_owner} onChange={(e)=>setFormdata((prev)=>({...prev,board_owner:e.target.value}))} />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="wn">Workflow Name</Label>
@@ -114,12 +120,13 @@ const CreateBoard = () => {
               /> */}
 
               <DropdownSearch
+                
                 dropdownData={workflowOptions}
                 title="Workflow"
                 value={formdata.workflow_id}
                 size="370"
                 onChange={(val) =>
-                  setFormdata({ ...formdata, workflow_id: val })
+                  setFormdata({ ...formdata, workflow_id: String(val) })
                 }
               />
             </div>
