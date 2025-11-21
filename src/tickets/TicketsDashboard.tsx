@@ -46,6 +46,7 @@ const TicketsDashboard = () => {
     { id: "OnHold", title: "OnHold" },
     { id: "Resolved", title: "Resolved" },
     { id: "Cancelled", title: "Cancelled" },
+    {id: "Re-Open" , title : "Re-Open"},
   ];
   // console.log('loc',location.pathname)
 
@@ -53,7 +54,7 @@ const TicketsDashboard = () => {
   useEffect(() => {
     if (mountRef.current) return;
     mountRef.current = true;
-    console.log("running");
+    // console.log("running");
     const fetchingTickets = async () => {
       const response = await fetchAllTickets();
       if (response.length == 0) setNoTkts(true);
@@ -206,6 +207,8 @@ const TicketsDashboard = () => {
 
     if (res?.status === 200) {
       toast.success(res.data.message);
+      const response = await fetchAllTickets(); // re-fetch tickets
+      setAllTickets(response)
     } else {
       toast.error("Failed to update ticket");
     }

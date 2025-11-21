@@ -64,7 +64,7 @@ const UserProfilePage = () => {
           </DropdownMenuSub>
 
 
-
+          <DropdownMenuItem className="cursor-pointer" onClick={()=>navigate("/addUser")}>Add User</DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer">Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -38,6 +38,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import TicketCommnets from "../IndividualTicketComments/TicketComments";
 
 const OpenTicket = () => {
   const [ticketDetails, setTicketDetails] = useState<TicketType | null>(null);
@@ -49,19 +50,14 @@ const OpenTicket = () => {
   const params = useParams();
 
   const ticketStateData = [
-    { label: "ToDo", value: "ToDo" },
-    { label: "InProgress", value: "InProgress" },
-    { label: "Cancelled", value: "Cancelled" },
-    { label: "Resolved", value: "Resolved" },
-    { label: "OnHold", value: "OnHold" },
+    "ToDo",
+    "InProgress",
+    "Cancelled",
+    "Resolved",
+    "OnHold",
   ];
 
-  const ticketSeverityData = [
-    { label: "Low", value: "Low" },
-    { label: "Medium", value: "Medium" },
-    { label: "High", value: "High" },
-    { label: "Critical", value: "Critical" },
-  ];
+  const ticketSeverityData = ["Low", "Medium", "High", "Critical"];
 
   useEffect(() => {
     if (params.id) {
@@ -95,39 +91,37 @@ const OpenTicket = () => {
     }
   }, [ticketDetails]);
 
-
-  const formatTimeAgo =  (dateStr:string) => {
-    const now = new Date()
-    const date = new Date(dateStr)
-    const diff = now.getTime() - date.getTime()
+  const formatTimeAgo = (dateStr: string) => {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diff = now.getTime() - date.getTime();
     // console.log(diff)
-    const seconds = Math.floor(diff/1000)
-    const minutes = Math.floor(diff/1000/60)
-    const hours = Math.floor(diff/1000/60/60)
-    const days = Math.floor(diff/1000/60/60/24)
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(diff / 1000 / 60);
+    const hours = Math.floor(diff / 1000 / 60 / 60);
+    const days = Math.floor(diff / 1000 / 60 / 60 / 24);
     // console.log(seconds,minutes,hours,days)
 
-    if(days>7){
-      return date.toLocaleDateString("en-US",{
-        day : "2-digit",
-        month : "long",
-        year : "numeric"
-      })
+    if (days > 7) {
+      return date.toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
     }
-    if(days>=1) return `${days} day${days>1 ? "s" : ""} ago`
-    if(hours>=1) return `${hours} hour${hours>1 ? "s" : ""} ago`
-    if(minutes>=1) return `${minutes} minute${minutes>1 ? "s" : ""} ago`
-    if(seconds>=1) return `${seconds} second ${seconds >1 ? "s" : ""} ago`
+    if (days >= 1) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (hours >= 1) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (minutes >= 1) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    if (seconds >= 1) return `${seconds} second ${seconds > 1 ? "s" : ""} ago`;
+  };
 
-  }
-
-  function formattedDate (dateStr:string){
-      const date = new Date(dateStr)
-      return date.toLocaleDateString("en-US",{
-        day : "2-digit",
-        month : "short",
-        year : "numeric"
-      })
+  function formattedDate(dateStr: string) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   }
 
   return (
@@ -145,12 +139,14 @@ const OpenTicket = () => {
               <span className="border-2 border-orange-400 text-orange-400 p-1 text-sm px-2 rounded ">
                 {ticketDetails.ticket_status}
               </span>
-              <span className="float-right p-1.5 bg-gray-300" onClick={() => navigate("/tickets")}>
+              <span
+                className="float-right p-1.5 bg-gray-300"
+                onClick={() => navigate("/tickets")}
+              >
                 <FontAwesomeIcon
                   icon={faX}
                   className="font-bold cursor-pointer"
                   size="sm"
-                  
                 />
               </span>
             </DialogTitle>
@@ -249,9 +245,12 @@ const OpenTicket = () => {
                         <div className="w-full ">
                           <Tabs defaultValue="history" className="w-full">
                             <TabsList className="w-[400px]">
-                              <TabsTrigger value="all" >All</TabsTrigger>
+                              <TabsTrigger value="all">All</TabsTrigger>
                               <TabsTrigger value="comment">
-                                <FontAwesomeIcon icon={faComment} color="gray"/>
+                                <FontAwesomeIcon
+                                  icon={faComment}
+                                  color="gray"
+                                />
                                 Comments
                               </TabsTrigger>
                               <TabsTrigger value="history">
@@ -259,34 +258,38 @@ const OpenTicket = () => {
                                 History
                               </TabsTrigger>
                               <TabsTrigger value="worklogs">
-                                <FontAwesomeIcon icon={faGears}/>
+                                <FontAwesomeIcon icon={faGears} />
                                 Worklogs
                               </TabsTrigger>
-                            </TabsList> 
+                            </TabsList>
                             <TabsContent value="all">
                               Make changes to your account here.
                             </TabsContent>
                             <TabsContent value="comment">
-                              Change your password here.
+                              <TicketCommnets />
                             </TabsContent>
                             <TabsContent value="history">
-                              
                               <div className="grid gap-5">
-                                {ticketDetails.ticket_history.map((obj,idx)=>{
-                                  return(
-                                    <div className="flex flex-col gap-2" key={idx}>
-                                      <span>{obj.action_msg}</span>
-                                      <span>{formatTimeAgo(obj.processed_time)}</span>
-                                    </div>
-                                  )
-                                })}
+                                {ticketDetails.ticket_history.map(
+                                  (obj, idx) => {
+                                    return (
+                                      <div
+                                        className="flex flex-col gap-2"
+                                        key={idx}
+                                      >
+                                        <span>{obj.action_msg}</span>
+                                        <span>
+                                          {formatTimeAgo(obj.processed_time)}
+                                        </span>
+                                      </div>
+                                    );
+                                  }
+                                )}
                               </div>
                             </TabsContent>
-                            <TabsContent value="worklogs">
-                              Worklogs
-                            </TabsContent>
+                            <TabsContent value="worklogs">Worklogs</TabsContent>
                           </Tabs>
-                        </div> 
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -311,25 +314,34 @@ const OpenTicket = () => {
                     </div>
                     <div className="grid grid-cols-2">
                       <Label>Due Date</Label>
-                      {ticketDetails.end_date?<span className="border-2 border-red-500 w-fit text-red-500 p-1.5 rounded"><FontAwesomeIcon icon={faTriangleExclamation} /> {formattedDate(ticketDetails.end_date)}</span> : "NONE"}
+                      {ticketDetails.end_date ? (
+                        <span className="border-2 border-red-500 w-fit text-red-500 p-1.5 rounded">
+                          <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+                          {formattedDate(ticketDetails.end_date)}
+                        </span>
+                      ) : (
+                        "NONE"
+                      )}
                     </div>
                     <div className="grid grid-cols-2">
                       <Label>Collaborators</Label>
                       <span className="flex">
-                      <Avatar>
+                        <Avatar>
                           {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
                           <AvatarFallback className="uppercase font-bold bg-white text-md  ">
-                            <FontAwesomeIcon icon={faUsers} className="" size="lg" />
+                            <FontAwesomeIcon
+                              icon={faUsers}
+                              className=""
+                              size="lg"
+                            />
                           </AvatarFallback>
                         </Avatar>
                         <Avatar className="cursor-pointer">
                           <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white ">
-                            <FontAwesomeIcon icon={faPlus}  />
+                            <FontAwesomeIcon icon={faPlus} />
                           </AvatarFallback>
                         </Avatar>
-
                       </span>
-                      
                     </div>
                     <div className="grid grid-cols-2">
                       <Label className="capitalize">assignee</Label>
@@ -351,9 +363,8 @@ const OpenTicket = () => {
                       Created &nbsp; {createdDateStr} at {createdTimeStr}
                     </span>
                   )}
-                   <span>Updated {formatTimeAgo(ticketDetails.updated_at)}</span>
+                  <span>Updated {formatTimeAgo(ticketDetails.updated_at)}</span>
                 </div>
-               
               </div>
             </div>
           </DialogDescription>

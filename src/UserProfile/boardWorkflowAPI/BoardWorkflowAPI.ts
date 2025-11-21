@@ -16,6 +16,12 @@ interface CreateBoardProps{
   workflow_id: string;
 
 }
+
+interface AddUserProps{
+    email: string[],
+  role: string
+}
+
 export const BoardWorkflowAPI = () =>{
     const CreateWorkflow = useCallback(async(data : CreateWorkflowProps)=>{
         console.log(data)
@@ -95,6 +101,18 @@ export const BoardWorkflowAPI = () =>{
         }
     },[CreateBoard])
 
+
+    const AddUser = useCallback( async(data:AddUserProps)=>{
+        try{
+            const res = await axios.post("/api/users/add-user",data)
+            return res
+        }
+        catch(err){
+            console.log('addUser',err)
+
+        }
+    },[])
+
     
 
     return {
@@ -105,5 +123,6 @@ export const BoardWorkflowAPI = () =>{
         FetchAllBoards,
         CreateBoard,
         FetchAllBoardsWithWorkflows,
+        AddUser,
     }
 }

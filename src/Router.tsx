@@ -10,6 +10,8 @@ import CreateBoard from "./UserProfile/CreateBoard/CreateBoard";
 import CreateWorkflow from "./UserProfile/CreateWorkflow/CreateWorkflow";
 import WorkflowStatusSelect from "./UserProfile/CreateWorkflow/workflowStatusSelect";
 import BoardsPage from "./UserProfile/Boards/BoardsPage";
+import AddUserPage from "./UserProfile/addUser/AddUserPage";
+import { SignupForm } from "./components/signup-form";
 export const AllRoutes = () => {
   const routes = [
     {
@@ -34,24 +36,26 @@ export const AllRoutes = () => {
               element: <UpdateTicket />,
             },
             {
-              path : "createBoard",
-              element : <CreateBoard/>
+              path: "createBoard",
+              element: <CreateBoard />,
             },
             {
-              path : "createWorkflow",
-              element : <CreateWorkflow/>
+              path: "createWorkflow",
+              element: <CreateWorkflow />,
             },
             {
-              path : "statusSelect/:wfId",
-              element : <WorkflowStatusSelect/>
-
-            }
-
+              path: "statusSelect/:wfId",
+              element: <WorkflowStatusSelect />,
+            },
           ],
         },
         {
-          path : "boards",
-          element : <BoardsPage/>
+          path: "boards",
+          element: <BoardsPage />,
+        },
+        {
+          path: "addUser",
+          element: <AddUserPage />,
         },
 
         {
@@ -59,6 +63,10 @@ export const AllRoutes = () => {
           element: <DeleteTicket />,
         },
       ],
+    },
+    {
+      path: "loginPage",
+      element: <SignupForm />,
     },
   ];
   return useRoutes(routes);

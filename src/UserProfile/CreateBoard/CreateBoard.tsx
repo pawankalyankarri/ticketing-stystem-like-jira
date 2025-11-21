@@ -79,7 +79,7 @@ const CreateBoard = () => {
   // console.log('workflows',workflowOptions)
   return (
     <Dialog open={true}>
-      <DialogContent className="sm:max-w-[425px] max-h-[80vh]  ">
+      <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto  ">
         <DialogHeader>
           <DialogTitle>Create Board</DialogTitle>
           <DialogDescription>
@@ -87,7 +87,7 @@ const CreateBoard = () => {
               done. */}
           </DialogDescription>
         </DialogHeader>
-        <form className=" w-full max-h-[70vh] overflow-y-auto" onSubmit={handleSubmit}>
+        <form className=" w-full max-h-[75vh] " onSubmit={handleSubmit}>
           <div className="grid gap-4 overflow-y-auto">
             <div className="grid gap-3">
               <Label htmlFor="bn">Board Name</Label>

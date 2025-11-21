@@ -62,7 +62,7 @@ const UpdateTicket = () => {
   const [pointing, setPointing] = useState<boolean>(false);
   const [update_id, setUpdate_id] = useState<string>("");
   const [fileObjects, setFileObjects] = useState<File[]>([]);
-  const [tktId,setTktId] = useState<string>("")
+  const [tktId, setTktId] = useState<string>("");
   const [formData, setFormData] = useState<TicketFormDataType>({
     ticket_status: "",
     ticket_state: "",
@@ -78,26 +78,17 @@ const UpdateTicket = () => {
   });
   const { CreateTicket, EditTicket, GetTicket } = UseTickets();
   const navigate = useNavigate();
-  const ticketStatusData = [
-    { label: "Open", value: "Open" },
-    { label: "Close", value: "Close" },
-    { label: "Pending", value: "Pending" },
-  ];
+  const ticketStatusData = ["Open", "Close", "Pending"];
   const ticketStateData = [
-    { label: "ToDo", value: "ToDo" },
-    { label: "InProgress", value: "InProgress" },
-    { label: "Cancelled", value: "Cancelled" },
-    { label: "Resolved", value: "Resolved" },
-    { label: "OnHold", value: "OnHold" },
+    "ToDo",
+    "InProgress",
+    "Cancelled",
+    "Resolved",
+    "OnHold",
   ];
-  const ticketSeverityData = [
-    { label: "Low", value: "Low" },
-    { label: "Medium", value: "Medium" },
-    { label: "High", value: "High" },
-    { label: "Critical", value: "Critical" },
-  ];
+  const ticketSeverityData = ["Low", "Medium", "High", "Critical"];
+  const assigneeData = ["Charan", "shiva", "Ram", "Hari"];
 
-  
   useEffect(() => {
     if (!params.id) return;
     const fetchTicket = async () => {
@@ -118,7 +109,7 @@ const UpdateTicket = () => {
           created_by: res.created_by,
         });
         setUpdate_id(String(res.id));
-        setTktId(String(res.ticket_id))
+        setTktId(String(res.ticket_id));
       } catch (err) {
         console.log("err", err);
       }
@@ -127,12 +118,13 @@ const UpdateTicket = () => {
   }, [params.id]);
   // console.log(formData);
 
-
-  function getImageSrc (url:string){
-    return url.replace("\\","/")
+  function getImageSrc(url: string) {
+    return url.replace("\\", "/");
   }
 
-  console.log(getImageSrc("D:/algofusion/ticketing_backend/fileFileds\\lion.webp"))
+  console.log(
+    getImageSrc("D:/algofusion/ticketing_backend/fileFileds\\lion.webp")
+  );
 
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData((prevData) => ({
@@ -175,7 +167,7 @@ const UpdateTicket = () => {
       ["update_id"]: update_id,
     };
 
-    const res = await EditTicket(updatedData,fileObjects,tktId);
+    const res = await EditTicket(updatedData, fileObjects, tktId);
     // console.log('res',res)
     res?.status === 200
       ? toast.success(res.data.message || "Ticket Updated Successfully!")
@@ -323,7 +315,7 @@ const UpdateTicket = () => {
                       <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                         {/* comments */}
                         <div className="w-full h-full grid  p-0">
-                          <div className="border-1 border-gray-200 rounded">
+                          <div className="border border-gray-200 rounded">
                             <ToggleGroup type="multiple">
                               <ToggleGroupItem
                                 value="bold"
@@ -370,7 +362,7 @@ const UpdateTicket = () => {
                               </ToggleGroupItem>
                             </ToggleGroup>
                           </div>
-                          <div className="border-x-1 border-b-1 border-gray-200 rounded">
+                          <div className="border-x border-b border-gray-200 rounded">
                             <Textarea
                               placeholder="Add Comment..."
                               className={cn(
@@ -395,7 +387,7 @@ const UpdateTicket = () => {
                           <Label htmlFor="date" className="px-1">
                             Start Date
                           </Label>
-                          <Popover  onOpenChange={setOpen}>
+                          <Popover onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
@@ -478,7 +470,7 @@ const UpdateTicket = () => {
                         <div className="grid gap-2">
                           <Label>Assignee</Label>
                           <SelectSearch
-                            SelectSearchData={ticketStatusData}
+                            SelectSearchData={assigneeData}
                             title={"Select Assignee"}
                             size={"md"}
                             value={formData.assignee}
@@ -486,7 +478,7 @@ const UpdateTicket = () => {
                           />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="created_by">Created by</Label>
+                          <Label htmlFor="created_by">Reporter</Label>
                           <Input
                             placeholder="ex: John Doe"
                             className="text-sm w-[85%]"
@@ -532,10 +524,6 @@ const UpdateTicket = () => {
   );
 };
 export default UpdateTicket;
-
-
-
-
 
 // import { Button } from "@/components/ui/button";
 // import { Calendar } from "@/components/ui/calendar";
@@ -605,7 +593,7 @@ export default UpdateTicket;
 //   // Separate state for existing images (from server) and new images (blob URLs)
 //   const [existingImages, setExistingImages] = useState<string[]>([]);
 //   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
-  
+
 //   const [formData, setFormData] = useState<TicketFormDataType>({
 //     ticket_status: "",
 //     ticket_state: "",
@@ -646,11 +634,10 @@ export default UpdateTicket;
 //     if (path.startsWith('blob:')) {
 //       return path;
 //     }
-    
+
 //     // Extract filename from the full path
 //     const filename = path.split(/[/\\]/).pop();
-    
-  
+
 //     return `http://localhost:8000/uploads/${filename}`;
 //   };
 
@@ -707,10 +694,10 @@ export default UpdateTicket;
 //     if (!files) return;
 
 //     const fileList = Array.from(files);
-    
+
 //     // Create blob URLs for preview
 //     const newPreviews = fileList.map((file) => URL.createObjectURL(file));
-    
+
 //     setFileObjects((prev) => [...prev, ...fileList]);
 //     setNewImagePreviews((prev) => [...prev, ...newPreviews]);
 //   };
@@ -726,7 +713,7 @@ export default UpdateTicket;
 //   const handleRemoveNewImage = (index: number) => {
 //     // Revoke the blob URL to free memory
 //     URL.revokeObjectURL(newImagePreviews[index]);
-    
+
 //     setNewImagePreviews((prev) => prev.filter((_, i) => i !== index));
 //     setFileObjects((prev) => prev.filter((_, i) => i !== index));
 //   };
@@ -841,7 +828,7 @@ export default UpdateTicket;
 //                             onChange={handleImageChange}
 //                           />
 //                         </div>
-                        
+
 //                         {/* Display existing images from server */}
 //                         {existingImages.length > 0 && existingImages.some((path) => path.trim() !== "") && (
 //                           <div className="w-full">

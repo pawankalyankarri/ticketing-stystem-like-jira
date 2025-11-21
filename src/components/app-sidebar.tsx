@@ -18,7 +18,7 @@ import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
-import { useEffect,useState,useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -30,8 +30,6 @@ import { faTableColumns, faTicket } from "@fortawesome/free-solid-svg-icons";
 import { BoardWorkflowAPI } from "@/UserProfile/boardWorkflowAPI/BoardWorkflowAPI";
 
 // This is sample data.
-
-
 
 const data = {
   user: {
@@ -61,7 +59,7 @@ const data = {
       title: "tickets",
       url: "#",
       icon: faTicket,
-      navigate : "/tickets",
+      navigate: "/tickets",
       isActive: true,
     },
     // {
@@ -82,43 +80,44 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [allBoards,setAllBoards] = useState([])
-  const {FetchAllBoardsWithWorkflows} = BoardWorkflowAPI()
-  const mountRef = useRef<boolean>(false)
-  
-  useEffect(()=>{
-    if(mountRef.current) return
-    mountRef.current = true
-    const GetAllBoards = async() => {
-      const response = await FetchAllBoardsWithWorkflows()
-      console.log(response)
-      if(response?.status === 200){
-        console.log('boardsres',response)
-        setAllBoards(response.data.data)
+  const [allBoards, setAllBoards] = useState([]);
+  const { FetchAllBoardsWithWorkflows } = BoardWorkflowAPI();
+  const mountRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (mountRef.current) return;
+    mountRef.current = true;
+    const GetAllBoards = async () => {
+      const response = await FetchAllBoardsWithWorkflows();
+      console.log(response);
+      if (response?.status === 200) {
+        console.log("boardsres", response.data);
+        if (response.data.data) {
+          setAllBoards(response.data.data);
+        }
       }
-    }
-    GetAllBoards()
-  },[])
+    };
+    GetAllBoards();
+  }, []);
   // console.log('boards',allBoards)
 
-  if(!allBoards){
-    return null
+  if (!allBoards) {
+    return null;
   }
 
   return (
-    
-      <Sidebar collapsible="icon" {...props} className="text-white">
-        <SidebarHeader>
-          <TeamSwitcher teams={data.teams} />
-        </SidebarHeader>
-        <SidebarContent>
-          <NavMain items={data.navMain} />
-          <NavProjects boards={allBoards} />
-        </SidebarContent>
-        <SidebarFooter>
-          <NavUser user={data.user} />
-        </SidebarFooter>
-        <SidebarRail />
-      </Sidebar>
+    <Sidebar collapsible="icon" {...props} className="text-white">
+      <SidebarHeader>
+        <TeamSwitcher teams={data.teams} />
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={data.navMain} />
+        <NavProjects boards={allBoards} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
   );
 }
