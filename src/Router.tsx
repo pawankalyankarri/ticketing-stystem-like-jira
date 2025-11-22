@@ -65,7 +65,7 @@ export const AllRoutes = () => {
       ],
     },
     {
-      path: "loginPage",
+      path: "signup",
       element: <SignupForm />,
     },
   ];

@@ -13,40 +13,38 @@ import { Input } from "@/components/ui/input";
 import { SelectSearch } from "@/components/ui/SelectSearch";
 import { useNavigate } from "react-router-dom";
 import { UseTickets, type TicketType } from "../hooks/UseTickets";
-import { useEffect, useState, type Dispatch, type InputEvent, type SetStateAction } from "react";
+import {
+  useEffect,
+  useState,
+  type Dispatch,
+  type InputEvent,
+  type SetStateAction,
+} from "react";
 import { cn } from "@/lib/utils";
 
 interface TicketHeadProps {
-  tickets : TicketType[],
-  setTickets : Dispatch<SetStateAction<TicketType[]>>,
-  gridCols : boolean;
-  setGridCols : Dispatch<SetStateAction<boolean>>; 
+  tickets: TicketType[];
+  setTickets: Dispatch<SetStateAction<TicketType[]>>;
+  gridCols: boolean;
+  setGridCols: Dispatch<SetStateAction<boolean>>;
 }
 
-const TicketsHead = ({tickets,setTickets,gridCols,setGridCols} : TicketHeadProps) => {
+const TicketsHead = ({
+  tickets,
+  setTickets,
+  gridCols,
+  setGridCols,
+}: TicketHeadProps) => {
   const [ticketId, setTicketId] = useState<string>("");
   // const [allTickets, setAllTickets] = useState<TicketType[]>([])
-  const [severity,setSeverity] = useState<string>("All Severity")
-  const [tStatus,setTStatus] = useState<string>("All Status")
-  const { fetchAllTickets,loading } = UseTickets();
+  const [severity, setSeverity] = useState<string>("All Severity");
+  const [tStatus, setTStatus] = useState<string>("All Status");
+  const { fetchAllTickets, loading } = UseTickets();
   // const { tickets, setTickets } = TicketsStore();
   const navigate = useNavigate();
 
-
-
-  const severityData = [
-    { label: "All Severity", value: "All Severity" },
-    { label: "Low", value: "Low" },
-    { label: "Medium", value: "Medium" },
-    { label: "High", value: "High" },
-    { label: "Critical", value: "Critical" },
-  ];
-  const StatusData = [
-    { label: "All Status", value: "All Status" },
-    { label: "Open", value: "Open" },
-    { label: "Close", value: "Close" },
-    { label: "Pending", value: "Pending" },
-  ];
+  const severityData = ["All Severity", "Low", "Medium", "High", "Critical"];
+  const StatusData = ["All Status", "Open", "Close", "Pending"];
 
   // useEffect(()=>{
   //   setTickets(tickets)
@@ -58,48 +56,48 @@ const TicketsHead = ({tickets,setTickets,gridCols,setGridCols} : TicketHeadProps
   async function ticketIdSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
     setTicketId(value);
-    console.log(value)
-    const res = await fetchAllTickets()
+    console.log(value);
+    const res = await fetchAllTickets();
 
-    const filteredTickets = res.filter((item:TicketType) =>
-      item.ticket_id.toLowerCase().includes(value.toLowerCase()) || item.summary.toLowerCase().includes(value.toLowerCase())
+    const filteredTickets = res.filter(
+      (item: TicketType) =>
+        item.ticket_id.toLowerCase().includes(value.toLowerCase()) ||
+        item.summary.toLowerCase().includes(value.toLowerCase())
     );
     setTickets(filteredTickets);
   }
   const refreshTickets = async () => {
-    const res = await fetchAllTickets()
-    setTickets(res)
-    setSeverity("All Severity")
-    setTStatus("All Status")
-    setTicketId("")
-  }
-  
-   async function handleSeverityChange(val:string){
-      setSeverity(val)
-      console.log('val',val)
-      const res = await fetchAllTickets()
-      if(val === "" || val === "All Severity"){
-        setTickets(res)
-        return
-      }
-      const tkts = res.filter((t:TicketType)=>t.ticket_severity === val)
-      setTickets(tkts)
+    const res = await fetchAllTickets();
+    setTickets(res);
+    setSeverity("All Severity");
+    setTStatus("All Status");
+    setTicketId("");
+  };
 
+  async function handleSeverityChange(val: string) {
+    setSeverity(val);
+    console.log("val", val);
+    const res = await fetchAllTickets();
+    if (val === "" || val === "All Severity") {
+      setTickets(res);
+      return;
+    }
+    const tkts = res.filter((t: TicketType) => t.ticket_severity === val);
+    setTickets(tkts);
   }
-   async function handleStatusChange(val:string){
-      setTStatus(val)
-      console.log('val',val)
-      const res = await fetchAllTickets()
-      if(val === "" || val === "All Status"){
-        setTickets(res)
-        return
-      }
-      const tkts = res.filter((t:TicketType)=>t.ticket_status === val)
-      setTickets(tkts)
-
+  async function handleStatusChange(val: string) {
+    setTStatus(val);
+    console.log("val", val);
+    const res = await fetchAllTickets();
+    if (val === "" || val === "All Status") {
+      setTickets(res);
+      return;
+    }
+    const tkts = res.filter((t: TicketType) => t.ticket_status === val);
+    setTickets(tkts);
   }
 
-  return ( 
+  return (
     <Card className="p-1.5 rounded grid grid-cols-2 text-sm w-full h-full bg-transparent">
       <div className=""></div>
       <div className="flex justify-end gap-2 items-center">
@@ -134,13 +132,20 @@ const TicketsHead = ({tickets,setTickets,gridCols,setGridCols} : TicketHeadProps
           className="p-1.5 outline-1 rounded shadow cursor-pointer"
           onClick={refreshTickets}
         >
-          <FontAwesomeIcon icon={faRefresh} className={cn(loading ? "animate-spin":"")}/>
+          <FontAwesomeIcon
+            icon={faRefresh}
+            className={cn(loading ? "animate-spin" : "")}
+          />
         </span>
         <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
           <FontAwesomeIcon icon={faCodeMerge} />
         </span>
-        <span onClick={()=>setGridCols(false)} className="cursor-pointer"><FontAwesomeIcon icon={faGrip} /></span>
-        <span onClick={()=>setGridCols(true)} className="cursor-pointer"><FontAwesomeIcon icon={faListUl} /></span>
+        <span onClick={() => setGridCols(false)} className="cursor-pointer">
+          <FontAwesomeIcon icon={faGrip} />
+        </span>
+        <span onClick={() => setGridCols(true)} className="cursor-pointer">
+          <FontAwesomeIcon icon={faListUl} />
+        </span>
         <Button
           className="p-0 bg-blue-500 hover:bg-blue-800 cursor-pointer"
           onClick={() => navigate("/tickets/createTicket")}

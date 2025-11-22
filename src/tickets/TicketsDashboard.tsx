@@ -21,7 +21,7 @@ import { Divide } from "lucide-react";
 import { Outlet, useLocation } from "react-router-dom";
 import type { TicketFormDataType } from "./updateTicket/UpdateTicket";
 import { cn } from "@/lib/utils";
-import  DisplayOrderedTickets from "./displayorderedtickets/DisplayOrderedTickets";
+import DisplayOrderedTickets from "./displayorderedtickets/DisplayOrderedTickets";
 
 export interface ColumnsType {
   id: string;
@@ -40,13 +40,13 @@ const TicketsDashboard = () => {
   const { UpdateTicketStatus, fetchAllTickets, GetTicket, EditTicket } =
     UseTickets();
 
-  const Columns: ColumnsType[] = [
-    { id: "ToDo", title: "ToDo" },
-    { id: "InProgress", title: "InProgress" },
-    { id: "OnHold", title: "OnHold" },
-    { id: "Resolved", title: "Resolved" },
-    { id: "Cancelled", title: "Cancelled" },
-    {id: "Re-Open" , title : "Re-Open"},
+  const Columns: string[] = [
+    "ToDo",
+    "InProgress",
+    "OnHold",
+    "Resolved",
+    "Cancelled",
+    "Re-Open",
   ];
   // console.log('loc',location.pathname)
 
@@ -65,9 +65,9 @@ const TicketsDashboard = () => {
   }, []);
 
   useEffect(() => {
-    const handler = async() => {
+    const handler = async () => {
       const res = await fetchAllTickets(); // re-fetch tickets
-      setAllTickets(res)
+      setAllTickets(res);
     };
 
     window.addEventListener("ticketsUpdated", handler);
@@ -208,7 +208,7 @@ const TicketsDashboard = () => {
     if (res?.status === 200) {
       toast.success(res.data.message);
       const response = await fetchAllTickets(); // re-fetch tickets
-      setAllTickets(response)
+      setAllTickets(response);
     } else {
       toast.error("Failed to update ticket");
     }
@@ -242,44 +242,47 @@ const TicketsDashboard = () => {
       ) : (
         <div
           className={cn(
-            "flex-1 rounded-xl  w-full flex gap-4 text-xs overflow-x-auto",
-            
+            "flex-1 rounded-xl  w-full flex gap-4 text-xs overflow-x-auto"
           )}
         >
-         { gridCols ? <DisplayOrderedTickets allTickets={allTickets}/> :  <DndContext
-            sensors={sensors}
-            onDragEnd={handleDragEnd}
-            onDragStart={(event) => setActiveId(String(event.active.id))}
-          >
-            {Columns.map((column: ColumnsType) => {
-              const columnTickets = allTickets.filter(
-                (ticket: TicketType) => ticket.ticket_state === column.id
-              );
-              return (
-                <DisplayTickets
-                  key={column.id}
-                  column={column}
-                  activeId={activeId}
-                 
-                  tickets={columnTickets}
-                />
-              );
-            })}
-            <DragOverlay dropAnimation={null}>
-              {activeId
-                ? allTickets.find((t) => String(t.id) === String(activeId)) && (
-                    <ShowSpecifiedTickets
-                      
-                      item={
-                        allTickets.find(
-                          (t) => String(t.id) === String(activeId)
-                        )!
-                      }
-                    />
-                  )
-                : null}
-            </DragOverlay>
-          </DndContext>}
+          {gridCols ? (
+            <DisplayOrderedTickets allTickets={allTickets} />
+          ) : (
+            <DndContext
+              sensors={sensors}
+              onDragEnd={handleDragEnd}
+              onDragStart={(event) => setActiveId(String(event.active.id))}
+            >
+              {Columns.map((column,idx) => {
+                const columnTickets = allTickets.filter(
+                  (ticket: TicketType) => ticket.ticket_state === column
+                );
+                return (
+                  <DisplayTickets
+                    key={idx}
+                    column={column}
+                    activeId={activeId}
+                    tickets={columnTickets}
+                  />
+                );
+              })}
+              <DragOverlay dropAnimation={null}>
+                {activeId
+                  ? allTickets.find(
+                      (t) => String(t.id) === String(activeId)
+                    ) && (
+                      <ShowSpecifiedTickets
+                        item={
+                          allTickets.find(
+                            (t) => String(t.id) === String(activeId)
+                          )!
+                        }
+                      />
+                    )
+                  : null}
+              </DragOverlay>
+            </DndContext>
+          )}
         </div>
       )}
       {/* <div className=" min-h-screen flex-1 rounded-xl md:min-h-min grid grid-cols-5 gap-4 text-xs">

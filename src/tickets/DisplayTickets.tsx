@@ -84,14 +84,14 @@ import ShowSpecifiedTickets from "./ShowSpecifiedTickets";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 
 interface ColumnTypeProp {
-  column: ColumnsType;
+  column: string;
   tickets: TicketType[];
   activeId?: string | null;
 }
 
 const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
   const { setNodeRef,isOver } = useDroppable({
-    id: column.id,
+    id: column,
   });
 
   const columnTextColors: Record<string, string> = {
@@ -101,13 +101,13 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
     Resolved: "text-green-500",
     OnHold: "text-orange-500",
   };
-  const columBgColors: Record<string, string> = {
-    ToDo: "bg-gray-500 outline-gray-100 ",
-    InProgress: "bg-blue-500 outline-blue-100",
-    Cancelled: "bg-red-500",
-    Resolved: "bg-green-500",
-    OnHold: "bg-orange-500",
-  };
+  // const columBgColors: Record<string, string> = {
+  //   ToDo: "bg-gray-500 outline-gray-100 ",
+  //   InProgress: "bg-blue-500 outline-blue-100",
+  //   Cancelled: "bg-red-500",
+  //   Resolved: "bg-green-500",
+  //   OnHold: "bg-orange-500",
+  // };
   const columnColors: Record<string, string> = {
     ToDo: "bg-gray-50/20",
     InProgress: "bg-blue-50/20",
@@ -125,7 +125,7 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
       <Card
         className={cn(
           "p-1.5 rounded-sm bg-transparent",
-          columBgColors[column.title] || "bg-gray-400"
+           "bg-gray-400"
         )}
       >
         <div className={cn("w-full h-full flex justify-between py-2")}>
@@ -133,8 +133,8 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
             <span className="outline-1 px-2 py-1 bg-white font-bold rounded-full text-sm">
               {tickets.length > 0 ? tickets.length : "0"}
             </span>
-            <span className={cn("uppercase font-bold text-white text-sm")}>
-              {column.title}
+            <span className={cn("uppercase font-bold text-black text-sm")}>
+              {column}
             </span>
           </div>
           <div className=" px-1 flex items-center">

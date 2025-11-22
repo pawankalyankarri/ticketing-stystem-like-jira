@@ -19,7 +19,15 @@ interface CreateBoardProps{
 
 interface AddUserProps{
     email: string[],
-  role: string
+    role: string
+}
+
+interface SignUpUserProps{
+    first_name: string,
+    last_name: string,
+    email: string,
+    password: string,
+    phone_number: string,
 }
 
 export const BoardWorkflowAPI = () =>{
@@ -113,6 +121,16 @@ export const BoardWorkflowAPI = () =>{
         }
     },[])
 
+    const SignUpUser = useCallback(async(data:SignUpUserProps)=>{
+        try{
+            const res = await axios.post("/api/users/user-sign-up",data)
+            return res
+        }
+        catch(err){
+            console.log('signupuser',err)
+        }
+    },[])
+
     
 
     return {
@@ -124,5 +142,6 @@ export const BoardWorkflowAPI = () =>{
         CreateBoard,
         FetchAllBoardsWithWorkflows,
         AddUser,
+        SignUpUser,
     }
 }
