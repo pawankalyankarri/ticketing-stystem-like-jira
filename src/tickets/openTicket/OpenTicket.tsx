@@ -243,7 +243,7 @@ const OpenTicket = () => {
                       <div className="">
                         <span className="text-lg font-bold">Activity</span>
                         <div className="w-full ">
-                          <Tabs defaultValue="history" className="w-full">
+                          <Tabs defaultValue="comment" className="w-full">
                             <TabsList className="w-[400px]">
                               <TabsTrigger value="all">All</TabsTrigger>
                               <TabsTrigger value="comment">

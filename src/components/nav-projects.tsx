@@ -121,7 +121,7 @@ export function NavProjects({
                     <SidebarMenuSubItem key={item.id}>
                       <SidebarMenuSubButton asChild>
                         
-                        <span className="font-bold capitalize text-white">{item.board_name}</span>
+                        <span className="font-bold capitalize text-gray-800">{item.board_name}</span>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

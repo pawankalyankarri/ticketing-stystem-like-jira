@@ -63,6 +63,7 @@ const UpdateTicket = () => {
   const [update_id, setUpdate_id] = useState<string>("");
   const [fileObjects, setFileObjects] = useState<File[]>([]);
   const [tktId, setTktId] = useState<string>("");
+  const [previews,setPreviews] = useState<string|null>("")
   const [formData, setFormData] = useState<TicketFormDataType>({
     ticket_status: "",
     ticket_state: "",
@@ -110,6 +111,7 @@ const UpdateTicket = () => {
         });
         setUpdate_id(String(res.id));
         setTktId(String(res.ticket_id));
+        setPreviews(String(res.file_attachment_name))
       } catch (err) {
         console.log("err", err);
       }
@@ -118,13 +120,13 @@ const UpdateTicket = () => {
   }, [params.id]);
   // console.log(formData);
 
-  function getImageSrc(url: string) {
-    return url.replace("\\", "/");
-  }
+  // function getImageSrc(url: string) {
+  //   return url.replace("\\", "/");
+  // }
 
-  console.log(
-    getImageSrc("D:/algofusion/ticketing_backend/fileFileds\\lion.webp")
-  );
+  // console.log(
+  //   getImageSrc("D:/algofusion/ticketing_backend/fileFileds\\lion.webp")
+  // );
 
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData((prevData) => ({
@@ -156,6 +158,7 @@ const UpdateTicket = () => {
     setFileObjects((prev) => [...prev, ...fileList]);
     // setFormData((prev)=>({...prev,'file_attach' : fileList}))
   };
+  console.log('fileobjects',fileObjects)
 
   // console.log("file", formData.file_attachment);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -179,6 +182,8 @@ const UpdateTicket = () => {
     // navigate("/tickets")
   };
   // console.log('formdata', formData)
+
+  console.log('preview',previews)
   return (
     <div>
       <Dialog
@@ -189,7 +194,7 @@ const UpdateTicket = () => {
           if (!value) navigate("/tickets"); //  navigate when closed
         }}
       >
-        <DialogContent className="h-[95%] min-w-[80%] overflow-y-auto  ">
+        <DialogContent className="h-[95%] min-w-[80%] overflow-y-auto py-2 ">
           <DialogHeader>
             <DialogTitle>Create New Ticket </DialogTitle>
             <DialogDescription asChild>
@@ -272,7 +277,9 @@ const UpdateTicket = () => {
                             onChange={handleImageChange}
                           />
                         </div>
-                        {/* <>
+                         <div>
+                          
+                          {/* <>
                           {
                             formData.file_attachment.length > 0 &&
                             formData.file_attachment.some(
@@ -287,7 +294,7 @@ const UpdateTicket = () => {
                                       key={idx}
                                     >
                                       <img
-                                        src={`/${url}`}
+                                        src={`http://127.0.0.1:9002/fileFileds/${previews}`}
                                         alt={`Attachment ${idx}`}
                                         className="w-32 h-32 object-cover rounded"
                                       />
@@ -305,12 +312,54 @@ const UpdateTicket = () => {
                                       </span>
                                     </div>
                                   ) : null
-                                )}
-
+                                )}}
+                               
                                 
-                              </div>
-                            )}
-                        </> */}
+                                
+                                  
+                                    
+                                 
+                                
+                              
+                           
+                        </>  */}
+
+
+
+
+                         </div>
+
+                         <div>
+                          {fileObjects.length > 0 && 
+                          fileObjects.map((file,idx)=>{
+                            const url = URL.createObjectURL(file)
+                            return(
+                              <div
+                                      className="relative w-fit h-full  "
+                                      key={idx}
+                                    >
+                                      <img
+                                        src={url}
+                                        alt={`Attachment ${idx}`}
+                                        className="w-32 h-32 object-cover rounded"
+                                      />
+                                      <span className="absolute right-0 top-1 z-0 hover:z-10 ">
+                                        <FontAwesomeIcon
+                                          icon={faTrash}
+                                          className="text-red-500 cursor-pointer"
+                                          onClick={() =>{
+                                            setFormData((prev) => ({
+                                              ...prev,
+                                              file_attachment: [],
+                                            }))
+                                            setFileObjects([])
+                                          }}
+                                        />
+                                      </span>
+                                    </div>
+                            )
+                          })}
+                         </div>
                       </div>
                       <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                         {/* comments */}
