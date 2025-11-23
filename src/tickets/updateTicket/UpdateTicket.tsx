@@ -63,7 +63,7 @@ const UpdateTicket = () => {
   const [update_id, setUpdate_id] = useState<string>("");
   const [fileObjects, setFileObjects] = useState<File[]>([]);
   const [tktId, setTktId] = useState<string>("");
-  const [previews,setPreviews] = useState<string|null>("")
+  const [previews, setPreviews] = useState<string | null>("");
   const [formData, setFormData] = useState<TicketFormDataType>({
     ticket_status: "",
     ticket_state: "",
@@ -111,7 +111,7 @@ const UpdateTicket = () => {
         });
         setUpdate_id(String(res.id));
         setTktId(String(res.ticket_id));
-        setPreviews(String(res.file_attachment_name))
+        setPreviews(String(res.file_attachment_name));
       } catch (err) {
         console.log("err", err);
       }
@@ -149,8 +149,10 @@ const UpdateTicket = () => {
     }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement> | FileList
+  ) => {
+    const files = e instanceof FileList ? e : e.target.files;
     if (!files) return;
 
     const fileList = Array.from(files);
@@ -158,7 +160,7 @@ const UpdateTicket = () => {
     setFileObjects((prev) => [...prev, ...fileList]);
     // setFormData((prev)=>({...prev,'file_attach' : fileList}))
   };
-  console.log('fileobjects',fileObjects)
+  console.log("fileobjects", fileObjects);
 
   // console.log("file", formData.file_attachment);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -183,7 +185,7 @@ const UpdateTicket = () => {
   };
   // console.log('formdata', formData)
 
-  console.log('preview',previews)
+  console.log("preview", previews);
   return (
     <div>
       <Dialog
@@ -268,8 +270,30 @@ const UpdateTicket = () => {
                         {/* attachments */}
                         <div className=" w-full h-full grid gap-2">
                           <Label htmlFor="file_attachment">Attachments</Label>
+
+                          <div
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              handleImageChange(e.dataTransfer.files);
+                            }}
+                            className="border-2 border-dashed p-4 cursor-pointer  rounded hover:bg-gray-50"
+                            onClick={() => {
+                              document
+                                .getElementById("file_attachment")
+                                ?.click();
+                            }}
+                          >
+                            <p className="text-center text-sm text-gray-600">
+                              Drag & Drop files here
+                              <br />
+                              or click to browse
+                            </p>
+                          </div>
+
                           <Input
                             type="file"
+                            hidden
                             id="file_attachment"
                             name="file_attachment"
                             className="text-sm"
@@ -277,8 +301,7 @@ const UpdateTicket = () => {
                             onChange={handleImageChange}
                           />
                         </div>
-                         <div>
-                          
+                        <div>
                           {/* <>
                           {
                             formData.file_attachment.length > 0 &&
@@ -323,43 +346,39 @@ const UpdateTicket = () => {
                               
                            
                         </>  */}
+                        </div>
 
-
-
-
-                         </div>
-
-                         <div>
-                          {fileObjects.length > 0 && 
-                          fileObjects.map((file,idx)=>{
-                            const url = URL.createObjectURL(file)
-                            return(
-                              <div
-                                      className="relative w-fit h-full  "
-                                      key={idx}
-                                    >
-                                      <img
-                                        src={url}
-                                        alt={`Attachment ${idx}`}
-                                        className="w-32 h-32 object-cover rounded"
-                                      />
-                                      <span className="absolute right-0 top-1 z-0 hover:z-10 ">
-                                        <FontAwesomeIcon
-                                          icon={faTrash}
-                                          className="text-red-500 cursor-pointer"
-                                          onClick={() =>{
-                                            setFormData((prev) => ({
-                                              ...prev,
-                                              file_attachment: [],
-                                            }))
-                                            setFileObjects([])
-                                          }}
-                                        />
-                                      </span>
-                                    </div>
-                            )
-                          })}
-                         </div>
+                        <div>
+                          {fileObjects.length > 0 &&
+                            fileObjects.map((file, idx) => {
+                              const url = URL.createObjectURL(file);
+                              return (
+                                <div
+                                  className="relative w-fit h-full  "
+                                  key={idx}
+                                >
+                                  <img
+                                    src={url}
+                                    alt={`Attachment ${idx}`}
+                                    className="w-32 h-32 object-cover rounded"
+                                  />
+                                  <span className="absolute right-0 top-1 z-0 hover:z-10 ">
+                                    <FontAwesomeIcon
+                                      icon={faTrash}
+                                      className="text-red-500 cursor-pointer"
+                                      onClick={() => {
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          file_attachment: [],
+                                        }));
+                                        setFileObjects([]);
+                                      }}
+                                    />
+                                  </span>
+                                </div>
+                              );
+                            })}
+                        </div>
                       </div>
                       <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                         {/* comments */}

@@ -43,7 +43,7 @@ const TicketsDashboard = () => {
   const Columns: string[] = [
     "ToDo",
     "InProgress",
-    "OnHold",
+    "On Hold",
     "Resolved",
     "Cancelled",
     "Re-Open",
