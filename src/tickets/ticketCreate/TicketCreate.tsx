@@ -99,29 +99,45 @@ const TicketCreate = () => {
     // console.log(formData);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = e.target.files;
+  //   if (!files) return;
+
+  //   const newFileNames = Array.from(files).map((file) => file.name);
+
+  //   setImages((prev) => [...prev, ...newFileNames]);
+  //   setFilefields(Array.from(files).map((file) => URL.createObjectURL(file)));
+
+  //   // setFormData((prev) => ({
+  //   //   ...prev,
+  //   //   file_attachment: [...images, ...newFileNames],
+  //   // }));
+  //   const fileList = Array.from(files);
+  //   const names = fileList.map((file) => file.name);
+
+  //   setFileObjects((prev) => [...prev, ...fileList]);
+
+  //   // update form data
+  //   // setFormData((prev) => ({
+  //   //   ...prev,
+  //   //   file_attachment: [...prev.file_attachment, ...names],
+  //   // }));
+  // };
+
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement> | FileList
+  ) => {
+    // console.log(e)
+    const files = e instanceof FileList ? e : e.target.files;
     if (!files) return;
 
-    const newFileNames = Array.from(files).map((file) => file.name);
+    const newFiles = Array.from(files);
+
+    const newFileNames = newFiles.map((file) => file.name);
 
     setImages((prev) => [...prev, ...newFileNames]);
-    setFilefields(Array.from(files).map((file) => URL.createObjectURL(file)));
-
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   file_attachment: [...images, ...newFileNames],
-    // }));
-    const fileList = Array.from(files);
-    const names = fileList.map((file) => file.name);
-
-    setFileObjects((prev) => [...prev, ...fileList]);
-
-    // update form data
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   file_attachment: [...prev.file_attachment, ...names],
-    // }));
+    setFilefields(newFiles.map((file) => URL.createObjectURL(file)));
+    setFileObjects((prev) => [...prev, ...newFiles]);
   };
 
   const handleInputChange = (
@@ -240,7 +256,7 @@ const TicketCreate = () => {
                   </div>
                   <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                     {/* attachments */}
-                    <div className=" w-full h-full grid gap-2">
+                    {/* <div className=" w-full h-full grid gap-2">
                       <Label htmlFor="file_attachment">Attachments</Label>
                       <Input
                         type="file"
@@ -251,7 +267,41 @@ const TicketCreate = () => {
                         multiple
                         onChange={handleImageChange}
                       />
+                    </div> */}
+
+                    <div className="w-full h-full grid gap-2">
+                      <Label htmlFor="file_attachment">Attachments</Label>
+
+                      <div
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          handleImageChange(e.dataTransfer.files);
+                        }}
+                        className="border-2 border-dashed rounded-md p-4 cursor-pointer
+               hover:bg-gray-50 transition"
+                        onClick={() =>
+                          document.getElementById("file_attachment")?.click()
+                        }
+                      >
+                        <p className="text-center text-sm text-gray-600">
+                          Drag & Drop files here
+                          <br />
+                          or click to browse
+                        </p>
+                      </div>
+
+                      <Input
+                        type="file"
+                        id="file_attachment"
+                        name="file_attachment"
+                        className="hidden"
+                        key={keyval}
+                        multiple
+                        onChange={handleImageChange}
+                      />
                     </div>
+
                     <>
                       {fileFields &&
                         fileFields.length > 0 &&
@@ -273,12 +323,14 @@ const TicketCreate = () => {
                                     <FontAwesomeIcon
                                       icon={faTrash}
                                       className="text-red-500 cursor-pointer"
-                                      // onClick={() =>
-                                      //   setFormData((prev) => ({
-                                      //     ...prev,
-                                      //     file_attachment: [],
-                                      //   }))
-                                      // }
+                                      onClick={() =>{
+                                        console.log('running')
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          file_attachment: [],
+                                        }))
+                                        setFilefields([])
+                                       } }
                                     />
                                   </span>
                                 </div>
