@@ -15,6 +15,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Bold,
+  Check,
   Italic,
   List,
   ListOrdered,
@@ -31,6 +32,7 @@ import {
   faClockRotateLeft,
   faComment,
   faGears,
+  faPaperclip,
   faPlus,
   faTriangleExclamation,
   faUsers,
@@ -39,14 +41,29 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import TicketCommnets from "../IndividualTicketComments/TicketComments";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Progress } from "@/components/ui/progress";
 
 const OpenTicket = () => {
   const [ticketDetails, setTicketDetails] = useState<TicketType | null>(null);
   const [createdDateStr, setCreatedDateStr] = useState<String>("");
   const [createdTimeStr, setCreatedTimeStr] = useState<String>("");
   const [open, setOpen] = useState<boolean>(true);
+  const [collabsOpen, setCollabsOpen] = useState<boolean>(true);
   const [collaborators, setCollaborators] = useState<string[]>([]);
-  const [showSelectCollabs,setShowSelectCollabs] = useState<boolean>(false)
+  const [showSelectCollabs, setShowSelectCollabs] = useState<boolean>(false);
   const collaboratorsData = ["Charan", "shiva", "Ram", "Hari"];
 
   const navigate = useNavigate();
@@ -73,9 +90,6 @@ const OpenTicket = () => {
     }
   }, []);
   console.log(ticketDetails);
-
-
-   
 
   useEffect(() => {
     if (ticketDetails) {
@@ -146,7 +160,85 @@ const OpenTicket = () => {
               <span className="border-2 border-orange-400 text-orange-400 p-1 text-sm px-2 rounded ">
                 {ticketDetails.ticket_status}
               </span>
-              <span
+
+              <div className="flex gap-2 items-center">
+                <div className="">
+                 
+                            <Popover
+                              open={collabsOpen}
+                              onOpenChange={setCollabsOpen}
+                            >
+                              <PopoverTrigger asChild>
+                              <span className="text-sm border border-black p-1.5 cursor-pointer rounded">Assign Parent</span>
+                              </PopoverTrigger>
+                              <PopoverContent className={cn("p-0")}>
+                                <Command className="text-xs">
+                                  <CommandInput
+                                    placeholder="Search Here..."
+                                    className="h-9 text-xs"
+                                  />
+
+                                  <CommandList>
+                                    <CommandEmpty>
+                                      No results found.
+                                    </CommandEmpty>
+
+                                    <CommandGroup>
+                                      {collaboratorsData.map((item) => {
+                                        // const isSelected =
+                                        //   collaborators.includes(item); // <-- MULTI-SELECT LOGIC
+
+                                        return (
+                                          <CommandItem
+                                            key={item}
+                                            className="text-xs capitalize flex items-center"
+                                            onSelect={() => {
+                                              let updated;
+
+                                              // if (isSelected) {
+                                              //   // remove item
+                                              //   updated = collaborators.filter(
+                                              //     (val) => val !== item
+                                              //   );
+                                              // } else {
+                                              //   // add item
+                                              //   updated = [
+                                              //     ...collaborators,
+                                              //     item,
+                                              //   ];
+                                              // }
+
+                                              // setCollaborators(updated); // send updated list
+                                            }}
+                                          >
+                                            {/* Checkbox */}
+                                            <Check
+                                              className={cn(
+                                                "mr-2",
+                                                // isSelected
+                                                //   ? "opacity-100"
+                                                //   : "opacity-0"
+                                              )}
+                                            />
+
+                                            {item}
+                                          </CommandItem>
+                                        );
+                                      })}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                         
+                </div>
+
+                <div className="border border-black rounded p-1 cursor-pointer">
+                  <span><FontAwesomeIcon icon={faPaperclip} size={"xs"} /></span>
+                  <span className="capitalize text-sm">Add Attachment</span> 
+                  </div>
+             
+              <div
                 className="float-right p-1.5 bg-gray-300 rounded"
                 onClick={() => navigate("/tickets")}
               >
@@ -155,7 +247,8 @@ const OpenTicket = () => {
                   className="font-bold cursor-pointer"
                   size="sm"
                 />
-              </span>
+              </div>
+               </div>
             </DialogTitle>
           </DialogHeader>
           <DialogDescription
@@ -302,9 +395,9 @@ const OpenTicket = () => {
                   </div>
                 </div>
               </div>
-              <div className="overflow-y-auto grid gap-5 h-fit">
+              <div className="overflow-y-auto grid gap-5 min-h-40">
                 <Card>
-                  <CardContent className="grid gap-4">
+                  <CardContent className="grid gap-4 p-2">
                     <div className="flex justify-between text-sm">
                       <p>Details</p>
                       <p className="underline">Add To Watchlist</p>
@@ -320,9 +413,30 @@ const OpenTicket = () => {
                       />
                     </div>
                     <div className="grid grid-cols-2">
+                      <Label className="flex items-center">Allocated Hours</Label>
+                      <span className="border border-gray-500 p-1 rounded">None</span>
+                    </div>
+
+                    <div className="grid grid-cols-2">
+                      <Label>Time Tracking</Label>
+                      <span className="grid">
+                        <Progress className="w-[80%]" />
+                        <span className="flex justify-end text-xs">
+                          {" "}
+                          0 % Completed
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2">
+                      <Label className="flex items-center">Hours Spent</Label>
+                      <span className="border border-gray-500  p-1 rounded">None</span>
+                    </div>
+
+                    <div className="grid grid-cols-2">
                       <Label>Due Date</Label>
                       {ticketDetails.end_date ? (
-                        <span className="border-2 border-red-500 w-fit text-red-500 p-1.5 rounded">
+                        <span className="border-2 border-red-500 w-full text-red-500 p-1 rounded">
                           <FontAwesomeIcon icon={faTriangleExclamation} />{" "}
                           {formattedDate(ticketDetails.end_date)}
                         </span>
@@ -332,18 +446,25 @@ const OpenTicket = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-1">
                       <Label>Collaborators</Label>
-                      <span className="flex gap-1  items-center">
-                        {collaborators.map(item=>{
-                          return(
-                             <Avatar>
-                          {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
-                          <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white ">
-                            {item[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                          )
-                        })}
-                        <Avatar>
+                      <span className="flex gap-0.5  items-center">
+                        <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
+                          {collaborators.slice(0, 2).map((item, idx) => (
+                            <Avatar key={idx} className="w-6 h-6">
+                              <AvatarFallback className="uppercase font-bold bg-blue-950 text-white text-[10px]">
+                                {item[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                          ))}
+
+                          {collaborators.length > 2 && (
+                            <Avatar className="w-6 h-6">
+                              <AvatarFallback className="uppercase font-bold bg-gray-500 text-white text-[10px]">
+                                +{collaborators.length - 2}
+                              </AvatarFallback>
+                            </Avatar>
+                          )}
+                        </div>
+                        <Avatar className="w-6 h-6">
                           {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
                           <AvatarFallback className="uppercase font-bold bg-white text-md  ">
                             <FontAwesomeIcon
@@ -353,26 +474,112 @@ const OpenTicket = () => {
                             />
                           </AvatarFallback>
                         </Avatar>
-                        <Avatar className="cursor-pointer">
+                        {/* <Avatar className="cursor-pointer">
                           <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white " onClick={()=>setShowSelectCollabs(!showSelectCollabs)}>
                             <FontAwesomeIcon icon={faPlus} />
                           </AvatarFallback>
-                        </Avatar>
-                       
-                        {showSelectCollabs && 
-                        <span >
-                          <SelectSearch
-                            SelectSearchData={collaboratorsData}
-                            title={"Select Assignee"}
-                            size={"md"}
-                            value={""}
-                            onChange={(val:string)=>setCollaborators((prev)=>([...prev,val]))}
-                          />
-                        </span>}
-                        {!collaborators.includes("admin")&& <span onClick={()=>setCollaborators((prev)=>([...prev,"admin"]))}>Assign to me</span>}
+                        </Avatar> */}
+
+                        {
+                          <span>
+                            <Popover
+                              open={collabsOpen}
+                              onOpenChange={setCollabsOpen}
+                            >
+                              <PopoverTrigger asChild>
+                                <Avatar className="cursor-pointer w-6 h-6">
+                                  <AvatarFallback
+                                    className="uppercase font-bold bg-blue-950 text-md text-white "
+                                    onClick={() =>
+                                      setShowSelectCollabs(!showSelectCollabs)
+                                    }
+                                  >
+                                    <FontAwesomeIcon icon={faPlus} />
+                                  </AvatarFallback>
+                                </Avatar>
+                              </PopoverTrigger>
+                              <PopoverContent className={cn("p-0")}>
+                                <Command className="text-xs">
+                                  <CommandInput
+                                    placeholder="Search Here..."
+                                    className="h-9 text-xs"
+                                  />
+
+                                  <CommandList>
+                                    <CommandEmpty>
+                                      No results found.
+                                    </CommandEmpty>
+
+                                    <CommandGroup>
+                                      {collaboratorsData.map((item) => {
+                                        const isSelected =
+                                          collaborators.includes(item); // <-- MULTI-SELECT LOGIC
+
+                                        return (
+                                          <CommandItem
+                                            key={item}
+                                            className="text-xs capitalize flex items-center"
+                                            onSelect={() => {
+                                              let updated;
+
+                                              if (isSelected) {
+                                                // remove item
+                                                updated = collaborators.filter(
+                                                  (val) => val !== item
+                                                );
+                                              } else {
+                                                // add item
+                                                updated = [
+                                                  ...collaborators,
+                                                  item,
+                                                ];
+                                              }
+
+                                              setCollaborators(updated); // send updated list
+                                            }}
+                                          >
+                                            {/* Checkbox */}
+                                            <Check
+                                              className={cn(
+                                                "mr-2",
+                                                isSelected
+                                                  ? "opacity-100"
+                                                  : "opacity-0"
+                                              )}
+                                            />
+
+                                            {item}
+                                          </CommandItem>
+                                        );
+                                      })}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          </span>
+                        }
+                        {!collaborators.includes("admin") && (
+                          <span
+                            className="cursor-pointer text-xs"
+                            onClick={() =>
+                              setCollaborators((prev) => [...prev, "admin"])
+                            }
+                          >
+                            Assign to me
+                          </span>
+                        )}
                       </span>
-                       
                     </div>
+                    <div className="grid grid-cols-2">
+                      <Label className="flex items-center text-black">Label</Label>
+                      <span className="border border-gray-500  p-1 rounded">None</span>
+                    </div>
+                     <div className="grid grid-cols-2">
+                      <Label className="flex items-center">Milestone</Label>
+                      <span className="border border-gray-500  p-1 rounded">None</span>
+                    </div>
+                    
                     <div className="grid grid-cols-2">
                       <Label className="capitalize">assignee</Label>
                       <span className="flex items-center gap-2">
@@ -385,6 +592,8 @@ const OpenTicket = () => {
                         {ticketDetails.assignee}
                       </span>
                     </div>
+                     
+                     
                   </CardContent>
                 </Card>
                 <div className="flex flex-col items-end">
@@ -395,6 +604,7 @@ const OpenTicket = () => {
                   )}
                   <span>Updated {formatTimeAgo(ticketDetails.updated_at)}</span>
                 </div>
+                
               </div>
             </div>
           </DialogDescription>
