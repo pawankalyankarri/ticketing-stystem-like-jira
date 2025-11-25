@@ -6,6 +6,7 @@ import {
   BookOpen,
   Bot,
   Command,
+  FileKey,
   Frame,
   GalleryVerticalEnd,
   Map,
@@ -26,7 +27,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { faTableColumns, faTicket } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faGears, faTableColumns, faTicket, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
+
 import { BoardWorkflowAPI } from "@/UserProfile/boardWorkflowAPI/BoardWorkflowAPI";
 
 // This is sample data.
@@ -60,6 +62,34 @@ const data = {
       url: "#",
       icon: faTicket,
       navigate: "/tickets",
+      isActive: true,
+    },
+    {
+      title : "my tasks",
+      url: "#",
+      icon: faUser,
+      // navigate: "",
+      isActive: true,
+    },
+    {
+      title : "watching",
+      url: "#",
+      icon: faEye,
+      // navigate: "",
+      isActive: true,
+    },
+    {
+      title : "task assignment",
+      url: "#",
+      icon: faUsers,
+      // navigate: "",
+      isActive: true,
+    },
+    {
+      title : "worklogs",
+      url: "#",
+      icon: faGears,
+      // navigate: "",
       isActive: true,
     },
     // {
@@ -106,7 +136,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
 
   return (
-    <Sidebar collapsible="icon" {...props} className="text-gray-800">
+    <Sidebar collapsible="icon" {...props} className="text-gray-800 grid gap-1">
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>

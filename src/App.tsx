@@ -17,6 +17,7 @@ import { Outlet } from "react-router-dom"
 import UserProfilePage from "./UserProfile/UserProfilePage"
 import { useEffect, useState } from "react"
 import { BoardWorkflowAPI } from "./UserProfile/boardWorkflowAPI/BoardWorkflowAPI"
+import { Card } from "./components/ui/card"
 
 export default function Page() {
   
@@ -24,8 +25,8 @@ export default function Page() {
   return (
     <SidebarProvider className="bg-gray-50"  >
       <AppSidebar  />
-      <SidebarInset className="overflow-hidden bg-gray-100">
-        <header className="flex h-fit py-0.5 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-fit">
+      <SidebarInset className="overflow-hidden">
+        <header className="flex h-fit py-0.5 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-fit border-b-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator
@@ -47,6 +48,7 @@ export default function Page() {
             </Breadcrumb> */}
           </div>
           <div className="w-full flex justify-end items-end mr-2"><UserProfilePage/></div>
+          
         </header>
         {/* here everyting  will be rendered */}
         

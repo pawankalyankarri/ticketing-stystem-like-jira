@@ -46,7 +46,7 @@ export function SignupForm() {
       ...prev,
       [name]: String(value),
     }));
-    console.log(details);
+    // console.log(details);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,12 +67,14 @@ export function SignupForm() {
   };
 
   return (
+    <div className="flex items-center justify-center  min-h-screen ">
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="w-full max-w-md m-auto my-5 rounded-xl shadow-lg bg-white"
+      className="  w-full max-w-md  rounded-xl shadow-lg bg-white"
     >
+      <div className="flex flex-col w-full ">
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Create an account</CardTitle>
@@ -183,6 +185,8 @@ export function SignupForm() {
           </form>
         </CardContent>
       </Card>
+      </div>
     </motion.div>
+    </div>
   );
 }

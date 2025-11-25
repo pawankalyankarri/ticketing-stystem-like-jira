@@ -12,6 +12,8 @@ import WorkflowStatusSelect from "./UserProfile/CreateWorkflow/workflowStatusSel
 import BoardsPage from "./UserProfile/Boards/BoardsPage";
 import AddUserPage from "./UserProfile/addUser/AddUserPage";
 import { SignupForm } from "./components/signup-form";
+import { LoginForm } from "./components/login-form";
+import Testing from "./tickets/Testing";
 export const AllRoutes = () => {
   const routes = [
     {
@@ -68,6 +70,15 @@ export const AllRoutes = () => {
       path: "signup",
       element: <SignupForm />,
     },
+    {
+      path : "login",
+      element : <LoginForm/>
+    },
+    {
+      path : "testing",
+      element : <Testing/>
+    }
+    
   ];
   return useRoutes(routes);
 };
