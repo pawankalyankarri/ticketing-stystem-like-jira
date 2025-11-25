@@ -73,15 +73,16 @@
 // export default DisplayTickets;
 
 import { Card } from "@/components/ui/card";
-import type { ColumnsType } from "./TicketsDashboard";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";
 import type { TicketType } from "./hooks/UseTickets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faCircleUser, faPlus} from "@fortawesome/free-solid-svg-icons";
 // import { motion } from "motion/react";
 import ShowSpecifiedTickets from "./ShowSpecifiedTickets";
-import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+import { motion } from "framer-motion";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 
 interface ColumnTypeProp {
   column: string;
@@ -90,17 +91,19 @@ interface ColumnTypeProp {
 }
 
 const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
-  const { setNodeRef,isOver } = useDroppable({
+  const [activeColumn, setActiveColumn] = useState<string>("");
+  const [newTodo,setNewTodo] = useState<string>("")
+  const { setNodeRef, isOver } = useDroppable({
     id: column,
   });
 
-  const columnTextColors: Record<string, string> = {
-    ToDo: "text-gray-500 ",
-    InProgress: "text-blue-500",
-    Cancelled: "text-red-500",
-    Resolved: "text-green-500",
-    OnHold: "text-orange-500",
-  };
+  // const columnTextColors: Record<string, string> = {
+  //   ToDo: "text-gray-500 ",
+  //   InProgress: "text-blue-500",
+  //   Cancelled: "text-red-500",
+  //   Resolved: "text-green-500",
+  //   OnHold: "text-orange-500",
+  // };
   // const columBgColors: Record<string, string> = {
   //   ToDo: "bg-gray-500 outline-gray-100 ",
   //   InProgress: "bg-blue-500 outline-blue-100",
@@ -108,72 +111,86 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
   //   Resolved: "bg-green-500",
   //   OnHold: "bg-orange-500",
   // };
-  const columnColors: Record<string, string> = {
-    ToDo: "bg-gray-50/20",
-    InProgress: "bg-blue-50/20",
-    Cancelled: "bg-red-50/20",
-    Resolved: "bg-green-50/20",
-    OnHold: "bg-orange-50/20",
-  };
+  // const columnColors: Record<string, string> = {
+  //   ToDo: "bg-gray-50/20",
+  //   InProgress: "bg-blue-50/20",
+  //   Cancelled: "bg-red-50/20",
+  //   Resolved: "bg-green-50/20",
+  //   OnHold: "bg-orange-50/20",
+  // };
   return (
     <div
       className={cn(
-        " aspect-video rounded-xl h-full min-w-[300px] overflow-hidden bg-gray-200",isOver ? "bg-blue-100 border-dashed border-2 border-black" : ""
+        " aspect-video rounded-xl h-full min-w-[300px] overflow-hidden bg-gray-200",
+        isOver ? "bg-blue-100 border-dashed border-2 border-black" : ""
       )}
       ref={setNodeRef}
     >
-      <Card
-        className={cn(
-          "p-1.5 rounded-sm bg-transparent",
-           "bg-gray-400"
-        )}
-      >
+      <Card className={cn("p-1.5 rounded-sm bg-transparent", "bg-gray-200")}>
         <div className={cn("w-full h-full flex justify-between py-2")}>
           <div className="flex gap-3 px-1 items-center">
             <span className="outline-1 px-2 py-1 bg-white font-bold rounded-full text-sm">
               {tickets.length > 0 ? tickets.length : "0"}
             </span>
-            <span className={cn("uppercase font-bold text-black text-sm")}>
+            <span className={cn("uppercase font-bold text-gray-900 text-sm")}>
               {column}
             </span>
           </div>
           <div className=" px-1 flex items-center">
             <FontAwesomeIcon
               icon={faPlus}
-              className="font-bold text-white cursor-pointer"
+              className="font-bold text-gray-800 cursor-pointer"
               size="xl"
+              onClick={() => setActiveColumn(column)}
             />
           </div>
         </div>
       </Card>
       <div className="flex flex-col h-[calc(100%-60px)] p-1 overflow-auto thin-scrollbar gap-1">
-        {/* <div className="grid gap-1 flex-1 mt-1 text-xs"> */}
+        <div className="w-full px-2">
+          {activeColumn === column && (
+            <div className="bg-white rounded-md ">
+              <Textarea className="resize-none border-0 outline-0 " cols={2} value={newTodo}  onChange={(e)=>setNewTodo(e.target.value)}  />
 
-          {tickets
-            .filter((item) => String(item.id) !== String(activeId)) // <-- hide the card being dragged
-            .map((item: TicketType) => {
-              return (
-                <motion.div
-                  key={item.id}
-                  layout // this enables smooth position transition
-                  initial={{ opacity: 1, scale: 1 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  // exit={{ opacity: 0 }}
-                  transition={{
-                    layout: { type: "spring", stiffness: 300, damping: 25 },
-                    // default: { duration: 0.2 },
-                  }}
-                >
-                  <ShowSpecifiedTickets
-                    item={item}
-                    
-                    // isDragging={activeId === String(item.id)}
+              <div className="w-full flex justify-start gap-3 p-2">
+                <span></span>
+                <span>
+                  <FontAwesomeIcon
+                    icon={faCalendar}
+                    className="text-gray-500 cursor-pointer"
+                    size="xl"
                   />
-                </motion.div>
-              );
-            })}
+                </span>
+                <span className=" ">
+                  <FontAwesomeIcon icon={faCircleUser} className="text-gray-500 cursor-pointer" size="xl" />
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+        {tickets
+          .filter((item) => String(item.id) !== String(activeId)) // hide the card being dragged
+          .map((item: TicketType) => {
+            return (
+              <motion.div
+                key={item.id}
+                layout // this enables smooth position transition
+                initial={{ opacity: 1, scale: 1 }}
+                animate={{ opacity: 1, scale: 1 }}
+                // exit={{ opacity: 0 }}
+                transition={{
+                  layout: { type: "spring", stiffness: 300, damping: 25 },
+                  // default: { duration: 0.2 },
+                }}
+              >
+                <ShowSpecifiedTickets
+                  item={item}
 
-        {/* </div> */}
+                  // isDragging={activeId === String(item.id)}
+                />
+              </motion.div>
+            );
+          })}
       </div>
     </div>
   );

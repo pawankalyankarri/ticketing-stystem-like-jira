@@ -29,6 +29,10 @@ interface SignUpUserProps{
     password: string,
     phone_number: string,
 }
+interface SignInUserProps {
+    email : string,
+    password : string
+}
 
 export const BoardWorkflowAPI = () =>{
     const CreateWorkflow = useCallback(async(data : CreateWorkflowProps)=>{
@@ -131,6 +135,17 @@ export const BoardWorkflowAPI = () =>{
         }
     },[])
 
+    const SingInUser = useCallback(async(data : SignInUserProps) => {
+        try{
+            const res = await axios.post("",data)
+            return res
+        }
+        catch(err){
+            console.log('signinuser',err)
+        }
+
+    },[])
+
     
 
     return {
@@ -143,5 +158,6 @@ export const BoardWorkflowAPI = () =>{
         FetchAllBoardsWithWorkflows,
         AddUser,
         SignUpUser,
+        SingInUser
     }
 }

@@ -52,7 +52,8 @@ export interface TicketFormDataType {
 }
 
 const TicketCreate = () => {
-  const [open, setOpen] = useState<Boolean>(false);
+  const [sdopen, setsdOpen] = useState<boolean>(false);
+  const [edopen, setedOpen] = useState<boolean>(false);
   const [keyval, setKeyval] = useState<number>(0);
   const [bold, setBold] = useState<boolean>(false);
   const [italic, setItalic] = useState<boolean>(false);
@@ -185,12 +186,12 @@ const TicketCreate = () => {
             navigate("/createTicket");
           }}
         />
-        <DialogContent className="h-[95%] min-w-[80%] overflow-y-auto  ">
-          <DialogTitle>Create New Ticket </DialogTitle>
+        <DialogContent className="h-[95%] min-w-[70%] overflow-y-auto p-2 ">
+          <DialogTitle className="uppercase">Create New Ticket </DialogTitle>
 
           <div className="w-full h-full">
             <form
-              className="w-full h-full text-black dark:text-white grid gap-10"
+              className="w-full h-full text-black dark:text-white grid gap-5"
               onSubmit={handleSubmit}
             >
               <div className="w-full h-full grid grid-cols-4 gap-5 pt-5">
@@ -301,17 +302,17 @@ const TicketCreate = () => {
                         onChange={handleImageChange}
                       />
                     </div>
-
-                    <>
+ 
+                    <div className="flex gap-3 h-fit w-fit">
                       {fileFields &&
                         fileFields.length > 0 &&
                         fileFields.some((url) => url) && ( //  check for non-empty strings
-                          <div className="w-[200px] h-[200px] grid gap-2">
+                          <div className="w-[150px] h-[150px] grid gap-2">
                             {/* Render images */}
                             {fileFields.map((url, idx) =>
                               url ? (
                                 <div
-                                  className="relative w-full h-full  "
+                                  className="relative w-fit h-fit "
                                   key={idx}
                                 >
                                   <img
@@ -340,7 +341,7 @@ const TicketCreate = () => {
                             {/* Render trash icon only if images exist */}
                           </div>
                         )}
-                    </>
+                    </div>
                   </div>
                   <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                     {/* comments */}
@@ -416,7 +417,7 @@ const TicketCreate = () => {
                       <Label htmlFor="date" className="px-1">
                         Start Date
                       </Label>
-                      <Popover onOpenChange={setOpen}>
+                      <Popover onOpenChange={setsdOpen} open={sdopen}>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
@@ -449,6 +450,7 @@ const TicketCreate = () => {
                                 ...prev,
                                 start_date: date.toISOString(),
                               }));
+                              setsdOpen(false)
                             }}
                           />
                         </PopoverContent>
@@ -458,7 +460,7 @@ const TicketCreate = () => {
                       <Label htmlFor="date" className="px-1">
                         End Date
                       </Label>
-                      <Popover onOpenChange={setOpen}>
+                      <Popover onOpenChange={setedOpen} open={edopen}>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
@@ -489,6 +491,7 @@ const TicketCreate = () => {
                                 ...prev,
                                 end_date: date.toISOString(),
                               }));
+                              setedOpen(false)
                             }}
                           />
                         </PopoverContent>

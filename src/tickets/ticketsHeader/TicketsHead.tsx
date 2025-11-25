@@ -3,8 +3,11 @@ import { Card } from "@/components/ui/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCodeMerge,
+  faFileLines,
+  faGears,
   faGrip,
   faListUl,
+  faPaperclip,
   faPlus,
   faRefresh,
   faSearch,
@@ -21,6 +24,7 @@ import {
   type SetStateAction,
 } from "react";
 import { cn } from "@/lib/utils";
+import { NotepadText } from "lucide-react";
 
 interface TicketHeadProps {
   tickets: TicketType[];
@@ -98,17 +102,10 @@ const TicketsHead = ({
   }
 
   return (
-    <Card className="p-1.5 rounded grid grid-cols-2 text-sm w-full h-full bg-transparent">
-      <div className=""></div>
-      <div className="flex justify-end gap-2 items-center">
-        <span className="relative flex justify-center items-center ">
-          <FontAwesomeIcon icon={faSearch} className="absolute left-2" />
-          <Input
-            className="pl-8 text-xs"
-            value={ticketId}
-            onChange={(e) => ticketIdSearchChange(e)}
-          />
-        </span>
+    <div className="p-1.5 rounded grid grid-cols-3 text-sm w-full h-full text-gray-900 bg-white">
+      <div></div>
+      <div className="flex justify-end gap-2 col-span-2 items-center">
+       
         <span>
           <SelectSearch
             SelectSearchData={severityData}
@@ -127,7 +124,14 @@ const TicketsHead = ({
             onChange={handleStatusChange}
           />
         </span>
-
+         <span className="relative flex justify-center items-center ">
+          <FontAwesomeIcon icon={faSearch} className="absolute left-2" />
+          <Input
+            className="pl-8 text-xs w-[100px]"
+            value={ticketId}
+            onChange={(e) => ticketIdSearchChange(e)}
+          />
+        </span>
         <span
           className="p-1.5 outline-1 rounded shadow cursor-pointer"
           onClick={refreshTickets}
@@ -137,14 +141,23 @@ const TicketsHead = ({
             className={cn(loading ? "animate-spin" : "")}
           />
         </span>
-        <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
+        {/* <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
           <FontAwesomeIcon icon={faCodeMerge} />
-        </span>
-        <span onClick={() => setGridCols(false)} className="cursor-pointer">
+        </span> */}
+        <span onClick={() => setGridCols(false)} className="p-1.5 outline-1 rounded cursor-pointer">
           <FontAwesomeIcon icon={faGrip} />
         </span>
-        <span onClick={() => setGridCols(true)} className="cursor-pointer">
+        <span onClick={() => setGridCols(true)} className="p-1.5 outline-1 rounded cursor-pointer">
           <FontAwesomeIcon icon={faListUl} />
+        </span>
+        <span className="p-1.5 outline-1 rounded shadow cursor-pointer text-gray-900">
+          <FontAwesomeIcon icon={faFileLines} />
+        </span>
+        <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
+          <FontAwesomeIcon icon={faGears} className="text-gray-900" color="gray" />
+        </span>
+        <span className="p-1.5 outline-1 rounded shadow cursor-pointer">
+          <FontAwesomeIcon icon={faPaperclip} className="text-gray-900" color="gray" />
         </span>
         <Button
           className="p-0 bg-blue-500 hover:bg-blue-800 cursor-pointer"
@@ -154,7 +167,7 @@ const TicketsHead = ({
           Create
         </Button>
       </div>
-    </Card>
+    </div>
   );
 };
 

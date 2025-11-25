@@ -22,6 +22,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import type { TicketFormDataType } from "./updateTicket/UpdateTicket";
 import { cn } from "@/lib/utils";
 import DisplayOrderedTickets from "./displayorderedtickets/DisplayOrderedTickets";
+import TicketsHeadTab from "./ticketsHeader/TicketHeadTab";
 
 export interface ColumnsType {
   id: string;
@@ -42,11 +43,11 @@ const TicketsDashboard = () => {
 
   const Columns: string[] = [
     "ToDo",
-    "InProgress",
+    "In Progress",
     "On Hold",
     "Resolved",
     "Cancelled",
-    "Re-Open",
+    "Re Open",
   ];
   // console.log('loc',location.pathname)
 
@@ -183,7 +184,8 @@ const TicketsDashboard = () => {
       )
     );
 
-    setTimeout(() => setActiveId(null), 0);
+    // setTimeout(() => setActiveId(null), 0);
+    setActiveId(null)
 
     // update object
     const updatedTicket = {
@@ -215,7 +217,7 @@ const TicketsDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 pt-0 w-full h-full overflow-hidden">
+    <div className="flex flex-col gap-1 p-4 pt-0 w-full h-full overflow-hidden">
       <div className="w-full h-fit">
         {/* tickets header filters */}
         <Outlet />
@@ -225,7 +227,10 @@ const TicketsDashboard = () => {
           gridCols={gridCols}
           setGridCols={setGridCols}
         />
+
       </div>
+          <div className="h-fit w-full"><TicketsHeadTab/></div>
+
       {/* <div className="grid auto-rows-min  gap-4 md:grid-cols-3">
         <div className="bg-muted/50 aspect-video rounded-xl h-20 w-full" />
         <div className="bg-muted/50 aspect-video rounded-xl  h-20 w-full" />
@@ -253,7 +258,7 @@ const TicketsDashboard = () => {
               onDragEnd={handleDragEnd}
               onDragStart={(event) => setActiveId(String(event.active.id))}
             >
-              {Columns.map((column,idx) => {
+              {Columns.map((column, idx) => {
                 const columnTickets = allTickets.filter(
                   (ticket: TicketType) => ticket.ticket_state === column
                 );

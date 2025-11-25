@@ -51,7 +51,9 @@ export interface TicketFormDataType {
 }
 
 const UpdateTicket = () => {
-  const [open, setOpen] = useState<Boolean>(false);
+  const [sdopen, setsdOpen] = useState<boolean>(false);
+  const [edopen, setedOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const params = useParams();
   const [keyval, setKeyval] = useState<number>(0);
   const [bold, setBold] = useState<boolean>(false);
@@ -196,13 +198,13 @@ const UpdateTicket = () => {
           if (!value) navigate("/tickets"); //  navigate when closed
         }}
       >
-        <DialogContent className="h-[95%] min-w-[80%] overflow-y-auto py-2 ">
+        <DialogContent className="h-[95%] min-w-[70%] overflow-y-auto p-2 ">
           <DialogHeader>
-            <DialogTitle>Create New Ticket </DialogTitle>
+            <DialogTitle className="uppercase">Update Ticket </DialogTitle>
             <DialogDescription asChild>
               <div className="w-full h-full">
                 <form
-                  className="w-full h-full text-black dark:text-white grid gap-10"
+                  className="w-full h-full text-black dark:text-white grid gap-5"
                   onSubmit={handleSubmit}
                 >
                   <div className="w-full h-full grid grid-cols-4 gap-5 pt-5">
@@ -348,15 +350,12 @@ const UpdateTicket = () => {
                         </>  */}
                         </div>
 
-                        <div>
+                        <div className="flex gap-3">
                           {fileObjects.length > 0 &&
                             fileObjects.map((file, idx) => {
                               const url = URL.createObjectURL(file);
                               return (
-                                <div
-                                  className="relative w-fit h-full  "
-                                  key={idx}
-                                >
+                                <div className="relative w-fit " key={idx}>
                                   <img
                                     src={url}
                                     alt={`Attachment ${idx}`}
@@ -447,6 +446,8 @@ const UpdateTicket = () => {
                             />
                           </div>
                         </div>
+
+                       
                       </div>
                     </div>
                     <div className="w-full h-full grid gap-0">
@@ -455,7 +456,7 @@ const UpdateTicket = () => {
                           <Label htmlFor="date" className="px-1">
                             Start Date
                           </Label>
-                          <Popover onOpenChange={setOpen}>
+                          <Popover onOpenChange={setsdOpen} open={sdopen}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
@@ -488,6 +489,7 @@ const UpdateTicket = () => {
                                     ...prev,
                                     start_date: date.toISOString(),
                                   }));
+                                  setsdOpen(false);
                                 }}
                               />
                             </PopoverContent>
@@ -497,7 +499,7 @@ const UpdateTicket = () => {
                           <Label htmlFor="date" className="px-1">
                             End Date
                           </Label>
-                          <Popover onOpenChange={setOpen}>
+                          <Popover onOpenChange={setedOpen} open={edopen}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
@@ -530,6 +532,7 @@ const UpdateTicket = () => {
                                     ...prev,
                                     end_date: date.toISOString(),
                                   }));
+                                  setedOpen(false);
                                 }}
                               />
                             </PopoverContent>

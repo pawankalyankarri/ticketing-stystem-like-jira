@@ -8,19 +8,15 @@ import {
 import { cn } from "@/lib/utils";
 import { useDraggable } from "@dnd-kit/core";
 import {
-  faEllipsisV,
-  faEye,
-  faPen,
+
   faPenToSquare,
   faShare,
-  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { TooltipArrow } from "@radix-ui/react-tooltip";
 import { Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { UseTickets, type TicketType } from "./hooks/UseTickets";
+import {  type TicketType } from "./hooks/UseTickets";
 // import {
 //   Menubar,
 //   MenubarContent,
@@ -38,7 +34,7 @@ interface SpecifiedTicketsProps {
 }
 const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
   const navigate = useNavigate();
-  const { EditTicket } = UseTickets();
+
   const date = new Date(item.start_date);
   const options: Intl.DateTimeFormatOptions = {
     month: "short",
@@ -93,7 +89,7 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
           // key={item.id}
           onClick={() => navigate(`/tickets/view/${item.id}`)}
           className={cn(
-            "w-full min-h-40 max-h-40 px-2 py-2 text-xs cursor-pointer flex gap-2 group"
+            "w-full min-h-40 max-h-40 px-2 py-2 text-xs cursor-pointer flex gap-2 group "
             // isDragging ? "opacity-0 pointer-events-none" : ""
           )}
           // ref={setNodeRef}
@@ -222,7 +218,7 @@ const ShowSpecifiedTickets = ({ item, isDragging }: SpecifiedTicketsProps) => {
             </div>
           </div>
           <CardContent className="px-1 ">
-            <div className=" w-full text-sm text-black dark:text-white">
+            <div className=" w-full text-sm text-gray-900 dark:text-white">
               <Tooltip>
                 <TooltipTrigger
                   asChild

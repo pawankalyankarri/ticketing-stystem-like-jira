@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTableColumns } from "@fortawesome/free-solid-svg-icons";
 
 export function NavProjects({
   boards,
@@ -111,7 +112,9 @@ export function NavProjects({
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip="boards" className="font-bold capitalize">
                   {/* {item.icon && <FontAwesomeIcon icon={item.icon} />} */}
-                  <span >Boards</span>
+                  
+                    <FontAwesomeIcon icon={faTableColumns} />
+                    Boards
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>

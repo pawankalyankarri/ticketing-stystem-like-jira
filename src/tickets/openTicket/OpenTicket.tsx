@@ -45,6 +45,10 @@ const OpenTicket = () => {
   const [createdDateStr, setCreatedDateStr] = useState<String>("");
   const [createdTimeStr, setCreatedTimeStr] = useState<String>("");
   const [open, setOpen] = useState<boolean>(true);
+  const [collaborators, setCollaborators] = useState<string[]>([]);
+  const [showSelectCollabs,setShowSelectCollabs] = useState<boolean>(false)
+  const collaboratorsData = ["Charan", "shiva", "Ram", "Hari"];
+
   const navigate = useNavigate();
   const { GetTicket } = UseTickets();
   const params = useParams();
@@ -69,6 +73,9 @@ const OpenTicket = () => {
     }
   }, []);
   console.log(ticketDetails);
+
+
+   
 
   useEffect(() => {
     if (ticketDetails) {
@@ -134,13 +141,13 @@ const OpenTicket = () => {
     >
       {ticketDetails && (
         <DialogContent className="w-full! sm:w-[90%]! max-w-none! h-[90%]! border-0! shadow-none! focus-visible:outline-none! focus-visible:ring-0 gap-2 p-0 ">
-          <DialogHeader className=" gap-0 sticky bg-gray-200 max-w-full py-3 h-fit rounded">
+          <DialogHeader className=" gap-0 sticky bg-gray-200 max-w-full py-3 h-fit rounded-md">
             <DialogTitle className="w-full px-2 flex justify-between items-center  ">
               <span className="border-2 border-orange-400 text-orange-400 p-1 text-sm px-2 rounded ">
                 {ticketDetails.ticket_status}
               </span>
               <span
-                className="float-right p-1.5 bg-gray-300"
+                className="float-right p-1.5 bg-gray-300 rounded"
                 onClick={() => navigate("/tickets")}
               >
                 <FontAwesomeIcon
@@ -323,9 +330,19 @@ const OpenTicket = () => {
                         "NONE"
                       )}
                     </div>
-                    <div className="grid grid-cols-2">
+                    <div className="grid grid-cols-2 gap-1">
                       <Label>Collaborators</Label>
-                      <span className="flex">
+                      <span className="flex gap-1  items-center">
+                        {collaborators.map(item=>{
+                          return(
+                             <Avatar>
+                          {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
+                          <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white ">
+                            {item[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                          )
+                        })}
                         <Avatar>
                           {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
                           <AvatarFallback className="uppercase font-bold bg-white text-md  ">
@@ -337,11 +354,24 @@ const OpenTicket = () => {
                           </AvatarFallback>
                         </Avatar>
                         <Avatar className="cursor-pointer">
-                          <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white ">
+                          <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white " onClick={()=>setShowSelectCollabs(!showSelectCollabs)}>
                             <FontAwesomeIcon icon={faPlus} />
                           </AvatarFallback>
                         </Avatar>
+                       
+                        {showSelectCollabs && 
+                        <span >
+                          <SelectSearch
+                            SelectSearchData={collaboratorsData}
+                            title={"Select Assignee"}
+                            size={"md"}
+                            value={""}
+                            onChange={(val:string)=>setCollaborators((prev)=>([...prev,val]))}
+                          />
+                        </span>}
+                        {!collaborators.includes("admin")&& <span onClick={()=>setCollaborators((prev)=>([...prev,"admin"]))}>Assign to me</span>}
                       </span>
+                       
                     </div>
                     <div className="grid grid-cols-2">
                       <Label className="capitalize">assignee</Label>
