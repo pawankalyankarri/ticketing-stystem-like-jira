@@ -84,10 +84,11 @@ const UpdateTicket = () => {
   const ticketStatusData = ["Open", "Close", "Pending"];
   const ticketStateData = [
     "ToDo",
-    "InProgress",
+    "In Progress",
     "Cancelled",
     "Resolved",
-    "OnHold",
+    "On Hold",
+    "Re Open"
   ];
   const ticketSeverityData = ["Low", "Medium", "High", "Critical"];
   const assigneeData = ["Charan", "shiva", "Ram", "Hari"];
@@ -162,7 +163,7 @@ const UpdateTicket = () => {
     setFileObjects((prev) => [...prev, ...fileList]);
     // setFormData((prev)=>({...prev,'file_attach' : fileList}))
   };
-  console.log("fileobjects", fileObjects);
+  // console.log("fileobjects", fileObjects);
 
   // console.log("file", formData.file_attachment);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -175,10 +176,10 @@ const UpdateTicket = () => {
     };
 
     const res = await EditTicket(updatedData, fileObjects, tktId);
-    // console.log('res',res)
-    res?.status === 200
-      ? toast.success(res.data.message || "Ticket Updated Successfully!")
-      : toast.warning("Not Updated!");
+    console.log('res',res)
+    res?.data.message 
+      ? toast.success(res.data.message)
+      : toast.warning(res?.data.error);
     window.dispatchEvent(new Event("ticketsUpdated"));
     navigate("/tickets");
 
@@ -187,7 +188,7 @@ const UpdateTicket = () => {
   };
   // console.log('formdata', formData)
 
-  console.log("preview", previews);
+  // console.log("preview", previews);
   return (
     <div>
       <Dialog
@@ -261,7 +262,7 @@ const UpdateTicket = () => {
                             id="description"
                             name="description"
                             placeholder="Provide Ticket Description"
-                            className="h-16 text-sm resize-none"
+                            className="h-20 text-sm resize-none"
                             rows={2}
                             value={formData.description}
                             onChange={handleInputChange}
@@ -433,7 +434,7 @@ const UpdateTicket = () => {
                             <Textarea
                               placeholder="Add Comment..."
                               className={cn(
-                                "h-10 text-sm resize-none  border-0  outline-0",
+                                "h-20 text-sm resize-none  border-0  outline-0",
                                 bold && "font-bold!",
                                 italic && "italic",
                                 underline && "underline",
@@ -461,7 +462,7 @@ const UpdateTicket = () => {
                               <Button
                                 variant="outline"
                                 id="date"
-                                className="w-48 justify-between font-normal"
+                                className="w-52 justify-between font-normal"
                               >
                                 {formData.start_date
                                   ? new Date(
@@ -504,7 +505,7 @@ const UpdateTicket = () => {
                               <Button
                                 variant="outline"
                                 id="date"
-                                className="w-48 justify-between font-normal"
+                                className="w-52 justify-between font-normal"
                               >
                                 {formData.end_date
                                   ? new Date(
@@ -552,7 +553,7 @@ const UpdateTicket = () => {
                           <Label htmlFor="created_by">Reporter</Label>
                           <Input
                             placeholder="ex: John Doe"
-                            className="text-sm w-[85%]"
+                            className="text-sm w-[90%]"
                             id="created_by"
                             name="created_by"
                             value={formData.created_by}

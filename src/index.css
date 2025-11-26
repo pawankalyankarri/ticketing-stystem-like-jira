@@ -134,5 +134,21 @@
   background: transparent;
 }
 
+
+
+.thin-scrollbar1::-webkit-scrollbar {
+  width: 3px;
+}
+
+
+.thin-scrollbar1::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.5);
+  border-radius: 3px;
+}
+
+.thin-scrollbar1::-webkit-scrollbar-track {
+  background: transparent;
+}
+
   
 

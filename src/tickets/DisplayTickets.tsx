@@ -97,6 +97,16 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
     id: column,
   });
 
+  function handleKeydown(e:React.KeyboardEvent<HTMLTextAreaElement>) {
+      if(e.key !== "Enter"){
+        return
+      }
+
+      console.log(newTodo,activeColumn)
+      setActiveColumn("")
+      setNewTodo("")
+  }
+
   // const columnTextColors: Record<string, string> = {
   //   ToDo: "text-gray-500 ",
   //   InProgress: "text-blue-500",
@@ -149,10 +159,11 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
       <div className="flex flex-col h-[calc(100%-60px)] p-1 overflow-auto thin-scrollbar gap-1">
         <div className="w-full px-2">
           {activeColumn === column && (
-            <div className="bg-white rounded-md ">
-              <Textarea className="resize-none border-0 outline-0 " cols={2} value={newTodo}  onChange={(e)=>setNewTodo(e.target.value)}  />
+            <div className="bg-white rounded-md border-2 border-blue-500 min-h-28 ">
+              <Textarea className="resize-none border-0 outline-0 min-h-28 max-h-28 overflow-y-auto thin-scrollbar1 " value={newTodo}  onChange={(e)=>setNewTodo(e.target.value)}  onKeyDown={handleKeydown}
+               />
 
-              <div className="w-full flex justify-start gap-3 p-2">
+              {/* <div className="w-full flex justify-start gap-3 p-2">
                 <span></span>
                 <span>
                   <FontAwesomeIcon
@@ -164,7 +175,7 @@ const DisplayTicket = ({ column, tickets, activeId }: ColumnTypeProp) => {
                 <span className=" ">
                   <FontAwesomeIcon icon={faCircleUser} className="text-gray-500 cursor-pointer" size="xl" />
                 </span>
-              </div>
+              </div> */}
             </div>
           )}
         </div>

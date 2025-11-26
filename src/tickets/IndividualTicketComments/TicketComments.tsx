@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -10,6 +10,7 @@ import Underline from "@tiptap/extension-underline";
 import {
   AtSign,
   Bold,
+  Clock,
   Image,
   Italic,
   List,
@@ -407,12 +408,13 @@ const TicketCommnets = () => {
               className="flex gap-3 px-2 justify-center items-center"
               key={comment.id}
             >
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex justify-center items-center text-white uppercase font-bold shrink-0 text-sm">
-                {comment.avatar}
+              <div className="flex flex-col items-end" >
+                <span className=""><Clock size={16}/></span>
+                <span className="w-8 h-8 rounded-full bg-blue-600 flex justify-center items-center text-white uppercase font-bold shrink-0 text-sm">{comment.avatar}</span>
               </div>
 
               <div className="flex-1">
-                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex justify-center items-center">
                       <span className="text-gray-900 text-sm capitalize">
@@ -472,7 +474,7 @@ const TicketCommnets = () => {
                     //   {comment.content}
                     // </p>
                     <div
-                      className="p-2 border rounded text-bg-gray-600  whitespace-pre-wrap"
+                      className="px-1  rounded text-bg-gray-600  whitespace-pre-wrap"
                       dangerouslySetInnerHTML={{ __html: comment.content }}
                     />
                   )}
