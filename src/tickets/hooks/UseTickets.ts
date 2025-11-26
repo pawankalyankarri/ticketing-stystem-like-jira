@@ -87,16 +87,14 @@ export const UseTickets = () => {
   }, []);
 
   const UpdateTicketStatus = useCallback(
-async (data: TicketFormDataType) => {
+    async (data: TicketFormDataType) => {
       console.log("data", data);
       setLoading(true);
       try {
         data.file_attachment.length === 0 ? data.file_attachment.push("") : "";
         const response = await axios.post("/api/ticketing/update-ticket", data);
         console.log("edittkt", response);
-        
-       
-        
+
         return response;
       } catch (err) {
         console.log("edittkt", err);
@@ -107,15 +105,6 @@ async (data: TicketFormDataType) => {
     [fetchAllTickets]
   );
 
-
-
-
-
-
-
-
-
-  
   // const CreateTicket = useCallback(
   //   async ({ data, fileStr }: CreateTicketDataProps) => {
   //     setLoading(true);
@@ -156,52 +145,53 @@ async (data: TicketFormDataType) => {
   //   [fetchAllTickets]
   // );
 
+  const CreateTicket = useCallback(
+    async ({ data, files }: { data: any; files: File[] }) => {
+      setLoading(true);
+      console.log("data,files", data, files);
 
-const CreateTicket = useCallback(
-  async ({ data, files }: { data: any; files: File[] }) => {
-    setLoading(true);
-    console.log('data,files',data,files)
+      try {
+        //  Create Ticket (JSON)
+        const response = await axios.post(
+          "/api/ticketing/create-ticket",
+          data,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        console.log("response", response);
+        const tktId = response.data.Ticket.ticket_id;
+        console.log("tktid", typeof tktId);
 
-    try {
-      //  Create Ticket (JSON)
-      const response = await axios.post(
-        "/api/ticketing/create-ticket",
-        data,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log('response',response)
-      const tktId = response.data.Ticket.ticket_id;
-      console.log('tktid',typeof tktId)
-
-      // Upload each file one-by-one
-      // for (const file of files) {
+        // Upload each file one-by-one
+        // for (const file of files) {
         // const fd = new FormData();
         // fd.append("id", tktId);
         // fd.append("uploadfile", files[0]);
 
         // console.log('fd',fd)
         // setTimeout(()=>{},1000)
-        const res = await axios.post("/api/ticketing/attach-file",{'ticket_id' : tktId,"uploadfile": files[0]}, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      // }
-        console.log('fileres',res)
-      toast.success("Ticket created successfully");
-      await fetchAllTickets();
+        const res = await axios.post(
+          "/api/ticketing/attach-file",
+          { ticket_id: tktId, uploadfile: files[0] },
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        // }
+        console.log("fileres", res);
+        toast.success("Ticket created successfully");
+        await fetchAllTickets();
 
-      return response;
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  },
-  [fetchAllTickets]
-);
-
-
+        return response;
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchAllTickets]
+  );
 
   const GetTicket = useCallback(
     async (tktId: string) => {
@@ -222,7 +212,7 @@ const CreateTicket = useCallback(
   );
 
   const EditTicket = useCallback(
-    async (data: TicketFormDataType,fileObject:File[],tktId:string) => {
+    async (data: TicketFormDataType, fileObject: File[], tktId: string) => {
       console.log("data", data);
       setLoading(true);
       try {
@@ -230,15 +220,22 @@ const CreateTicket = useCallback(
         const response = await axios.post("/api/ticketing/update-ticket", data);
         console.log("edittkt", response);
         // await fetchAllTickets()
-        
-        console.log('data',data)
-        console.log('tktid',tktId,fileObject)
-        const res = await axios.post("/api/ticketing/attach-file",{'ticket_id' : tktId,"uploadfile": fileObject[0]}, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      // }
-        console.log('fileres',res)
-        return response;
+
+        console.log("data", data);
+        console.log("tktid", tktId, fileObject);
+        if (fileObject.length !== 0) {
+          const res = await axios.post(
+            "/api/ticketing/attach-file",
+            { ticket_id: tktId, uploadfile: fileObject[0] },
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
+
+          console.log("fileres", res);
+         
+        }
+         return response;
       } catch (err) {
         console.log("edittkt", err);
       } finally {

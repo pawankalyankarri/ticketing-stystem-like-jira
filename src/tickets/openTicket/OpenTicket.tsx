@@ -11,7 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { UseTickets, type TicketType } from "../hooks/UseTickets";
 import { Textarea } from "@/components/ui/textarea";
 import TextareaAutosize from "react-textarea-autosize";
-
+import { motion } from "motion/react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Bold,
@@ -34,6 +34,7 @@ import {
   faGears,
   faPaperclip,
   faPlus,
+  faPlusCircle,
   faTriangleExclamation,
   faUsers,
   faX,
@@ -64,7 +65,10 @@ const OpenTicket = () => {
   const [collabsOpen, setCollabsOpen] = useState<boolean>(true);
   const [collaborators, setCollaborators] = useState<string[]>([]);
   const [showSelectCollabs, setShowSelectCollabs] = useState<boolean>(false);
+  const [showSubTaskInput, setShowSubTaskInput] = useState<boolean>(false);
+  const [assigneedetails,setAssigneeDetails] = useState<string>("")
   const collaboratorsData = ["Charan", "shiva", "Ram", "Hari"];
+  
 
   const navigate = useNavigate();
   const { GetTicket } = UseTickets();
@@ -85,6 +89,7 @@ const OpenTicket = () => {
       const fetch = async () => {
         const response = await GetTicket(String(params.id));
         setTicketDetails(response);
+        setAssigneeDetails(response.assignee)
       };
       fetch();
     }
@@ -163,100 +168,100 @@ const OpenTicket = () => {
 
               <div className="flex gap-2 items-center">
                 <div className="">
-                 
-                            <Popover
-                              open={collabsOpen}
-                              onOpenChange={setCollabsOpen}
-                            >
-                              <PopoverTrigger asChild>
-                              <span className="text-sm border border-black p-1.5 cursor-pointer rounded">Assign Parent</span>
-                              </PopoverTrigger>
-                              <PopoverContent className={cn("p-0")}>
-                                <Command className="text-xs">
-                                  <CommandInput
-                                    placeholder="Search Here..."
-                                    className="h-9 text-xs"
+                  <Popover
+                  // open={collabsOpen}
+                  // onOpenChange={setCollabsOpen}
+                  >
+                    <PopoverTrigger asChild>
+                      <span className="text-sm border border-black p-1.5 cursor-pointer rounded">
+                        Assign Parent
+                      </span>
+                    </PopoverTrigger>
+                    <PopoverContent className={cn("p-0")}>
+                      <Command className="text-xs">
+                        <CommandInput
+                          placeholder="Search Here..."
+                          className="h-9 text-xs"
+                        />
+
+                        <CommandList>
+                          <CommandEmpty>No results found.</CommandEmpty>
+
+                          <CommandGroup>
+                            {collaboratorsData.map((item) => {
+                              // const isSelected =
+                              //   collaborators.includes(item); // <-- MULTI-SELECT LOGIC
+
+                              return (
+                                <CommandItem
+                                  key={item}
+                                  className="text-xs capitalize flex items-center"
+                                  onSelect={() => {
+                                    let updated;
+
+                                    // if (isSelected) {
+                                    //   // remove item
+                                    //   updated = collaborators.filter(
+                                    //     (val) => val !== item
+                                    //   );
+                                    // } else {
+                                    //   // add item
+                                    //   updated = [
+                                    //     ...collaborators,
+                                    //     item,
+                                    //   ];
+                                    // }
+
+                                    // setCollaborators(updated); // send updated list
+                                  }}
+                                >
+                                  {/* Checkbox */}
+                                  <Check
+                                    className={cn(
+                                      "mr-2"
+                                      // isSelected
+                                      //   ? "opacity-100"
+                                      //   : "opacity-0"
+                                    )}
                                   />
 
-                                  <CommandList>
-                                    <CommandEmpty>
-                                      No results found.
-                                    </CommandEmpty>
-
-                                    <CommandGroup>
-                                      {collaboratorsData.map((item) => {
-                                        // const isSelected =
-                                        //   collaborators.includes(item); // <-- MULTI-SELECT LOGIC
-
-                                        return (
-                                          <CommandItem
-                                            key={item}
-                                            className="text-xs capitalize flex items-center"
-                                            onSelect={() => {
-                                              let updated;
-
-                                              // if (isSelected) {
-                                              //   // remove item
-                                              //   updated = collaborators.filter(
-                                              //     (val) => val !== item
-                                              //   );
-                                              // } else {
-                                              //   // add item
-                                              //   updated = [
-                                              //     ...collaborators,
-                                              //     item,
-                                              //   ];
-                                              // }
-
-                                              // setCollaborators(updated); // send updated list
-                                            }}
-                                          >
-                                            {/* Checkbox */}
-                                            <Check
-                                              className={cn(
-                                                "mr-2",
-                                                // isSelected
-                                                //   ? "opacity-100"
-                                                //   : "opacity-0"
-                                              )}
-                                            />
-
-                                            {item}
-                                          </CommandItem>
-                                        );
-                                      })}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                         
+                                  {item}
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 <div className="border border-black rounded p-1 cursor-pointer">
-                  <span><FontAwesomeIcon icon={faPaperclip} size={"xs"} /></span>
-                  <span className="capitalize text-sm">Add Attachment</span> 
-                  </div>
-             
-              <div
-                className="float-right p-1.5 bg-gray-300 rounded"
-                onClick={() => navigate("/tickets")}
-              >
-                <FontAwesomeIcon
-                  icon={faX}
-                  className="font-bold cursor-pointer"
-                  size="sm"
-                />
+                  <span>
+                    <FontAwesomeIcon icon={faPaperclip} size={"xs"} />
+                  </span>
+                  <span className="capitalize text-sm">Add Attachment</span>
+                </div>
+
+                <div
+                  className="float-right p-1.5 bg-gray-300 rounded"
+                  onClick={() => navigate("/tickets")}
+                >
+                  <FontAwesomeIcon
+                    icon={faX}
+                    className="font-bold cursor-pointer"
+                    size="sm"
+                  />
+                </div>
               </div>
-               </div>
             </DialogTitle>
           </DialogHeader>
           <DialogDescription
             asChild
-            className="text-black py-0 h-full overflow-hidden px-3"
+            className="text-black py-0 h-full px-3 overflow-y-auto"
           >
-            <div className="grid grid-cols-3 gap-3 h-full ">
-              <div className="col-span-2 h-full overflow-y-auto">
+            <div className="grid grid-cols-3 gap-3 h-full  ">
+              <div className="col-span-2 h-full">
                 <div>
                   <div className=" w-full h-full col-span-2 flex flex-col gap-4 ">
                     {/* comments */}
@@ -363,15 +368,10 @@ const OpenTicket = () => {
                               </TabsTrigger>
                             </TabsList>
                             <TabsContent value="all">
-                              Make changes to your account here.
-                            </TabsContent>
-                            <TabsContent value="comment">
-                              <TicketCommnets />
-                            </TabsContent>
-                            <TabsContent value="history">
                               <div className="grid gap-5">
-                                {ticketDetails.ticket_history.map(
-                                  (obj, idx) => {
+                                {ticketDetails.ticket_history
+                                  .reverse()
+                                  .map((obj, idx) => {
                                     return (
                                       <div
                                         className="flex flex-col gap-2"
@@ -383,8 +383,29 @@ const OpenTicket = () => {
                                         </span>
                                       </div>
                                     );
-                                  }
-                                )}
+                                  })}
+                              </div>
+                            </TabsContent>
+                            <TabsContent value="comment">
+                              <TicketCommnets />
+                            </TabsContent>
+                            <TabsContent value="history">
+                              <div className="grid gap-5">
+                                {ticketDetails.ticket_history
+                                  .reverse()
+                                  .map((obj, idx) => {
+                                    return (
+                                      <div
+                                        className="flex justify-between  gap-2"
+                                        key={idx}
+                                      >
+                                        <span>{obj.action_msg}</span>
+                                        <span>
+                                          {formatTimeAgo(obj.processed_time)}
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
                               </div>
                             </TabsContent>
                             <TabsContent value="worklogs">Worklogs</TabsContent>
@@ -395,7 +416,7 @@ const OpenTicket = () => {
                   </div>
                 </div>
               </div>
-              <div className="overflow-y-auto grid gap-5 min-h-40">
+              <div className=" grid gap-5 h-fit ">
                 <Card>
                   <CardContent className="grid gap-4 p-2">
                     <div className="flex justify-between text-sm">
@@ -413,14 +434,22 @@ const OpenTicket = () => {
                       />
                     </div>
                     <div className="grid grid-cols-2">
-                      <Label className="flex items-center">Allocated Hours</Label>
-                      <span className="border border-gray-500 p-1 rounded">None</span>
+                      <Label className="flex items-center">
+                        Allocated Hours
+                      </Label>
+                      {/* <span className="border border-gray-500 p-1 rounded">None</span> */}
+
+                      <Input
+                        type="time"
+                        step={1}
+                        className="bg-background cursor-pointer border-black rounded appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                      />
                     </div>
 
                     <div className="grid grid-cols-2">
                       <Label>Time Tracking</Label>
                       <span className="grid">
-                        <Progress className="w-[80%]" />
+                        <Progress className="w-full" />
                         <span className="flex justify-end text-xs">
                           {" "}
                           0 % Completed
@@ -430,7 +459,9 @@ const OpenTicket = () => {
 
                     <div className="grid grid-cols-2">
                       <Label className="flex items-center">Hours Spent</Label>
-                      <span className="border border-gray-500  p-1 rounded">None</span>
+                      <span className="border border-gray-500  p-1 rounded">
+                        None
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-2">
@@ -449,7 +480,7 @@ const OpenTicket = () => {
                       <span className="flex gap-0.5  items-center">
                         <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
                           {collaborators.slice(0, 2).map((item, idx) => (
-                            <Avatar key={idx} className="w-6 h-6">
+                            <Avatar key={idx} className="">
                               <AvatarFallback className="uppercase font-bold bg-blue-950 text-white text-[10px]">
                                 {item[0]}
                               </AvatarFallback>
@@ -457,14 +488,14 @@ const OpenTicket = () => {
                           ))}
 
                           {collaborators.length > 2 && (
-                            <Avatar className="w-6 h-6">
+                            <Avatar className="">
                               <AvatarFallback className="uppercase font-bold bg-gray-500 text-white text-[10px]">
                                 +{collaborators.length - 2}
                               </AvatarFallback>
                             </Avatar>
                           )}
                         </div>
-                        <Avatar className="w-6 h-6">
+                        <Avatar className="">
                           {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
                           <AvatarFallback className="uppercase font-bold bg-white text-md  ">
                             <FontAwesomeIcon
@@ -487,7 +518,7 @@ const OpenTicket = () => {
                               onOpenChange={setCollabsOpen}
                             >
                               <PopoverTrigger asChild>
-                                <Avatar className="cursor-pointer w-6 h-6">
+                                <Avatar className="cursor-pointer ">
                                   <AvatarFallback
                                     className="uppercase font-bold bg-blue-950 text-md text-white "
                                     onClick={() =>
@@ -498,7 +529,7 @@ const OpenTicket = () => {
                                   </AvatarFallback>
                                 </Avatar>
                               </PopoverTrigger>
-                              <PopoverContent className={cn("p-0")}>
+                              <PopoverContent className={cn("p-0 w-fit")}>
                                 <Command className="text-xs">
                                   <CommandInput
                                     placeholder="Search Here..."
@@ -513,7 +544,7 @@ const OpenTicket = () => {
                                     <CommandGroup>
                                       {collaboratorsData.map((item) => {
                                         const isSelected =
-                                          collaborators.includes(item); // <-- MULTI-SELECT LOGIC
+                                          collaborators.includes(item); //
 
                                         return (
                                           <CommandItem
@@ -535,7 +566,7 @@ const OpenTicket = () => {
                                                 ];
                                               }
 
-                                              setCollaborators(updated); // send updated list
+                                              setCollaborators(updated);
                                             }}
                                           >
                                             {/* Checkbox */}
@@ -559,41 +590,75 @@ const OpenTicket = () => {
                             </Popover>
                           </span>
                         }
-                        {!collaborators.includes("admin") && (
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2">
+                      <Label className="flex items-center text-black">
+                        Label
+                      </Label>
+                      <span className="border border-gray-500  p-1 rounded">
+                        None
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2">
+                      <Label className="flex items-center">Milestone</Label>
+                      <span className="border border-gray-500  p-1 rounded">
+                        None
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2">
+                      <Label className="capitalize">assignee</Label>
+                      <span className="flex items-center gap-2 ">
+                        {assigneedetails.length > 0 ? (
+                          <Avatar>
+                            <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white ">
+                              {assigneedetails[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                        ) : (
                           <span
-                            className="cursor-pointer text-xs"
+                            className="cursor-pointer text-xs underline text-blue-900"
                             onClick={() =>
-                              setCollaborators((prev) => [...prev, "admin"])
+                              setAssigneeDetails( "admin")
                             }
                           >
                             Assign to me
                           </span>
                         )}
+
+                       <span className="uppercase"> {ticketDetails.assignee || assigneedetails}</span>
                       </span>
                     </div>
-                    <div className="grid grid-cols-2">
-                      <Label className="flex items-center text-black">Label</Label>
-                      <span className="border border-gray-500  p-1 rounded">None</span>
-                    </div>
-                     <div className="grid grid-cols-2">
-                      <Label className="flex items-center">Milestone</Label>
-                      <span className="border border-gray-500  p-1 rounded">None</span>
-                    </div>
-                    
-                    <div className="grid grid-cols-2">
-                      <Label className="capitalize">assignee</Label>
-                      <span className="flex items-center gap-2">
-                        <Avatar>
-                          {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
-                          <AvatarFallback className="uppercase font-bold bg-blue-950 text-md text-white ">
-                            {ticketDetails.assignee[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        {ticketDetails.assignee}
+
+                    <Card
+                      className="flex justify-between items-center flex-row! p-2 rounded cursor-pointer "
+                      onClick={() => setShowSubTaskInput(!showSubTaskInput)}
+                    >
+                      <span className="uppercase font-bold text-xs">
+                        sub Tasks
                       </span>
-                    </div>
-                     
-                     
+                      <span className="bg-gray-900 rounded p-1 text-white cursor-pointer ">
+                        <FontAwesomeIcon icon={faPlus} size={"1x"} />
+                      </span>
+                    </Card>
+                    {showSubTaskInput && (
+                      <motion.div
+                        className=" text-gray-900 p-0 rounded-lg shadow-lg"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <div className="bg-white rounded-md border-2 border-blue-500 min-h-20 ">
+                          <Textarea
+                            className="resize-none border-0 outline-0 min-h-20 max-h-20 overflow-y-auto thin-scrollbar1 "
+                            // value={newTodo}
+                            // onChange={(e) => setNewTodo(e.target.value)}
+                            // onKeyDown={handleKeydown}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
                   </CardContent>
                 </Card>
                 <div className="flex flex-col items-end">
@@ -604,7 +669,6 @@ const OpenTicket = () => {
                   )}
                   <span>Updated {formatTimeAgo(ticketDetails.updated_at)}</span>
                 </div>
-                
               </div>
             </div>
           </DialogDescription>

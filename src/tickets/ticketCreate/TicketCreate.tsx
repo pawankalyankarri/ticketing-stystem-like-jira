@@ -83,10 +83,10 @@ const TicketCreate = () => {
   const ticketStatusData = ["Open", "Close", "Pending"];
   const ticketStateData = [
     "ToDo",
-    "InProgress",
+    "In Progress",
     "Cancelled",
     "Resolved",
-    "OnHold",
+    "On Hold",
   ];
   const ticketSeverityData = ["Low", "Medium", "High", "Critical"];
 
@@ -422,7 +422,7 @@ const TicketCreate = () => {
                           <Button
                             variant="outline"
                             id="date"
-                            className="w-48 justify-between font-normal"
+                            className="w-52 justify-between font-normal"
                           >
                             {formData.start_date
                               ? new Date(
@@ -465,7 +465,7 @@ const TicketCreate = () => {
                           <Button
                             variant="outline"
                             id="date"
-                            className="w-48 justify-between font-normal"
+                            className="w-52 justify-between font-normal"
                           >
                             {formData.end_date
                               ? new Date(formData.end_date).toLocaleDateString()
@@ -511,7 +511,7 @@ const TicketCreate = () => {
                       <Label htmlFor="created_by">Reporter</Label>
                       <Input
                         placeholder="ex: John Doe"
-                        className="text-sm w-[85%]"
+                        className="text-sm w-[90%]"
                         id="created_by"
                         name="created_by"
                         onChange={handleInputChange}

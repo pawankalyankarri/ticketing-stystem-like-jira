@@ -14,6 +14,7 @@ import AddUserPage from "./UserProfile/addUser/AddUserPage";
 import { SignupForm } from "./components/signup-form";
 import { LoginForm } from "./components/login-form";
 import Testing from "./tickets/Testing";
+import { CreateMilestone } from "./milestone/createMilestone/CreateMilestone";
 export const AllRoutes = () => {
   const routes = [
     {
@@ -77,6 +78,10 @@ export const AllRoutes = () => {
     {
       path : "testing",
       element : <Testing/>
+    },
+    {
+      path : "milestone",
+      element : <CreateMilestone/>
     }
     
   ];
